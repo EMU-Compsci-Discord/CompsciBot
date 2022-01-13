@@ -1,27 +1,16 @@
-import json
 import os
 import platform
-import random
 import sys
-import mysql.connector
-import dateparser as dp
-import pytz
-import datetime
-from dateparser.search import search_dates
 
-import aiohttp
 import discord
 import yaml
 from discord.ext import commands
-from discord.ext import tasks
-from noncommands import summarizer
 
 if not os.path.isfile("config.yaml"):
     sys.exit("'config.yaml' not found! Please add it and try again.")
 else:
     with open("config.yaml") as file:
         config = yaml.load(file, Loader=yaml.FullLoader)
-
 
 class general(commands.Cog, name="general"):
     def __init__(self, bot):
