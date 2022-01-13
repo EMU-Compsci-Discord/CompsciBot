@@ -1,21 +1,12 @@
 import os
 import platform
-import random
 import sys
-import re
-from apscheduler.schedulers.asyncio import AsyncIOScheduler
-from apscheduler.triggers.cron import CronTrigger
-# import schedule
-from noncommands import haikudetector
-from noncommands import imchecker
-from noncommands import reminderLoop
-from noncommands import antimayhem
-from noncommands import scooby
-
 import discord
 import yaml
-from discord.ext import commands, tasks
+from discord.ext import commands
 from discord.ext.commands import Bot
+
+from noncommands import auto_code_block
 
 if not os.path.isfile("config.yaml"):
     sys.exit("'config.yaml' not found! Please add it and try again.")
@@ -27,11 +18,7 @@ intents = discord.Intents.default()
 
 bot = Bot(command_prefix=config["bot_prefix"], intents=intents)
 
-imChecker = imchecker.ImChecker()
-reminderChecker = reminderLoop.ReminderLoop()
-antiMayhem = antimayhem.AntiMayhem()
-haikuDetector = haikudetector.HaikuDetector()
-scooby = scooby.Scooby(bot)
+autoCodeBlock = auto_code_block.AutoCodeBlock(bot)
 
 # The code in this even is executed when the bot is ready
 @bot.event
@@ -41,14 +28,6 @@ async def on_ready():
     print(f"Python version: {platform.python_version()}")
     print(f"Running on: {platform.system()} {platform.release()} ({os.name})")
     print("-------------------")
-    status_task.start()
-
-
-# Setup the game status task of the bot
-@tasks.loop(minutes=1.0)
-async def status_task():
-    statuses = ["with your mom"]
-    await bot.change_presence(activity=discord.Game(random.choice(statuses)))
 
 
 # Removes the default help command of discord.py to be able to create our custom help command.
@@ -76,12 +55,6 @@ async def on_message(message):
 
     if message.author.id in config["blacklist"]:
         return
-    
-    await imChecker.checkIm(message)
-
-    await antiMayhem.gotem(message)
-
-    await haikuDetector.checkForHaiku(message)
 
     await bot.process_commands(message)
 
@@ -121,14 +94,4 @@ async def on_command_error(context, error):
         await context.send(embed=embed)
     raise error
 
-@tasks.loop(seconds=5)
-async def checkReminders():
-    await reminderChecker.checkReminders(bot)
-    await reminderChecker.deleteOldReminders(bot)
-
-checkReminders.start()
-scheduler = AsyncIOScheduler()
-scheduler.add_job(scooby.whatsTheMove, CronTrigger(hour = "19", minute = "0", second = "0", timezone="EST"))
-scheduler.add_job(scooby.praiseFireGator, CronTrigger(day_of_week="thu", hour = "0", minute = "0", second = "0", timezone="EST"))
-scheduler.start()
 bot.run(config["token"])
