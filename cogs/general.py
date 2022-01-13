@@ -129,7 +129,7 @@ class general(commands.Cog, name="general"):
         """
         Get the invite link of the bot to be able to invite it to another server.
         """
-        await context.reply(f"Invite me by clicking here: https://discordapp.com/oauth2/authorize?&client_id={config.APPLICATION_ID}&scope=bot&permissions=8")
+        await context.reply(f"Invite me by clicking here: https://discordapp.com/oauth2/authorize?&client_id={config.application_id}&scope=bot&permissions=8")
 
 def setup(bot):
     bot.add_cog(general(bot))
