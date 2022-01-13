@@ -28,7 +28,7 @@ class Help(commands.Cog, name="help"):
         for i in self.bot.cogs:
             cog = self.bot.get_cog(i.lower())
             print(i)
-            if i not in ["owner", "template"]:
+            if i not in ["owner", "template", "moderation"]:
                 commands = cog.get_commands()
                 command_list = [command.name for command in commands]
                 command_description = [command.help for command in commands]
