@@ -20,7 +20,7 @@ class AutoCodeBlock:
             await msg.add_reaction("🚫")
 
             def check(reaction, user):
-                return user == message.author and str(reaction) in "🚫"
+                return user == message.author and str(reaction) in "🚫" and reaction.message == msg
 
             try:
                 await self.bot.wait_for("reaction_add", timeout=120, check=check)
