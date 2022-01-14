@@ -116,22 +116,24 @@ class general(commands.Cog, name="general"):
     # Search CSquotes for a specific or give random quote
     @commands.command(name="quote")
     async def quote(self, context,*args):
+        """
+            Searches CS quotes by keyword, or search one at random.
+        """
         #initialize and get data
         f = open("resources/quotes.json")
         json_data = json.load(f)
         quotes = list(json_data['CSQuotes'])
 
+        #if keywords
         if args:
-            keyTerm =""
-            for a in args:
-                keyTerm += a
+            keyTerm= " ".join(args)
 
             random_quote="Sorry! You made a bad search"
             for line in quotes:
                 if keyTerm in line:
                     random_quote = line
                     break;
-                
+        #no keywords      
         else:
             random_quote = random.choice(quotes)
         await context.send(random_quote)
@@ -139,6 +141,9 @@ class general(commands.Cog, name="general"):
     # when called creates a new quote in CSQuotes field
     @commands.command(name="newquote")
     async def newquote(self, context, *args):
+        """
+            Creates a new quote to be put into the list of CS quotes.
+        """
         quote = " ".join(args)
         qfile = open("resources/quotes.json","r")
         qjson = json.load(qfile)
