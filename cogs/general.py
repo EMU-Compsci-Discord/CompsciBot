@@ -113,6 +113,7 @@ class general(commands.Cog, name="general"):
         )
         await context.send(embed=embed)
 
+    # Search CSquotes for a specific or give random quote
     @commands.command(name="quote")
     async def quote(self, context,*args):
         #initialize and get data
@@ -135,19 +136,19 @@ class general(commands.Cog, name="general"):
             random_quote = random.choice(quotes)
         await context.send(random_quote)
     
+    # when called creates a new quote in CSQuotes field
     @commands.command(name="newquote")
     async def newquote(self, context, *args):
         quote = " ".join(args)
         qfile = open("resources/quotes.json","r")
         qjson = json.load(qfile)
         qfile.close()
-        
+
         qjson["CSQuotes"].append(quote)
         qfile = open("resources/quotes.json","w")
         json.dump(qjson, qfile)
 
         await context.reply(f"New quote created: {quote}")
-
 
     @commands.command(name="invite")
     async def invite(self, context):
