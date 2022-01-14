@@ -1,10 +1,12 @@
 import os
 import platform
 import sys
-
+import json
 import discord
 import yaml
+import random
 from discord.ext import commands
+
 
 if not os.path.isfile("config.yaml"):
     sys.exit("'config.yaml' not found! Please add it and try again.")
@@ -112,13 +114,55 @@ class general(commands.Cog, name="general"):
         )
         await context.send(embed=embed)
 
+    # Search CSquotes for a specific or give random quote
+    @commands.command(name="quote")
+    async def quote(self, context,*keywords):
+        """
+            Searches CS quotes by keyword, or search one at random.
+        """
+
+        f = open("resources/quotes.json")
+        json_data = json.load(f)
+        quotes = list(json_data['CSQuotes'])
+
+        #if keywords
+        if keywords:
+            keyTerm= " ".join(keywords)
+
+            random_quote="Sorry! You made a bad search"
+            for line in quotes:
+                if keyTerm in line:
+                    random_quote = line
+                    break;
+        #no keywords      
+        else:
+            random_quote = random.choice(quotes)
+        await context.send(random_quote)
+    
+    # when called creates a new quote in CSQuotes field
+    @commands.command(name="newquote")
+    async def newquote(self, context):
+        """
+            Creates a new quote to be put into the list of CS quotes.
+        """
+        prefix = config["bot_prefix"]
+        startLen = len(prefix) + len("newquote")
+        quote = context.message.content[startLen:]
+
+        with open("resources/quotes.json","r") as qfile:
+            qjson = json.load(qfile)
+            qjson["CSQuotes"].append(quote)
+            qfile = open("resources/quotes.json","w")
+            json.dump(qjson, qfile)
+
+            await context.reply(f"New quote created: {quote}")
 
     @commands.command(name="invite")
     async def invite(self, context):
         """
         Get the invite link of the bot to be able to invite it to another server.
         """
-        await context.reply(f"Invite me by clicking here: https://discordapp.com/oauth2/authorize?&client_id={config.application_id}&scope=bot&permissions=8")
+        await context.reply(f"Invite me by clicking here: https://discordapp.com/oauth2/authorize?&client_id={config['application_id']}&scope=bot&permissions=8")
 
 def setup(bot):
     bot.add_cog(general(bot))
