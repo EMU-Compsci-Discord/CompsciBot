@@ -55,6 +55,8 @@ async def on_message(message):
 
     if message.author.id in config["blacklist"]:
         return
+    
+    await autoCodeBlock.check_message(message)
 
     await bot.process_commands(message)
 
