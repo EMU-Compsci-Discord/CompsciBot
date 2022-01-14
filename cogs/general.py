@@ -118,7 +118,7 @@ class general(commands.Cog, name="general"):
         #initialize and get data
         f = open("resources/quotes.json")
         json_data = json.load(f)
-        quotes = list(json_data['makeMeLaugh'])
+        quotes = list(json_data['CSQuotes'])
 
         if args:
             keyTerm =""
@@ -135,6 +135,18 @@ class general(commands.Cog, name="general"):
             random_quote = random.choice(quotes)
         await context.send(random_quote)
     
+    @commands.command(name="newquote")
+    async def newquote(self, context, *args):
+        quote = " ".join(args)
+        qfile = open("resources/quotes.json","r")
+        qjson = json.load(qfile)
+        qfile.close()
+        
+        qjson["CSQuotes"].append(quote)
+        qfile = open("resources/quotes.json","w")
+        json.dump(qjson, qfile)
+
+        await context.reply(f"New quote created: {quote}")
 
 
     @commands.command(name="invite")
