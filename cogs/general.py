@@ -1,9 +1,10 @@
 import os
 import platform
 import sys
-
+import json
 import discord
 import yaml
+import random
 from discord.ext import commands
 
 if not os.path.isfile("config.yaml"):
@@ -111,6 +112,29 @@ class general(commands.Cog, name="general"):
             text=f"Pong request by {context.message.author}"
         )
         await context.send(embed=embed)
+
+    @commands.command(name="quote")
+    async def quote(self, context,*args):
+        #initialize and get data
+        f = open("resources/quotes.json")
+        json_data = json.load(f)
+        quotes = list(json_data['makeMeLaugh'])
+
+        if args:
+            keyTerm =""
+            for a in args:
+                keyTerm += a
+
+            random_quote="Sorry! You made a bad search"
+            for line in quotes:
+                if keyTerm in line:
+                    random_quote = line
+                    break;
+                
+        else:
+            random_quote = random.choice(quotes)
+        await context.send(random_quote)
+    
 
 
     @commands.command(name="invite")
