@@ -114,7 +114,6 @@ class general(commands.Cog, name="general"):
         )
         await context.send(embed=embed)
 
-    # Search CSquotes for a specific or give random quote
     @commands.command(name="quote")
     async def quote(self, context,*keywords):
         """
@@ -123,9 +122,8 @@ class general(commands.Cog, name="general"):
 
         f = open("resources/quotes.json")
         json_data = json.load(f)
-        quotes = list(json_data['CSQuotes'])
+        quotes = list(json_data['teacherQuotes'])
 
-        #if keywords
         if keywords:
             keyTerm= " ".join(keywords)
 
@@ -133,13 +131,11 @@ class general(commands.Cog, name="general"):
             for line in quotes:
                 if keyTerm in line:
                     random_quote = line
-                    break;
-        #no keywords      
+                    break   
         else:
             random_quote = random.choice(quotes)
         await context.send(random_quote)
     
-    # when called creates a new quote in CSQuotes field
     @commands.command(name="newquote")
     async def newquote(self, context):
         """
@@ -151,7 +147,7 @@ class general(commands.Cog, name="general"):
 
         with open("resources/quotes.json","r") as qfile:
             qjson = json.load(qfile)
-            qjson["CSQuotes"].append(quote)
+            qjson["teacherQuotes"].append(quote)
             qfile = open("resources/quotes.json","w")
             json.dump(qjson, qfile)
 
