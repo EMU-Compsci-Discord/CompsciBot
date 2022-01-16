@@ -4,3 +4,10 @@ discord
 discord.py[voice]
 pyyaml
 aiofiles
+sklearn
+pandas
+nltk
+numpy
+trafilatura
+inspiro
+uwuify

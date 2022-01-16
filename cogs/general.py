@@ -6,7 +6,7 @@ import discord
 import yaml
 import random
 from discord.ext import commands
-
+from noncommands import summarizer
 
 if not os.path.isfile("config.yaml"):
     sys.exit("'config.yaml' not found! Please add it and try again.")
@@ -21,7 +21,7 @@ class general(commands.Cog, name="general"):
     @commands.command(name="info", aliases=["botinfo"])
     async def info(self, context):
         """
-        Get some useful (or not) information about the bot.
+        [No arguments] Get some useful (or not) information about the bot.
         """
         embed = discord.Embed(
             description="CompsciBot",
@@ -53,7 +53,7 @@ class general(commands.Cog, name="general"):
     @commands.command(name="serverinfo")
     async def serverinfo(self, context):
         """
-        Get some useful (or not) information about the server.
+        [No arguments] Get some useful (or not) information about the server.
         """
         server = context.message.guild
         roles = [x.name for x in server.roles]
@@ -99,7 +99,7 @@ class general(commands.Cog, name="general"):
     @commands.command(name="ping")
     async def ping(self, context):
         """
-        Check if the bot is alive.
+        [No arguments] Check if the bot is alive.
         """
         embed = discord.Embed(
             color=config["success"]
@@ -117,7 +117,7 @@ class general(commands.Cog, name="general"):
     @commands.command(name="quote")
     async def quote(self, context,*keywords):
         """
-            Searches CS quotes by keyword, or search one at random.
+        [(Optional) Search text] Searches CS quotes by keyword, or search one at random.
         """
 
         f = open("resources/quotes.json")
@@ -139,7 +139,7 @@ class general(commands.Cog, name="general"):
     @commands.command(name="newquote")
     async def newquote(self, context):
         """
-            Creates a new quote to be put into the list of CS quotes.
+        [(Required) Quote] Creates a new quote to be put into the list of CS quotes.
         """
         prefix = config["bot_prefix"]
         startLen = len(prefix) + len("newquote")
@@ -156,9 +156,38 @@ class general(commands.Cog, name="general"):
     @commands.command(name="invite")
     async def invite(self, context):
         """
-        Get the invite link of the bot to be able to invite it to another server.
+        [No arguments] Get the invite link of the bot to be able to invite it to another server.
         """
         await context.reply(f"Invite me by clicking here: https://discordapp.com/oauth2/authorize?&client_id={config['application_id']}&scope=bot&permissions=8")
+    
+    @commands.command(name="tldr")
+    async def tldr(self, context, url):
+        """
+        [(Required) Link to site] Used skills I learned in the information retreival class to build this!
+        """
+        try:
+            await context.send(embed=summarizer.getSummary(config, url))
+        except:
+             await context.send("There's something odd about that link. Either they won't let me read it or you sent it wrongly.")
+
+    @commands.command(name="poll")
+    async def poll(self, context, *args):
+        """
+        [(Required) Question] Create a poll where members can vote on a question.
+        """
+        poll_title = " ".join(args)
+        embed = discord.Embed(
+            title="A new poll has been created!",
+            description=f"{poll_title}",
+            color=config["success"]
+        )
+        embed.set_footer(
+            text=f"Poll created by: {context.message.author} • React to vote!"
+        )
+        embed_message = await context.send(embed=embed)
+        await embed_message.add_reaction("👍")
+        await embed_message.add_reaction("👎")
+        await embed_message.add_reaction("🤷")
 
 def setup(bot):
     bot.add_cog(general(bot))

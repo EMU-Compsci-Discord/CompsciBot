@@ -21,7 +21,7 @@ class Template(commands.Cog, name="template"):
     @commands.command(name="testcommand")
     async def testcommand(self, context):
         """
-        This is a testing command that does nothing.
+        [No arguments] This is a testing command that does nothing.
         """
         await context.send("I'll tell you when you're older. Move along now, child.")
 
