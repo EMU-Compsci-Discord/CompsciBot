@@ -165,7 +165,7 @@ class Fun(commands.Cog, name="fun"):
     @commands.command(name="uwu")
     async def uwu(self, context):
         """
-        [No arguments] UwU
+        [No arguments] (Reply to a message with this) UwU
         """
         message = await context.channel.fetch_message(context.message.reference.message_id)
         flags = uwuify.SMILEY | uwuify.YU
