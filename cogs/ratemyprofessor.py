@@ -14,7 +14,7 @@ else:
         config = yaml.load(file, Loader=yaml.FullLoader)
 
 
-class RateMyProfessor(commands.Cog, name="Rate my Professor"):
+class RateMyProfessor(commands.Cog, name="rate my professor"):
     def __init__(self, bot):
         self.bot = bot
         self.profImages = {

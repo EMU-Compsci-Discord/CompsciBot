@@ -27,7 +27,6 @@ class Help(commands.Cog, name="help"):
         embed = discord.Embed(title="Help", description="List of available commands:", color=config["success"])
         for i in self.bot.cogs:
             cog = self.bot.get_cog(i.lower())
-            print(i)
             if i not in ["owner", "template", "moderation"]:
                 commands = cog.get_commands()
                 command_list = [command.name for command in commands]
