@@ -11,3 +11,4 @@ numpy
 trafilatura
 inspiro
 uwuify
+ratemyprofessor
