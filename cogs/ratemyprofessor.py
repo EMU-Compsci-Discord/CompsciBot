@@ -34,9 +34,11 @@ class RateMyProfessor(commands.Cog, name="Rate my Professor"):
         EMU = ratemyprofessor.get_school_by_name("Eastern Michigan University")
         prof = ratemyprofessor.get_professor_by_school_and_name(EMU, professorSearchTerm)
 
-        ratings =  sorted([rating for rating in prof.get_ratings() if rating.comment], key=lambda rating: (rating.rating, rating.date))
-        bestRating = ratings[-1]
-        worstRating = ratings[0]
+        ratingsBest = sorted([rating for rating in prof.get_ratings() if rating.comment], key=lambda rating: (rating.rating, rating.date))
+        bestRating = ratingsBest[-1]
+
+        ratingsWorst = sorted([rating for rating in prof.get_ratings() if rating.comment], key=lambda rating: (-rating.rating, rating.date))
+        worstRating = ratingsWorst[-1]
 
         profEmbed = self.buildProfEmbed(prof)
         bestembed = self.buildRatingEmbed(discord.Embed(title=f"Best Rating for {prof.name}", color=config["success"]), bestRating)
@@ -45,7 +47,7 @@ class RateMyProfessor(commands.Cog, name="Rate my Professor"):
         await context.send(embed=profEmbed)
         await context.send(embed=bestembed)
         await context.send(embed=worstembed)
-    
+
     def buildRatingEmbed(self, embed, rating):
         if rating.rating:
             embed.add_field(
@@ -135,7 +137,7 @@ class RateMyProfessor(commands.Cog, name="Rate my Professor"):
             value=f"https://www.ratemyprofessors.com/ShowRatings.jsp?tid={prof.id}",
             inline=False
         )
-        
+
         return embed
 
 def setup(bot):
