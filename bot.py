@@ -8,11 +8,10 @@ from discord.ext.commands import Bot
 
 from noncommands import auto_code_block
 
-if not os.path.isfile("config.yaml"):
-    sys.exit("'config.yaml' not found! Please add it and try again.")
-else:
-    with open("config.yaml") as file:
-        config = yaml.load(file, Loader=yaml.FullLoader)
+if "CompsciBot" not in str(os.getcwd()):
+    os.chdir("./CompsciBot")
+with open("config.yaml") as file:
+    config = yaml.load(file, Loader=yaml.FullLoader)
 
 intents = discord.Intents.default()
 
