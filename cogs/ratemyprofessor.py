@@ -44,7 +44,9 @@ class RateMyProfessor(commands.Cog, name="rate my professor"):
         bestembed = self.buildRatingEmbed(discord.Embed(title=f"Best Rating for {prof.name}", color=config["success"]), bestRating)
         worstembed = self.buildRatingEmbed(discord.Embed(title=f"Worst Rating for {prof.name}",color=config["success"]), worstRating)
         
-        await context.send(embeds=[profEmbed, bestembed, worstembed])
+        await context.send(embed=profEmbed)
+        await context.send(embed=bestembed)
+        await context.send(embed=worstembed)
 
     def buildRatingEmbed(self, embed, rating):
         if rating.rating:
