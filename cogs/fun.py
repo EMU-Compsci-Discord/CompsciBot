@@ -14,12 +14,10 @@ import uuid
 import inspirobot
 import uwuify
 
-if not os.path.isfile("config.yaml"):
-    sys.exit("'config.yaml' not found! Please add it and try again.")
-else:
-    with open("config.yaml") as file:
-        config = yaml.load(file, Loader=yaml.FullLoader)
-
+if "CompsciBot" not in str(os.getcwd()):
+    os.chdir("./CompsciBot")
+with open("config.yaml") as file:
+    config = yaml.load(file, Loader=yaml.FullLoader)
 
 class Fun(commands.Cog, name="fun"):
     def __init__(self, bot):

@@ -5,12 +5,10 @@ import discord
 import yaml
 from discord.ext import commands
 
-if not os.path.isfile("config.yaml"):
-    sys.exit("'config.yaml' not found! Please add it and try again.")
-else:
-    with open("config.yaml") as file:
-        config = yaml.load(file, Loader=yaml.FullLoader)
-
+if "CompsciBot" not in str(os.getcwd()):
+    os.chdir("./CompsciBot")
+with open("config.yaml") as file:
+    config = yaml.load(file, Loader=yaml.FullLoader)
 
 class Help(commands.Cog, name="help"):
     def __init__(self, bot):

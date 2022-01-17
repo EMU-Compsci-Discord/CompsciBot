@@ -8,11 +8,10 @@ import random
 from discord.ext import commands
 from noncommands import summarizer
 
-if not os.path.isfile("config.yaml"):
-    sys.exit("'config.yaml' not found! Please add it and try again.")
-else:
-    with open("config.yaml") as file:
-        config = yaml.load(file, Loader=yaml.FullLoader)
+if "CompsciBot" not in str(os.getcwd()):
+    os.chdir("./CompsciBot")
+with open("config.yaml") as file:
+    config = yaml.load(file, Loader=yaml.FullLoader)
 
 class general(commands.Cog, name="general"):
     def __init__(self, bot):
