@@ -1,7 +1,6 @@
 aiohttp
 asyncio
-discord
-discord.py[voice]
+git+https://github.com/Pycord-Development/pycord
 pyyaml
 aiofiles
 sklearn
