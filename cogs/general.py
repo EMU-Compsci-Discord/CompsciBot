@@ -6,7 +6,7 @@ import discord
 import yaml
 import random
 from discord.ext import commands
-from noncommands import summarizer
+from noncommands import summarizer, quotes
 
 if "CompsciBot" not in str(os.getcwd()):
     os.chdir("./CompsciBot")
@@ -114,43 +114,26 @@ class general(commands.Cog, name="general"):
         await context.send(embed=embed)
 
     @commands.command(name="quote")
-    async def quote(self, context,*keywords):
+    async def quote(self, context, **kwargs):
         """
         [(Optional) Search text] Searches CS quotes by keyword, or search one at random.
         """
-
-        f = open("resources/quotes.json")
-        json_data = json.load(f)
-        quotes = list(json_data['teacherQuotes'])
-
-        if keywords:
-            keyTerm= " ".join(keywords)
-
-            random_quote="Sorry! You made a bad search"
-            for line in quotes:
-                if keyTerm in line:
-                    random_quote = line
-                    break   
-        else:
-            random_quote = random.choice(quotes)
+        quoteClass = quotes.Quotes(self.bot)
+        prefix = config["bot_prefix"]
+        startLen = len(prefix) + len("quote ")
+        search = context.message.content[startLen:]
+        random_quote = await quoteClass.quote(search)
         await context.send(random_quote)
-    
+
     @commands.command(name="newquote")
     async def newquote(self, context):
         """
         [(Required) Quote] Creates a new quote to be put into the list of CS quotes.
         """
-        prefix = config["bot_prefix"]
-        startLen = len(prefix) + len("newquote")
-        quote = context.message.content[startLen:]
+        quoteClass = quotes.Quotes(self.bot)
+        newquote=await quoteClass.newquote(context)
 
-        with open("resources/quotes.json","r") as qfile:
-            qjson = json.load(qfile)
-            qjson["teacherQuotes"].append(quote)
-            qfile = open("resources/quotes.json","w")
-            json.dump(qjson, qfile)
-
-            await context.reply(f"New quote created: {quote}")
+        await context.send("Quote submitted! Quote: " + newquote)
 
     @commands.command(name="invite")
     async def invite(self, context):

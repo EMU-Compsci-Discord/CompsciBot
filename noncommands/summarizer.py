@@ -9,6 +9,7 @@ from trafilatura import bare_extraction
 import trafilatura
 import discord
 
+
 nltk.download('punkt')
 nltk.download('stopwords')
 

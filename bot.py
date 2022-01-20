@@ -3,10 +3,12 @@ import platform
 import sys
 import discord
 import yaml
+from apscheduler.schedulers.asyncio import AsyncIOScheduler
+from apscheduler.triggers.cron import CronTrigger
 from discord.ext import commands
 from discord.ext.commands import Bot
 
-from noncommands import auto_code_block
+from noncommands import auto_code_block,quotes
 
 if "CompsciBot" not in str(os.getcwd()):
     os.chdir("./CompsciBot")
@@ -17,6 +19,8 @@ intents = discord.Intents.default()
 
 bot = Bot(command_prefix=config["bot_prefix"], intents=intents)
 
+scheduler = AsyncIOScheduler()
+toSchedule = quotes.Quotes(bot)
 autoCodeBlock = auto_code_block.AutoCodeBlock(bot)
 
 # The code in this even is executed when the bot is ready
@@ -27,7 +31,6 @@ async def on_ready():
     print(f"Python version: {platform.python_version()}")
     print(f"Running on: {platform.system()} {platform.release()} ({os.name})")
     print("-------------------")
-
 
 # Removes the default help command of discord.py to be able to create our custom help command.
 bot.remove_command("help")
@@ -42,7 +45,6 @@ if __name__ == "__main__":
             except Exception as e:
                 exception = f"{type(e).__name__}: {e}"
                 print(f"Failed to load extension {extension}\n{exception}")
-
 
 # The code in this event is executed every time someone sends a message, with or without the prefix
 @bot.event
@@ -59,9 +61,6 @@ async def on_message(message):
 
     await bot.process_commands(message)
 
-
-
-
 # The code in this event is executed every time a command has been *successfully* executed
 @bot.event
 async def on_command_completion(ctx):
@@ -70,7 +69,6 @@ async def on_command_completion(ctx):
     executedCommand = str(split[0])
     print(
         f"Executed {executedCommand} command in {ctx.guild.name} (ID: {ctx.message.guild.id}) by {ctx.message.author} (ID: {ctx.message.author.id})")
-
 
 # The code in this event is executed every time a valid commands catches an error
 @bot.event
@@ -95,4 +93,6 @@ async def on_command_error(context, error):
         await context.send(embed=embed)
     raise error
 
+scheduler.add_job(toSchedule.dailyQuote, CronTrigger(hour="9",minute="0",second="0",day_of_week="0-4",timezone="EST"))
+scheduler.start()
 bot.run(config["token"])
