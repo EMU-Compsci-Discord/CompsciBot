@@ -3,10 +3,12 @@ import platform
 import sys
 import discord
 import yaml
+from apscheduler.schedulers.asyncio import AsyncIOScheduler
+from apscheduler.triggers.cron import CronTrigger
 from discord.ext import commands
 from discord.ext.commands import Bot
 
-from noncommands import auto_code_block
+from noncommands import auto_code_block,quotes
 
 if "CompsciBot" not in str(os.getcwd()):
     os.chdir("./CompsciBot")
@@ -17,6 +19,8 @@ intents = discord.Intents.default()
 
 bot = Bot(command_prefix=config["bot_prefix"], intents=intents)
 
+scheduler = AsyncIOScheduler()
+toSchedule = quotes.Quotes(bot)
 autoCodeBlock = auto_code_block.AutoCodeBlock(bot)
 
 # The code in this even is executed when the bot is ready
@@ -95,4 +99,7 @@ async def on_command_error(context, error):
         await context.send(embed=embed)
     raise error
 
+
+scheduler.add_job(toSchedule.dailyQuote, CronTrigger(hour="9",minute="0",second="0",day_of_week="0-4",timezone="EST"))
+scheduler.start()
 bot.run(config["token"])
