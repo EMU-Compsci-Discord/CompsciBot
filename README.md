@@ -29,32 +29,30 @@ git clone https://github.com/Nanosplitter/CompsciBot
 ```
 You should see something similar to this result if you are using Windows Command Prompt, but the command will work on Mac and Linux aswell.
 
-<img src="https://github.com/Nanosplitter/CompsciBot/tree/main/imgs/cmdCloneCommand.png" alt="Command Line Output"/>
+<img src="https://github.com/Nanosplitter/CompsciBot//tree/dev/readme/imgs/cmdCloneCommand.png" alt="Command Line Output"/>
 
 ### 2. Getting a Discord Bot
 Now that you have the code base, you need to add a bot to discord to test any new code you add.
 
-First things first, go to the [Discord Developer Portal](https://discord.com/developers/) and log in.
-
 You should see an interface like this one:
-<img src="https://github.com/Nanosplitter/CompsciBot/tree/main/imgs/devPortal.png" alt="Discord Developer Website"/>
+<img src="https://github.com/Nanosplitter/CompsciBot//tree/dev/readme/imgs/devPortal.png" alt="Discord Developer Website"/>
 
 Click on "New Application" in the top right.
 
 You will be prompted to give it a name, we suggest using "CompsciBot - [your name]".
 
-<img src="https://github.com/Nanosplitter/CompsciBot/tree/main/imgs/devAppName.png" alt="Adding a Name"/>
+<img src="https://github.com/Nanosplitter/CompsciBot//tree/dev/readme/imgs/devAppName.png" alt="Adding a Name"/>
 
 You will then be taken to the bots General information.  Note the **APPLICATION ID**, as its important for later.
 
-<img id="appId" src="https://github.com/Nanosplitter/CompsciBot/tree/main/imgs/appMain.png" alt="General Application Page"/>
+<img id="appId" src="https://github.com/Nanosplitter/CompsciBot//tree/dev/readme/imgs/appMain.png" alt="General Application Page"/>
 
 ### 3. Adding a Bot 
 Now that you have an application, you need the actual bot.  
 
 Click on the Bot tab in the sidebar to see this:
 
-<img src="https://github.com/Nanosplitter/CompsciBot/tree/main/imgs/appBot.png" alt="Application Bot Page"/>
+<img src="https://github.com/Nanosplitter/CompsciBot//tree/dev/readme/imgs/appBot.png" alt="Application Bot Page"/>
 
 Click "Add Bot". The page will ask if you are sure, click "Yes".
 
@@ -62,7 +60,7 @@ Now you will see a Bot Screen, with the default discord logo and name.
 
 
 Notice the **TOKEN** section of the page, as we will use that in the next step.
-<img id="token" src="https://github.com/Nanosplitter/CompsciBot/tree/main/imgs/botScreen.png" alt="Bot Page"/>
+<img id="token" src="https://github.com/Nanosplitter/CompsciBot//tree/dev/readme/imgs/botScreen.png" alt="Bot Page"/>
 
 ### 4. Bot Permissions
 
@@ -77,7 +75,7 @@ Now go to your IDE or Text Editor, and make a copy of `config template.yaml`. Sa
 
 DO NOT WRITE ON THE TEMPLATE
 
-<img src="https://github.com/Nanosplitter/CompsciBot/tree/main/imgs/configTemplate.png" alt="Template"/>
+<img src="https://github.com/Nanosplitter/CompsciBot//tree/dev/readme/imgs/configTemplate.png" alt="Template"/>
 
 On the `config.yaml` file, you will be changing four lines:
  
@@ -110,7 +108,7 @@ Back in the Developer Portal, go to **OAuth2 > URL Generator** and check the `[ 
 In bot permissions, check the `[ ] Administrator` checkbox and scroll to the bottom to get an invite link.
 
 The result should look like this below:
-<img src="https://github.com/Nanosplitter/CompsciBot/tree/main/imgs/OAuthChecked.png" alt="Completed OAuth2"/>
+<img src="https://github.com/Nanosplitter/CompsciBot//tree/dev/readme/imgs/OAuthChecked.png" alt="Completed OAuth2"/>
 
 ### 6. Join the Testing Server and Add the bot.
 
@@ -122,7 +120,7 @@ If you are just joining, you may not have the permissions to add your bot to the
 
 Now it should show on the server side panel, but it is not shown as being on.
 
-<img src="https://github.com/Nanosplitter/CompsciBot/tree/main/imgs/inactive.png" alt="inactive bot"/>
+<img src="https://github.com/Nanosplitter/CompsciBot//tree/dev/readme/imgs/inactive.png" alt="inactive bot"/>
 
 ### 7. Running your bot
 
@@ -146,13 +144,13 @@ python bot.py
 
 This will run your bot!
 
-<img src="https://github.com/Nanosplitter/CompsciBot/tree/main/imgs/running.png" alt="running command line"/>
+<img src="https://github.com/Nanosplitter/CompsciBot//tree/dev/readme/imgs/running.png" alt="running command line"/>
 
 You will now see your bot in the ONLINE category, and if you call it with a `<prefix> ping` command it will respond. 
 
 
 
 
-<img src="https://github.com/Nanosplitter/CompsciBot/tree/main/imgs/ping.png" alt="ping response"/>
+<img src="https://github.com/Nanosplitter/CompsciBot//tree/dev/readme/imgs/ping.png" alt="ping response"/>
 
 press Ctrl+C to stop the bot from running, and now you can work on and change the bot as needed!
