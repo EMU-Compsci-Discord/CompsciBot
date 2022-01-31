@@ -1,5 +1,10 @@
 # Welcome to the new and improved CompsciBot!
 
+## Conventions
+- Please create and commit work into a new branch, instead of directly into main.
+- Use a consistent, clear code structure
+- Comment when needed
+
 
 
 ## Getting started 
@@ -9,7 +14,7 @@ before.
 
 ### Prior Knowledge:
 
-This tutorial assumes you have a basic understanding of GitHub,  and python. It also assumes you have git and python installed on your computer.
+This tutorial assumes you have a basic understanding of GitHub,  and python. It also assumes you have git, python, and pip package manager installed on your computer.
 
 If you do not have this skill yet, we recommend you check out:
 
