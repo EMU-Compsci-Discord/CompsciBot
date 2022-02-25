@@ -34,7 +34,7 @@ git clone https://github.com/Nanosplitter/CompsciBot
 ```
 You should see something similar to this result if you are using Windows Command Prompt, but the command will work on Mac and Linux aswell.
 
-<img src="https://raw.githubusercontent.com/Nanosplitter/CompsciBot/blob/main/imgs/cmdCloneCommand.png" alt="Command Line Output" width="100%"/>
+<img src="https://github.com/Nanosplitter/CompsciBot/blob/aefc804e7d6228e9953127c6c7743e3ec695b0aa/imgs/cmdCloneCommand.png" alt="Command Line Output" width="100%"/>
 
 ### 2. Getting a Discord Bot
 Now that you have the code base, you need to add a bot to discord to test any new code you add.
