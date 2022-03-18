@@ -93,6 +93,6 @@ async def on_command_error(context, error):
         await context.send(embed=embed)
     raise error
 
-scheduler.add_job(toSchedule.dailyQuote, CronTrigger(hour="9",minute="0",second="0",day_of_week="0-4",timezone="DST"))
+scheduler.add_job(toSchedule.dailyQuote, CronTrigger(hour="8",minute="0",second="0",day_of_week="0-4",timezone="EST"))
 scheduler.start()
 bot.run(config["token"])
