@@ -11,19 +11,35 @@ with open("config.yaml") as file:
     config = yaml.load(file, Loader=yaml.FullLoader)
 
 # Here we name the cog and create a new class for the cog.
+testGuild = 931309621027684413
 
 
 class Channel(commands.Cog, name="channel"):
     def __init__(self, bot):
         self.bot = bot
 
+    async def createCategory(category, context):
+        guild = context.guild
+        try:
+            return await guild.create_category(category)
+        except:
+            print("Issue with ", category, ".  Error: ", sys.exc_info()[0])
     # Here you can just add your own commands, you'll always need to provide "self" as first parameter.
+
+    def makeDict(categories, channels):
+        classDict = {}
+        for channel in channels:
+            for category in categories:
+                if (category in channel):
+                    classDict[channel] = category
+        print(classDict)
+        return classDict
+
     @commands.command(name="channelparse")
-    async def channleparse(self, context):
+    async def channelparse(self, context):
         """
         [Optional filename argument] This command sets up channels from a csv
         """
-        guild = context.guild
 
         channelnames = []
         categories = []
@@ -58,6 +74,13 @@ class Channel(commands.Cog, name="channel"):
 
                     channelnames.append(channelname)
 
+            # unable to creat channels
+            for channel in channelnames:
+                if('388' in channel or '571' in channel or '511' in channel):
+                    continue
+                await Channel.createChannel(channel, classDict[channel], context)
+        # print(channelnames)
+        # print(categories)
         await context.send("Test Done")
 
 
