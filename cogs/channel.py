@@ -4,6 +4,7 @@ import csv
 import yaml
 from discord.ext import commands
 from discord.ext.commands import has_permissions
+from discord.utils import find
 import re
 
 if "CompsciBot" not in str(os.getcwd()):
@@ -97,6 +98,9 @@ class ChannelManager(commands.Cog, name="channelmanager"):
             await context.send("Please input a filename without special characters or extensions")
             return
 
+        if (not filename.strip()):
+            await context.send("Please specify a file.")
+            return
         filename = "resources\\"+filename+".csv"
         print("filename: ", filename)
 
