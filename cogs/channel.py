@@ -38,6 +38,37 @@ class ChannelManager(commands.Cog, name="channelmanager"):
         except:
             print("Issue with ", category, ".  Error: ", sys.exc_info()[0])
 
+    async def getCategory(category_name, context):
+        """
+        Finds a category by same or if none exists creates a new one
+            Parameters:
+                category: the name of the category
+                context: the context of the command
+
+            Returns:
+                the category object
+        """
+        guild = context.guild
+        category = find(lambda category: category.name ==
+                        category_name, guild.categories)
+        # get category by category name
+        if(category == None):
+            category = await guild.create_category(category_name)
+        return category
+
+    async def createChannel(channel_name: str, category_name: str, context):
+        """
+        Given a channel and a category name, creates a channel and assigns it to the category
+            Parameters:
+                channel_name: the name of the channel
+                category_name: the name of the category
+        """
+        guild = context.guild
+
+        category = await ChannelManager.getCategory(category_name, context)
+
+        return await guild.create_text_channel(channel_name, category=category)
+
     def makeDict(categories, channels):
         classDict = {}
         for channel in channels:
