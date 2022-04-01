@@ -1,7 +1,6 @@
 import os
 import sys
 import csv
-from attr import get_run_validators
 import yaml
 from discord.ext import commands
 
@@ -14,7 +13,7 @@ with open("config.yaml") as file:
 testGuild = 931309621027684413
 
 
-class Channel(commands.Cog, name="channel"):
+class ChannelManager(commands.Cog, name="channelmanager"):
     def __init__(self, bot):
         self.bot = bot
 
@@ -24,7 +23,6 @@ class Channel(commands.Cog, name="channel"):
             return await guild.create_category(category)
         except:
             print("Issue with ", category, ".  Error: ", sys.exc_info()[0])
-    # Here you can just add your own commands, you'll always need to provide "self" as first parameter.
 
     def makeDict(categories, channels):
         classDict = {}
@@ -43,13 +41,10 @@ class Channel(commands.Cog, name="channel"):
 
         channelnames = []
         categories = []
-        categoryIds = []
         prefix = config["bot_prefix"]
         startLen = len(prefix) + len("channelparse")
         filename = context.message.content[startLen:].strip()
 
-        if (not filename.strip()):
-            filename = 'testcsv.csv'
 
         print("filename: ", filename)
 
@@ -73,17 +68,16 @@ class Channel(commands.Cog, name="channel"):
                         categories.append(categoryname)
 
                     channelnames.append(channelname)
-
+            classDict = ChannelManager.makeDict(categories, channelnames)
             # unable to creat channels
             for channel in channelnames:
                 if('388' in channel or '571' in channel or '511' in channel):
                     continue
-                await Channel.createChannel(channel, classDict[channel], context)
-        # print(channelnames)
-        # print(categories)
-        await context.send("Test Done")
+                await ChannelManager.createChannel(channel, classDict[channel], context)
 
 
 # And then we finally add the cog to the bot so that it can load, unload, reload and use it's content.
+
+
 def setup(bot):
-    bot.add_cog(Channel(bot))
+    bot.add_cog(ChannelManager(bot))
