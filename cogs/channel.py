@@ -20,7 +20,19 @@ class ChannelManager(commands.Cog, name="channelmanager"):
         self.bot = bot
 
     async def createCategory(category, context):
+        """
+        creates a category
+
+            Parameters:
+                category: the name of the category
+                context: the context of the command
+
+            Returns:
+                the category object
+        """
+
         guild = context.guild
+
         try:
             return await guild.create_category(category)
         except:
@@ -44,6 +56,8 @@ class ChannelManager(commands.Cog, name="channelmanager"):
 
         channelnames = []
         categories = []
+
+        # parses command to get message content
         prefix = config["bot_prefix"]
         startLen = len(prefix) + len("channelparse")
         filename = context.message.content[startLen:].strip()
@@ -55,9 +69,12 @@ class ChannelManager(commands.Cog, name="channelmanager"):
         filename = "resources\\"+filename+".csv"
         print("filename: ", filename)
 
+        # read and parse the csv
         with open(filename, newline='') as csvfile:
             csvreader = csv.reader(csvfile, delimiter=',')
             for row in csvreader:
+
+                # check if those attributes exist
                 if(row[2].strip() and row[3].strip() and row[19].strip()):
 
                     classtype = row[2]
@@ -68,6 +85,7 @@ class ChannelManager(commands.Cog, name="channelmanager"):
                     if (prof != "TBA"):
                         prof = prof.split()[1]
 
+                    # assemble class and category names
                     channelname = classtype+"-"+classnum+"-"+prof
                     categoryname = classtype + "-"+classnum
 
@@ -82,6 +100,7 @@ class ChannelManager(commands.Cog, name="channelmanager"):
                     continue
                 await ChannelManager.createChannel(channel, classDict[channel], context)
 
+        await context.send("Channels Created Successfully")
 
 # And then we finally add the cog to the bot so that it can load, unload, reload and use it's content.
 
