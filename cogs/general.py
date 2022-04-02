@@ -2,10 +2,10 @@ import os
 import platform
 import sys
 import json
-import discord
+import nextcord
 import yaml
 import random
-from discord.ext import commands
+from nextcord.ext import commands
 from noncommands import summarizer, quotes
 
 if "CompsciBot" not in str(os.getcwd()):
@@ -22,7 +22,7 @@ class general(commands.Cog, name="general"):
         """
         [No arguments] Get some useful (or not) information about the bot.
         """
-        embed = discord.Embed(
+        embed = nextcord.Embed(
             description="CompsciBot",
             color=config["success"]
         )
@@ -66,7 +66,7 @@ class general(commands.Cog, name="general"):
         time = time.split(" ")
         time = time[0]
 
-        embed = discord.Embed(
+        embed = nextcord.Embed(
             title="**Server Name:**",
             description=f"{server}",
             color=config["success"]
@@ -100,7 +100,7 @@ class general(commands.Cog, name="general"):
         """
         [No arguments] Check if the bot is alive.
         """
-        embed = discord.Embed(
+        embed = nextcord.Embed(
             color=config["success"]
         )
         embed.add_field(
@@ -158,7 +158,7 @@ class general(commands.Cog, name="general"):
         [(Required) Question] Create a poll where members can vote on a question.
         """
         poll_title = " ".join(args)
-        embed = discord.Embed(
+        embed = nextcord.Embed(
             title="A new poll has been created!",
             description=f"{poll_title}",
             color=config["success"]

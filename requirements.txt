@@ -1,8 +1,7 @@
 aiohttp
 apscheduler
 asyncio
-discord
-discord.py[voice]
+nextcord
 pyyaml
 aiofiles
 schedule
