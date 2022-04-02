@@ -6,9 +6,9 @@ import sys
 import aiohttp
 import aiofiles
 import hashlib
-import discord
+import nextcord
 import yaml
-from discord.ext import commands
+from nextcord.ext import commands
 import requests
 import uuid
 import inspirobot
@@ -26,17 +26,16 @@ class Fun(commands.Cog, name="fun"):
     @commands.command(name="randomfact")
     async def randomfact(self, context):
         """
-        [No arguments] Dad has learned a few things, he'll share.
+        [No arguments] A random fact!
         """
-        # This will prevent your bot from stopping everything when doing a web request - see: https://discordpy.readthedocs.io/en/stable/faq.html#how-do-i-make-a-web-request
         async with aiohttp.ClientSession() as session:
             async with session.get("https://uselessfacts.jsph.pl/random.json?language=en") as request:
                 if request.status == 200:
                     data = await request.json()
-                    embed = discord.Embed(description=data["text"], color=config["main_color"])
+                    embed = nextcord.Embed(description=data["text"], color=config["main_color"])
                     await context.send(embed=embed)
                 else:
-                    embed = discord.Embed(
+                    embed = nextcord.Embed(
                         title="Error!",
                         description="There is something wrong with the API, please try again later",
                         color=config["error"]
@@ -46,7 +45,7 @@ class Fun(commands.Cog, name="fun"):
     @commands.command(name="dadjoke")
     async def dadjoke(self, context, searchTerm="", *args):
         """
-        [No arguments] Have Dad tell you one of his classics.
+        [No arguments] Get one of the classics
         """
         url = "https://icanhazdadjoke.com/search?term=" + searchTerm
         headers = {'Accept': 'application/json'}
@@ -80,7 +79,7 @@ class Fun(commands.Cog, name="fun"):
     @commands.command(name="advice")
     async def advice(self, context):
         """
-        [No arguments] Get some fatherly advice.
+        [No arguments] Get some advice.
         """
         r = requests.get("https://api.adviceslip.com/advice")
         await context.reply(r.json()['slip']['advice'])
@@ -103,7 +102,7 @@ class Fun(commands.Cog, name="fun"):
     @commands.command(name="rps")
     async def rock_paper_scissors(self, context):
         """
-        [No arguments] Play a round of Rock-Paper-Scissors with Dad.
+        [No arguments] Play a round of Rock-Paper-Scissors.
         """
         choices = {
             0: "rock",
@@ -115,8 +114,8 @@ class Fun(commands.Cog, name="fun"):
             "🧻": 1,
             "✂": 2
         }
-        embed = discord.Embed(title="Please choose", color=config["warning"])
-        embed.set_author(name=context.author.display_name, icon_url=context.author.avatar_url)
+        embed = nextcord.Embed(title="Please choose", color=config["warning"])
+        embed.set_author(name=context.author.display_name, icon_url=context.author.avatar.url)
         choose_message = await context.send(embed=embed)
         for emoji in reactions:
             await choose_message.add_reaction(emoji)
@@ -133,8 +132,8 @@ class Fun(commands.Cog, name="fun"):
             bot_choice_emote = random.choice(list(reactions.keys()))
             bot_choice_index = reactions[bot_choice_emote]
 
-            result_embed = discord.Embed(color=config["success"])
-            result_embed.set_author(name=context.author.display_name, icon_url=context.author.avatar_url)
+            result_embed = nextcord.Embed(color=config["success"])
+            result_embed.set_author(name=context.author.display_name, icon_url=context.author.avatar.url)
             await choose_message.clear_reactions()
 
             if user_choice_index == bot_choice_index:
@@ -156,8 +155,8 @@ class Fun(commands.Cog, name="fun"):
             await choose_message.edit(embed=result_embed)
         except asyncio.exceptions.TimeoutError:
             await choose_message.clear_reactions()
-            timeout_embed = discord.Embed(title="Too late", color=config["error"])
-            timeout_embed.set_author(name=context.author.display_name, icon_url=context.author.avatar_url)
+            timeout_embed = nextcord.Embed(title="Too late", color=config["error"])
+            timeout_embed.set_author(name=context.author.display_name, icon_url=context.author.avatar.url)
             await choose_message.edit(embed=timeout_embed)
 
     @commands.command(name="uwu")
@@ -179,7 +178,7 @@ class Fun(commands.Cog, name="fun"):
                    'Signs point to yes.', 'Reply hazy, try again.', 'Ask again later.', 'Better not tell you now.',
                    'Cannot predict now.', 'Concentrate and ask again later.', 'Don\'t count on it.', 'My reply is no.',
                    'My sources say no.', 'Outlook not so good.', 'Very doubtful.']
-        embed = discord.Embed(
+        embed = nextcord.Embed(
             title="**My Answer:**",
             description=f"{answers[random.randint(0, len(answers) - 1)]}",
             color=config["success"]
@@ -196,7 +195,7 @@ class Fun(commands.Cog, name="fun"):
         """
         fileName = str(uuid.uuid1()) + str(random.choice(range(1, 1337))) + ".png"
         await self.save_online_cat(fileName)
-        file = discord.File(fileName, filename="newcat.png")
+        file = nextcord.File(fileName, filename="newcat.png")
         await context.send("", file=file)
         os.remove(fileName)
 

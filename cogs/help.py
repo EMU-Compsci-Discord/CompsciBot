@@ -1,9 +1,9 @@
 import os
 import sys
 
-import discord
+import nextcord
 import yaml
-from discord.ext import commands
+from nextcord.ext import commands
 
 if "CompsciBot" not in str(os.getcwd()):
     os.chdir("./CompsciBot")
@@ -22,7 +22,7 @@ class Help(commands.Cog, name="help"):
         prefix = config["bot_prefix"]
         if not isinstance(prefix, str):
             prefix = prefix[0]
-        embed = discord.Embed(title="Help", description="List of available commands:", color=config["success"])
+        embed = nextcord.Embed(title="Help", description="List of available commands:", color=config["success"])
         for i in self.bot.cogs:
             cog = self.bot.get_cog(i.lower())
             if i not in ["owner", "template", "moderation"]:

@@ -1,8 +1,8 @@
 import os
 import sys
-import discord
+import nextcord
 import yaml
-from discord.ext import commands
+from nextcord.ext import commands
 import ratemyprofessor
 
 if "CompsciBot" not in str(os.getcwd()):
@@ -26,23 +26,26 @@ class RateMyProfessor(commands.Cog, name="rate my professor"):
         """
         [(Required) Professor name] Check out what RateMyProfessor has to say about a professor!
         """
-        professorSearchTerm = " ".join(professorArgs)
-        EMU = ratemyprofessor.get_school_by_name("Eastern Michigan University")
-        prof = ratemyprofessor.get_professor_by_school_and_name(EMU, professorSearchTerm)
+        try:
+            professorSearchTerm = " ".join(professorArgs)
+            EMU = ratemyprofessor.get_school_by_name("Eastern Michigan University")
+            prof = ratemyprofessor.get_professor_by_school_and_name(EMU, professorSearchTerm)
 
-        ratingsBest = sorted([rating for rating in prof.get_ratings() if rating.comment], key=lambda rating: (rating.rating, rating.date))
-        bestRating = ratingsBest[-1]
+            ratingsBest = sorted([rating for rating in prof.get_ratings() if rating.comment], key=lambda rating: (rating.rating, rating.date))
+            bestRating = ratingsBest[-1]
 
-        ratingsWorst = sorted([rating for rating in prof.get_ratings() if rating.comment], key=lambda rating: (-rating.rating, rating.date))
-        worstRating = ratingsWorst[-1]
+            ratingsWorst = sorted([rating for rating in prof.get_ratings() if rating.comment], key=lambda rating: (-rating.rating, rating.date))
+            worstRating = ratingsWorst[-1]
 
-        profEmbed = self.buildProfEmbed(prof)
-        bestembed = self.buildRatingEmbed(discord.Embed(title=f"Best Rating for {prof.name}", color=config["success"]), bestRating)
-        worstembed = self.buildRatingEmbed(discord.Embed(title=f"Worst Rating for {prof.name}",color=config["success"]), worstRating)
-        
-        await context.send(embed=profEmbed)
-        await context.send(embed=bestembed)
-        await context.send(embed=worstembed)
+            profEmbed = self.buildProfEmbed(prof)
+            bestembed = self.buildRatingEmbed(nextcord.Embed(title=f"Best Rating for {prof.name}", color=config["success"]), bestRating)
+            worstembed = self.buildRatingEmbed(nextcord.Embed(title=f"Worst Rating for {prof.name}",color=config["success"]), worstRating)
+            
+            await context.send(embed=profEmbed)
+            await context.send(embed=bestembed)
+            await context.send(embed=worstembed)
+        except:
+            await context.send(f"Could not find professor '{professorSearchTerm}'. Try only using a last name or check your spelling!")
 
     def buildRatingEmbed(self, embed, rating):
         if rating.rating:
@@ -90,7 +93,7 @@ class RateMyProfessor(commands.Cog, name="rate my professor"):
         return embed
     
     def buildProfEmbed(self, prof):
-        embed = discord.Embed(
+        embed = nextcord.Embed(
             title=prof,
             color=config["success"]
         )
