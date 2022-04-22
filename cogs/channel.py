@@ -57,7 +57,7 @@ class ChannelManager(commands.Cog, name="channelmanager"):
             category = await guild.create_category(category_name)
         return category
 
-    async def createChannel(channel_name: str, category_name: str, context):
+    async def createChannel(channel_name: str, category_name: str, context, description: str):
         """
         Given a channel and a category name, creates a channel and assigns it to the category
             Parameters:
@@ -68,7 +68,7 @@ class ChannelManager(commands.Cog, name="channelmanager"):
 
         category = await ChannelManager.getCategory(category_name, context)
 
-        return await guild.create_text_channel(channel_name, category=category)
+        return await guild.create_text_channel(channel_name, category=category, topic=description)
 
     def makeDict(categories, channels):
         classDict = {}
@@ -83,7 +83,7 @@ class ChannelManager(commands.Cog, name="channelmanager"):
     @has_permissions(administrator=True)
     async def channelparse(self, context):
         """
-        [Optional filename argument] This command sets up channels from a csv
+        [filename argument] This command sets up channels from a csv ADMIN ONLY
         """
 
         channelnames = []
@@ -123,7 +123,9 @@ class ChannelManager(commands.Cog, name="channelmanager"):
                     # assemble class and category names
                     channelname = classtype+"-"+classnum+"-"+prof
                     categoryname = classtype + "-"+classnum
-
+                    description = ''
+                    if(row[8].strip() or row[9].strip()):
+                        decription = row[8].strip()+" " + row[9].strip()
                     if(categoryname not in categories):
                         categories.append(categoryname)
 
@@ -133,9 +135,20 @@ class ChannelManager(commands.Cog, name="channelmanager"):
             for channel in channelnames:
                 if('388' in channel or '571' in channel or '511' in channel):
                     continue
-                await ChannelManager.createChannel(channel, classDict[channel], context)
+                await ChannelManager.createChannel(channel, classDict[channel], context, description)
 
         await context.send("Channels Created Successfully")
+
+    @commands.command(name="deleteAllCOSC")
+    @has_permissions(administrator=True)
+    async def deleteAll(self, context):
+        """
+        Deletes all channels with cosc### or COSC### in a server, ADMIN ONLY
+        """
+        for channel in context.guild.channels:
+            if re.search('COSC-[0-9]{3}', channel.name) or re.search('cosc-[0-9]{3}', channel.name):
+                await channel.delete()
+
 
 # And then we finally add the cog to the bot so that it can load, unload, reload and use it's content.
 
