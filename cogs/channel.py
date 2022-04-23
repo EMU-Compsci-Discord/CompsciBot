@@ -2,6 +2,7 @@ import os
 import sys
 import csv
 import yaml
+import discord
 from discord.ext import commands
 from discord.ext.commands import has_permissions
 from discord.utils import find
@@ -30,9 +31,12 @@ class ChannelManager(commands.Cog, name="channelmanager"):
         """
 
         guild = context.guild
-
+        overwrites = {
+            guild.default_role: discord.PermissionOverwrite(
+                read_messages=False)
+        }
         try:
-            return await guild.create_category(category)
+            return await guild.create_category(category, overwrites=overwrites)
         except:
             print("Issue with ", category, ".  Error: ", sys.exc_info()[0])
 
@@ -52,7 +56,7 @@ class ChannelManager(commands.Cog, name="channelmanager"):
         category = find(lambda category: category.name ==
                         category_name, guild.categories)
         if(category == None):
-            category = await guild.create_category(category_name)
+            category = await ChannelManager.createCategory(category_name, context)
         return category
 
     async def createChannel(channel_name: str, category_name: str, context, description: str):
@@ -66,7 +70,7 @@ class ChannelManager(commands.Cog, name="channelmanager"):
 
         category = await ChannelManager.getCategory(category_name, context)
 
-        return await guild.create_text_channel(channel_name, category=category, topic=description)
+        return await guild.create_text_channel(channel_name, category=category, topic=description, permissions_synced=True)
 
     def makeDict(categories, channels):
         classDict = {}
