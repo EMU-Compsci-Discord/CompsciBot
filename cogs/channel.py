@@ -65,6 +65,8 @@ class ChannelManager(commands.Cog, name="channelmanager"):
             Parameters:
                 channel_name: the name of the channel
                 category_name: the name of the category
+            Returns: 
+                the channle object
         """
         guild = context.guild
 
@@ -84,8 +86,10 @@ class ChannelManager(commands.Cog, name="channelmanager"):
     @ has_permissions(administrator=True)
     async def channelparse(self, context, filename=None):
         """
-        [filename] the .csv file to be used for parsing.
-        This command sets up channels from a csv ADMIN ONLY
+        This command sets up organized categories and channels from a specified csv, with default private permissions.
+        Only Administrators can call this command. 
+            Parameters:
+                filename: a csv file ending in .csv consisting of letters, numbers, hyphens or underscores
         """
 
         channelnames = []
@@ -93,6 +97,7 @@ class ChannelManager(commands.Cog, name="channelmanager"):
 
         if (filename is None):
             await context.send("Please specify a .csv file as an argument.")
+
         if(not re.search("^[a-zA-Z0-9_\-]+\.csv$", filename)):
             await context.send("Please input a .csv filename without special characters or extensions")
             return
@@ -102,15 +107,16 @@ class ChannelManager(commands.Cog, name="channelmanager"):
         # read and parse the csv
         with open(filename, newline='') as csvfile:
             csvreader = csv.reader(csvfile, delimiter=',')
-            for row in csvreader:
+            for class_info in csvreader:
 
                 # check if those attributes exist
-                if(row[2].strip() and row[3].strip() and row[19].strip()):
+                if(class_info[2].strip() and class_info[3].strip() and class_info[19].strip()):
 
-                    classtype = row[2]
+                    classtype = class_info[2]
+
                     # first 3 numbers only (not L1,L2,L3)
-                    classnum = row[3][0:3]
-                    prof = row[19]
+                    classnum = class_info[3][0:3]
+                    prof = class_info[19]
 
                     if (prof != "TBA"):
                         prof = prof.split()[1]
@@ -119,14 +125,19 @@ class ChannelManager(commands.Cog, name="channelmanager"):
                     channelname = classtype+"-"+classnum+"-"+prof
                     categoryname = classtype + "-"+classnum
                     description = ''
-                    if(row[8].strip() or row[9].strip()):
-                        decription = row[8].strip()+" " + row[9].strip()
+
+                    if(class_info[8].strip() or class_info[9].strip()):
+                        decription = class_info[8].strip(
+                        )+" " + class_info[9].strip()
+
                     if(categoryname not in categories):
                         categories.append(categoryname)
 
                     channelnames.append(channelname)
+
             classDict = ChannelManager.makeDict(categories, channelnames)
-            # unable to creat channels
+
+            # unable to create channels
             for channel in channelnames:
                 if('388' in channel or '571' in channel or '511' in channel):
                     continue
@@ -138,7 +149,7 @@ class ChannelManager(commands.Cog, name="channelmanager"):
     @ has_permissions(administrator=True)
     async def deleteAll(self, context):
         """
-        Deletes all channels with cosc### or COSC### in a server, ADMIN ONLY
+        Deletes channels and categories with cosc### or COSC### in a server. Must have admin permissions to execute.
         """
         for channel in context.guild.channels:
             if re.search('COSC-[0-9]{3}', channel.name) or re.search('cosc-[0-9]{3}', channel.name):
