@@ -74,7 +74,6 @@ class ChannelManager(commands.Cog, name="channelmanager"):
             for category in categories:
                 if (category in channel):
                     classDict[channel] = category
-        print(classDict)
         return classDict
 
     @ commands.command(name="channelparse")
@@ -88,20 +87,13 @@ class ChannelManager(commands.Cog, name="channelmanager"):
         channelnames = []
         categories = []
 
-        # parses command to get message content
-        prefix = config["bot_prefix"]
-        startLen = len(prefix) + len("channelparse")
-        filename = context.message.content[startLen:].strip()
-
-        if(re.search("\W", filename)):
-            await context.send("Please input a filename without special characters or extensions")
+        if (filename is None):
+            await context.send("Please specify a .csv file as an argument.")
+        if(not re.search("^[a-zA-Z0-9_\-]+\.csv$", filename)):
+            await context.send("Please input a .csv filename without special characters or extensions")
             return
 
-        if (not filename.strip()):
-            await context.send("Please specify a file.")
-            return
-        filename = "resources\\"+filename+".csv"
-        print("filename: ", filename)
+        filename = "resources\\"+filename
 
         # read and parse the csv
         with open(filename, newline='') as csvfile:
