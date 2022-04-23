@@ -12,9 +12,6 @@ if "CompsciBot" not in str(os.getcwd()):
 with open("config.yaml") as file:
     config = yaml.load(file, Loader=yaml.FullLoader)
 
-# Here we name the cog and create a new class for the cog.
-testGuild = 931309621027684413
-
 
 class ChannelManager(commands.Cog, name="channelmanager"):
     def __init__(self, bot):
@@ -50,16 +47,17 @@ class ChannelManager(commands.Cog, name="channelmanager"):
                 the category object
         """
         guild = context.guild
+
+        # get category by category name
         category = find(lambda category: category.name ==
                         category_name, guild.categories)
-        # get category by category name
         if(category == None):
             category = await guild.create_category(category_name)
         return category
 
     async def createChannel(channel_name: str, category_name: str, context, description: str):
         """
-        Given a channel and a category name, creates a channel and assigns it to the category
+        Given a channel and a category name, creates a channel and assigns it to the category.
             Parameters:
                 channel_name: the name of the channel
                 category_name: the name of the category
@@ -79,11 +77,12 @@ class ChannelManager(commands.Cog, name="channelmanager"):
         print(classDict)
         return classDict
 
-    @commands.command(name="channelparse")
-    @has_permissions(administrator=True)
-    async def channelparse(self, context):
+    @ commands.command(name="channelparse")
+    @ has_permissions(administrator=True)
+    async def channelparse(self, context, filename=None):
         """
-        [filename argument] This command sets up channels from a csv ADMIN ONLY
+        [filename] the .csv file to be used for parsing.
+        This command sets up channels from a csv ADMIN ONLY
         """
 
         channelnames = []
@@ -139,8 +138,8 @@ class ChannelManager(commands.Cog, name="channelmanager"):
 
         await context.send("Channels Created Successfully")
 
-    @commands.command(name="deleteAllCOSC")
-    @has_permissions(administrator=True)
+    @ commands.command(name="deleteAllCOSC")
+    @ has_permissions(administrator=True)
     async def deleteAll(self, context):
         """
         Deletes all channels with cosc### or COSC### in a server, ADMIN ONLY
