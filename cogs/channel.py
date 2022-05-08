@@ -133,6 +133,8 @@ class ChannelManager(commands.Cog, name="channelmanager"):
         for channel in context.guild.channels:
             if re.search('COSC-[0-9]{3}', channel.name) or re.search('cosc-[0-9]{3}', channel.name):
                 await channel.delete()
+            if re.search('MATH-[0-9]{3}', channel.name) or re.search('math-[0-9]{3}', channel.name):
+                await channel.delete()
 
 
 # And then we finally add the cog to the bot so that it can load, unload, reload and use it's content.
