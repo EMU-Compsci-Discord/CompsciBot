@@ -73,6 +73,7 @@ class ChannelManager(commands.Cog, name="channelmanager"):
 
         channelnames = []
         categories = []
+        description = {}
 
         if (filename is None):
             await context.send("Please specify a .csv file as an argument.")
@@ -104,11 +105,12 @@ class ChannelManager(commands.Cog, name="channelmanager"):
                     # assemble class and category names
                     channelname = classtype+"-"+classnum+"-"+prof_lastname
                     categoryname = classtype + "-"+classnum
-                    description = ''
 
                     if(class_info[8].strip() or class_info[9].strip()):
-                        decription = class_info[8].strip(
+                        description[channelname] = class_info[8].strip(
                         )+" " + class_info[9].strip()
+                    else:
+                        description[channelname] = "No time listed"
 
                     if(categoryname not in categories):
                         categories.append(categoryname)
@@ -121,7 +123,7 @@ class ChannelManager(commands.Cog, name="channelmanager"):
             for channel in channelnames:
                 if('388' in channel or '571' in channel or '511' in channel):
                     continue
-                await ChannelManager.createChannel(channel, classDict[channel], context, description)
+                await ChannelManager.createChannel(channel, classDict[channel], context, description[channel])
 
         await context.send("Channels Created Successfully")
 
