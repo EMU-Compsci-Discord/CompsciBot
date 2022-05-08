@@ -119,7 +119,6 @@ class ChannelManager(commands.Cog, name="channelmanager"):
 
             classDict = ChannelManager.makeDict(categories, channelnames)
 
-            # unable to create channels
             for channel in channelnames:
                 if('388' in channel or '571' in channel or '511' in channel):
                     continue
