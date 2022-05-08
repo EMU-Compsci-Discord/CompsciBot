@@ -124,11 +124,11 @@ class ChannelManager(commands.Cog, name="channelmanager"):
 
         await context.send("Channels Created Successfully")
 
-    @ commands.command(name="deleteAllCOSC")
+    @ commands.command(name="deleteAllClasses")
     @ has_permissions(administrator=True)
     async def deleteAll(self, context):
         """
-        [No arguments] Admin Only. Deletes channels and categories with cosc-### or math-### case insensitive.
+        [No arguments] Admin Only. Deletes channels and categories with cosc-### or math-###,  case insensitive.
         """
         for channel in context.guild.channels:
             if re.search('COSC-[0-9]{3}', channel.name) or re.search('cosc-[0-9]{3}', channel.name):
