@@ -98,12 +98,11 @@ class ChannelManager(commands.Cog, name="channelmanager"):
                     prof = class_info[19]
 
                     if (prof != "TBA"):
-                        prof = prof.split()[1]
                         prof = prof.split()
                         prof_lastname = prof[len(prof)-2]
 
                     # assemble class and category names
-                    channelname = classtype+"-"+classnum+"-"+prof
+                    channelname = classtype+"-"+classnum+"-"+prof_lastname
                     categoryname = classtype + "-"+classnum
                     description = ''
 
