@@ -72,7 +72,7 @@ class ChannelManager(commands.Cog, name="channelmanager"):
 
         category = await ChannelManager.getCategory(category_name, context)
 
-        return await guild.create_text_channel(channel_name, category=category, topic=description, permissions_synced=True)
+        return await guild.create_text_channel(channel_name, category=category, topic=description)
 
     def makeDict(categories, channels):
         classDict = {}
@@ -102,7 +102,7 @@ class ChannelManager(commands.Cog, name="channelmanager"):
             await context.send("Please input a .csv filename without special characters or extensions")
             return
 
-        filename = "resources\\"+filename
+        filename = "./resources/"+filename
 
         # read and parse the csv
         with open(filename, newline='') as csvfile:
