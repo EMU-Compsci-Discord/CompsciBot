@@ -20,14 +20,7 @@ class ChannelManager(commands.Cog, name="channelmanager"):
 
     async def createCategory(category, context):
         """
-        creates a category
-
-            Parameters:
-                category: the name of the category
-                context: the context of the command
-
-            Returns:
-                the category object
+        [(Required) category name, message context] creates a category and returns category object
         """
 
         guild = context.guild
@@ -42,13 +35,7 @@ class ChannelManager(commands.Cog, name="channelmanager"):
 
     async def getCategory(category_name, context):
         """
-        Finds a category by same or if none exists creates a new one
-            Parameters:
-                category: the name of the category
-                context: the context of the command
-
-            Returns:
-                the category object
+        [(Required) category name, mesage context] get category and if no category match, create a category. Returns category object.
         """
         guild = context.guild
 
@@ -61,18 +48,13 @@ class ChannelManager(commands.Cog, name="channelmanager"):
 
     async def createChannel(channel_name: str, category_name: str, context, description: str):
         """
-        Given a channel and a category name, creates a channel and assigns it to the category.
-            Parameters:
-                channel_name: the name of the channel
-                category_name: the name of the category
-            Returns: 
-                the channle object
+        [(Required) channel name, category name, message context, description] creates channel in category with description and name, returns channel object.
         """
         guild = context.guild
 
         category = await ChannelManager.getCategory(category_name, context)
 
-        return await guild.create_text_channel(channel_name, category=category, topic=description, permissions_synced=True)
+        return await guild.create_text_channel(channel_name, category=category, topic=description)
 
     def makeDict(categories, channels):
         classDict = {}
@@ -86,14 +68,12 @@ class ChannelManager(commands.Cog, name="channelmanager"):
     @ has_permissions(administrator=True)
     async def channelparse(self, context, filename=None):
         """
-        This command sets up organized categories and channels from a specified csv, with default private permissions.
-        Only Administrators can call this command. 
-            Parameters:
-                filename: a csv file ending in .csv consisting of letters, numbers, hyphens or underscores
+        [(Required) filename] parses a csv into class channels and categories.
         """
 
         channelnames = []
         categories = []
+        description = {}
 
         if (filename is None):
             await context.send("Please specify a .csv file as an argument.")
@@ -102,7 +82,7 @@ class ChannelManager(commands.Cog, name="channelmanager"):
             await context.send("Please input a .csv filename without special characters or extensions")
             return
 
-        filename = "resources\\"+filename
+        filename = "./resources/"+filename
 
         # read and parse the csv
         with open(filename, newline='') as csvfile:
@@ -119,16 +99,18 @@ class ChannelManager(commands.Cog, name="channelmanager"):
                     prof = class_info[19]
 
                     if (prof != "TBA"):
-                        prof = prof.split()[1]
+                        prof = prof.split()
+                        prof_lastname = prof[len(prof)-2]
 
                     # assemble class and category names
-                    channelname = classtype+"-"+classnum+"-"+prof
+                    channelname = classtype+"-"+classnum+"-"+prof_lastname
                     categoryname = classtype + "-"+classnum
-                    description = ''
 
                     if(class_info[8].strip() or class_info[9].strip()):
-                        decription = class_info[8].strip(
+                        description[channelname] = class_info[8].strip(
                         )+" " + class_info[9].strip()
+                    else:
+                        description[channelname] = "No time listed"
 
                     if(categoryname not in categories):
                         categories.append(categoryname)
@@ -137,22 +119,25 @@ class ChannelManager(commands.Cog, name="channelmanager"):
 
             classDict = ChannelManager.makeDict(categories, channelnames)
 
-            # unable to create channels
             for channel in channelnames:
                 if('388' in channel or '571' in channel or '511' in channel):
                     continue
-                await ChannelManager.createChannel(channel, classDict[channel], context, description)
+                await ChannelManager.createChannel(channel, classDict[channel], context, description[channel])
 
         await context.send("Channels Created Successfully")
 
-    @ commands.command(name="deleteAllCOSC")
+    @ commands.command(name="deleteAllClasses")
     @ has_permissions(administrator=True)
     async def deleteAll(self, context):
         """
-        Deletes channels and categories with cosc### or COSC### in a server. Must have admin permissions to execute.
+        [No arguments] Admin Only. Deletes channels and categories with cosc-### or math-###,  case insensitive.
         """
         for channel in context.guild.channels:
             if re.search('COSC-[0-9]{3}', channel.name) or re.search('cosc-[0-9]{3}', channel.name):
+                await channel.delete()
+            if re.search('MATH-[0-9]{3}', channel.name) or re.search('math-[0-9]{3}', channel.name):
+                await channel.delete()
+            if re.search('STAT-[0-9]{3}', channel.name) or re.search('stat-[0-9]{3}', channel.name):
                 await channel.delete()
 
 
