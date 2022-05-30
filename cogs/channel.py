@@ -64,6 +64,9 @@ class ChannelManager(commands.Cog, name="channelmanager"):
                     classDict[channel] = category
         return classDict
 
+    async def createRole(self, context, rolename: str, permissions: discord.Permissions = discord.Permissions.general(), color=discord.Colour.default()):
+        return await context.guild.create_role(name=rolename, permissions=permissions, colour=color)
+
     @ commands.command(name="channelparse")
     @ has_permissions(administrator=True)
     async def channelparse(self, context, filename=None):
