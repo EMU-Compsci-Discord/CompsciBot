@@ -95,6 +95,12 @@ class ChannelManager(commands.Cog, name="channelmanager"):
         description = {}
         category_roles = {}
 
+        # make a mod role to see all classes
+        modClassRole = find(lambda role: role.name ==
+                            'EveryClassRole', context.guild.roles)
+        if not modClassRole:
+            modClassRole = await ChannelManager.createRole(context, 'EveryClassRole', color=discord.Colour.blue())
+
         if (filename is None):
             await context.send("Please specify a .csv file as an argument.")
 
@@ -156,6 +162,12 @@ class ChannelManager(commands.Cog, name="channelmanager"):
                 # gives basic permissions to a role for its assigned channel
                 await category_object.set_permissions(
                     category_roles[category],
+                    read_messages=True,
+                    send_messages=True,
+                    add_reactions=True,
+                    read_message_history=True)
+                await category_object.set_permissions(
+                    modClassRole,
                     read_messages=True,
                     send_messages=True,
                     add_reactions=True,
