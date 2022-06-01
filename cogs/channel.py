@@ -19,7 +19,7 @@ class ChannelManager(commands.Cog, name="channelmanager"):
     def __init__(self, bot):
         self.bot = bot
 
-    async def createCategory(category, context):
+    async def create_category(category, context):
         """
         [(Required) category name, message context] creates a category and returns category object
         """
@@ -34,7 +34,7 @@ class ChannelManager(commands.Cog, name="channelmanager"):
         except:
             print("Issue with ", category, ".  Error: ", sys.exc_info()[0])
 
-    async def getCategory(category_name, context):
+    async def get_category(category_name, context):
         """
         [(Required) category name, mesage context] get category and if no category match, create a category. Returns category object.
         """
@@ -44,20 +44,20 @@ class ChannelManager(commands.Cog, name="channelmanager"):
         category = find(lambda category: category.name ==
                         category_name, guild.categories)
         if(category == None):
-            category = await ChannelManager.createCategory(category_name, context)
+            category = await ChannelManager.create_category(category_name, context)
         return category
 
-    async def createChannel(channel_name: str, category_name: str, context, description: str):
+    async def create_channel(channel_name: str, category_name: str, context, description: str):
         """
         [(Required) channel name, category name, message context, description] creates channel in category with description and name, returns channel object.
         """
         guild = context.guild
 
-        category = await ChannelManager.getCategory(category_name, context)
+        category = await ChannelManager.get_category(category_name, context)
 
         return await guild.create_text_channel(channel_name, category=category, topic=description)
 
-    def makeDict(categories, channels):
+    def make_dict(categories, channels):
         classDict = {}
         for channel in channels:
             for category in categories:
@@ -65,13 +65,13 @@ class ChannelManager(commands.Cog, name="channelmanager"):
                     classDict[channel] = category
         return classDict
 
-    async def createRole(context, rolename: str, permissions: discord.Permissions = discord.Permissions.general(), color=discord.Colour.default()):
+    async def create_role(context, rolename: str, permissions: discord.Permissions = discord.Permissions.general(), color=discord.Colour.default()):
         """
         [(Required) message context, role name, (optional) permissions, color] creates a role with default general permissions, with specifed name.
         """
         return await context.guild.create_role(name=rolename, permissions=permissions, colour=color)
 
-    def getRoleSemester():
+    def get_role_semester():
         dateTest = datetime.date.today()
         month = dateTest.month
         year = dateTest.year
@@ -83,9 +83,9 @@ class ChannelManager(commands.Cog, name="channelmanager"):
             semester = "Fall"
         return (semester, year)
 
-    @ commands.command(name="csvparse")
+    @ commands.command(name="parsechannelcsv")
     @ has_permissions(administrator=True)
-    async def csvparse(self, context, filename=None):
+    async def parse_channel_csv(self, context, filename=None):
         """
         [(Required) filename] parses a csv into class channels and categories.
         """
@@ -99,7 +99,7 @@ class ChannelManager(commands.Cog, name="channelmanager"):
         modClassRole = find(lambda role: role.name ==
                             'EveryClassRole', context.guild.roles)
         if not modClassRole:
-            modClassRole = await ChannelManager.createRole(context, 'EveryClassRole', color=discord.Colour.blue())
+            modClassRole = await ChannelManager.create_role(context, 'EveryClassRole', color=discord.Colour.blue())
 
         if (filename is None):
             await context.send("Please specify a .csv file as an argument.")
@@ -128,7 +128,7 @@ class ChannelManager(commands.Cog, name="channelmanager"):
                         prof = prof.split()
                         prof_lastname = prof[len(prof)-2]
 
-                    semester, year = ChannelManager.getRoleSemester()
+                    semester, year = ChannelManager.get_role_semester()
 
                     # assemble class and category names
                     channelname = classtype + "-" + classnum + "-" + prof_lastname
@@ -145,20 +145,20 @@ class ChannelManager(commands.Cog, name="channelmanager"):
                     if(categoryname not in categories):
                         categories.append(categoryname)
                         # create role and save returned Role Object in dict
-                        category_roles[categoryname] = await ChannelManager.createRole(
+                        category_roles[categoryname] = await ChannelManager.create_role(
                             context, rolename, color=discord.Colour.blue())
 
                     channelnames.append(channelname)
 
-            classDict = ChannelManager.makeDict(categories, channelnames)
+            classDict = ChannelManager.make_dict(categories, channelnames)
 
             for channel in channelnames:
                 if('388' in channel or '571' in channel or '511' in channel):
                     continue
-                await ChannelManager.createChannel(channel, classDict[channel], context, description[channel])
+                await ChannelManager.create_channel(channel, classDict[channel], context, description[channel])
 
             for category in categories:
-                category_object = await ChannelManager.getCategory(category, context)
+                category_object = await ChannelManager.get_category(category, context)
                 # gives basic permissions to a role for its assigned channel
                 await category_object.set_permissions(
                     category_roles[category],
@@ -174,9 +174,9 @@ class ChannelManager(commands.Cog, name="channelmanager"):
                     read_message_history=True)
         await context.send("Channels and Roles created successfully")
 
-    @ commands.command(name="deleteAllClasses")
+    @ commands.command(name="deleteClasses")
     @ has_permissions(administrator=True)
-    async def deleteClasses(self, context):
+    async def delete_classes(self, context):
         """
         [No arguments] Admin Only. Deletes channels and categories with cosc-### or math-###,  case insensitive.
         """
@@ -188,7 +188,7 @@ class ChannelManager(commands.Cog, name="channelmanager"):
             elif re.search('STAT-[0-9]{3}', channel.name, flags=re.I):
                 await channel.delete()
 
-    @ commands.command(name="deleteAllRoles")
+    @ commands.command(name="deleteClassRoles")
     @ has_permissions(administrator=True)
     async def deleteRoles(self, context):
         for role in context.guild.roles:
