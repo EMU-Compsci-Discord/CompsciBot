@@ -64,7 +64,10 @@ class ChannelManager(commands.Cog, name="channelmanager"):
                     classDict[channel] = category
         return classDict
 
-    async def createRole(self, context, rolename: str, permissions: discord.Permissions = discord.Permissions.general(), color=discord.Colour.default()):
+    async def createRole(context, rolename: str, permissions: discord.Permissions = discord.Permissions.general(), color=discord.Colour.default()):
+        """
+        [(Required) message context, role name, (optional) permissions, color] creates a role with default general permissions, with specifed name.
+        """
         return await context.guild.create_role(name=rolename, permissions=permissions, colour=color)
 
     @ commands.command(name="channelparse")
