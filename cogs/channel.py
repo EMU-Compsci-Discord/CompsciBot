@@ -151,11 +151,11 @@ class ChannelManager(commands.Cog, name="channelmanager"):
         [No arguments] Admin Only. Deletes channels and categories with cosc-### or math-###,  case insensitive.
         """
         for channel in context.guild.channels:
-            if re.search('COSC-[0-9]{3}', channel.name) or re.search('cosc-[0-9]{3}', channel.name):
+            if re.search('COSC-[0-9]{3}', channel.name, flags=re.I):
                 await channel.delete()
-            if re.search('MATH-[0-9]{3}', channel.name) or re.search('math-[0-9]{3}', channel.name):
+            elif re.search('MATH-[0-9]{3}', channel.name, flags=re.I):
                 await channel.delete()
-            if re.search('STAT-[0-9]{3}', channel.name) or re.search('stat-[0-9]{3}', channel.name):
+            elif re.search('STAT-[0-9]{3}', channel.name, flags=re.I):
                 await channel.delete()
 
     @ commands.command(name="deleteAllRoles")
