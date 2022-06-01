@@ -158,9 +158,18 @@ class ChannelManager(commands.Cog, name="channelmanager"):
             if re.search('STAT-[0-9]{3}', channel.name) or re.search('stat-[0-9]{3}', channel.name):
                 await channel.delete()
 
+    @ commands.command(name="deleteAllRoles")
+    @ has_permissions(administrator=True)
+    async def deleteRoles(self, context):
+        for role in context.guild.roles:
+            if re.search('COSC [0-9]{3}', role.name, flags=re.I):
+                await role.delete()
+            elif re.search('MATH [0-9]{3}', role.name, flags=re.I):
+                await role.delete()
+            elif re.search('STAT [0-9]{3}', role.name, flags=re.I):
+                await role.delete()
+
 
 # And then we finally add the cog to the bot so that it can load, unload, reload and use it's content.
-
-
 def setup(bot):
     bot.add_cog(ChannelManager(bot))
