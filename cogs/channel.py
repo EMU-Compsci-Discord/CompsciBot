@@ -6,6 +6,7 @@ import discord
 from discord.ext import commands
 from discord.ext.commands import has_permissions
 from discord.utils import find
+import datetime
 import re
 
 if "CompsciBot" not in str(os.getcwd()):
@@ -92,6 +93,7 @@ class ChannelManager(commands.Cog, name="channelmanager"):
         channelnames = []
         categories = []
         description = {}
+        category_roles = {}
 
         if (filename is None):
             await context.send("Please specify a .csv file as an argument.")
@@ -120,18 +122,25 @@ class ChannelManager(commands.Cog, name="channelmanager"):
                         prof = prof.split()
                         prof_lastname = prof[len(prof)-2]
 
+                    semester, year = ChannelManager.getRoleSemester()
+
                     # assemble class and category names
-                    channelname = classtype+"-"+classnum+"-"+prof_lastname
-                    categoryname = classtype + "-"+classnum
+                    channelname = classtype + "-" + classnum + "-" + prof_lastname
+                    categoryname = classtype + "-" + classnum
+                    rolename = classtype + ' ' + classnum + \
+                        ' ' + str(semester) + ' ' + str(year)
 
                     if(class_info[8].strip() or class_info[9].strip()):
-                        description[channelname] = class_info[8].strip(
-                        )+" " + class_info[9].strip()
+                        description[channelname] = class_info[8].strip() + \
+                            " " + class_info[9].strip()
                     else:
                         description[channelname] = "No time listed"
 
                     if(categoryname not in categories):
                         categories.append(categoryname)
+                        # create role and save returned Role Object in dict
+                        category_roles[categoryname] = await ChannelManager.createRole(
+                            context, rolename, color=discord.Colour.blue())
 
                     channelnames.append(channelname)
 
@@ -142,7 +151,16 @@ class ChannelManager(commands.Cog, name="channelmanager"):
                     continue
                 await ChannelManager.createChannel(channel, classDict[channel], context, description[channel])
 
-        await context.send("Channels Created Successfully")
+            for category in categories:
+                category_object = await ChannelManager.getCategory(category, context)
+                # gives basic permissions to a role for its assigned channel
+                await category_object.set_permissions(
+                    category_roles[category],
+                    read_messages=True,
+                    send_messages=True,
+                    add_reactions=True,
+                    read_message_history=True)
+        await context.send("Channels and Roles created successfully")
 
     @ commands.command(name="deleteAllClasses")
     @ has_permissions(administrator=True)
