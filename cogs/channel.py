@@ -71,6 +71,19 @@ class ChannelManager(commands.Cog, name="channelmanager"):
         return await context.guild.create_role(name=rolename, permissions=permissions, colour=color)
 
     @ commands.command(name="channelparse")
+    def getRoleSemester():
+        dateTest = datetime.date.today()
+        month = dateTest.month
+        year = dateTest.year
+        if month >= 11 or month <= 2:
+            semester = 'Winter'
+        elif 2 < month <= 7:
+            semester = 'Summer'
+        else:
+            semester = "Fall"
+        return (semester, year)
+
+    @ commands.command(name="csvparse")
     @ has_permissions(administrator=True)
     async def channelparse(self, context, filename=None):
         """
