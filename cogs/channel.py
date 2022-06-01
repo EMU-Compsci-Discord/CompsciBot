@@ -70,7 +70,6 @@ class ChannelManager(commands.Cog, name="channelmanager"):
         """
         return await context.guild.create_role(name=rolename, permissions=permissions, colour=color)
 
-    @ commands.command(name="channelparse")
     def getRoleSemester():
         dateTest = datetime.date.today()
         month = dateTest.month
@@ -85,7 +84,7 @@ class ChannelManager(commands.Cog, name="channelmanager"):
 
     @ commands.command(name="csvparse")
     @ has_permissions(administrator=True)
-    async def channelparse(self, context, filename=None):
+    async def csvparse(self, context, filename=None):
         """
         [(Required) filename] parses a csv into class channels and categories.
         """
@@ -147,7 +146,7 @@ class ChannelManager(commands.Cog, name="channelmanager"):
 
     @ commands.command(name="deleteAllClasses")
     @ has_permissions(administrator=True)
-    async def deleteAll(self, context):
+    async def deleteClasses(self, context):
         """
         [No arguments] Admin Only. Deletes channels and categories with cosc-### or math-###,  case insensitive.
         """
