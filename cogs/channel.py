@@ -89,7 +89,7 @@ class ChannelManager(commands.Cog, name="channelmanager"):
         if filename is None:
             await context.send("Please specify a .csv file as an argument.")
 
-        if re.search("^[a-zA-Z0-9_\-]+\.csv$", filename) is not None:
+        if re.search("^[a-zA-Z0-9_\-]+\.csv$", filename) is None:
             await context.send("Please input a .csv filename without special characters or extensions.")
             return
 
@@ -137,7 +137,7 @@ class ChannelManager(commands.Cog, name="channelmanager"):
 
         # make a mod role to see all classes
         mod_class_role = find(lambda role: role.name == 'All Classes', context.guild.roles)
-        if mod_class_role is not None:
+        if mod_class_role is None:
             mod_class_role = await ChannelManager.create_role(context, 'All Classes', color=discord.Colour.blue())
             
 
