@@ -30,7 +30,7 @@ First things first, we will need to clone the main GitHub to our local repositor
  
 One way to do this is to paste this code in terminal, where you want the files to go:
 ``` 
-git clone https://github.com/Nanosplitter/CompsciBot 
+git clone https://github.com/EMU-Compsci-Discord/CompsciBot 
 ```
 You should see something similar to this result if you are using Windows Command Prompt, but the command will work on Mac and Linux aswell.
 
