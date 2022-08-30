@@ -15,11 +15,12 @@ with open("config.yaml") as file:
     config = yaml.load(file, Loader=yaml.FullLoader)
 
 # csv column names
-department = 2 # example: COSC
-course_number = 3 # example: 101
-days = 8 # example: WM
-times = 9 # 09:00 am-12:50 pm
-professor = 19 # example: Zenia Christine Bahorski (P)
+department = 2  # example: COSC
+course_number = 3  # example: 101
+days = 8  # example: WM
+times = 9  # 09:00 am-12:50 pm
+professor = 19  # example: Zenia Christine Bahorski (P)
+
 
 class ChannelManager(commands.Cog, name="channelmanager"):
     def __init__(self, bot):
@@ -99,6 +100,8 @@ class ChannelManager(commands.Cog, name="channelmanager"):
 
         # read and parse the csv
         with open(filename) as csv_file:
+            semester, year = ChannelManager.get_role_semester()
+
             csv_reader = csv.reader(csv_file, delimiter=',')
             for row in csv_reader:
 
@@ -118,12 +121,9 @@ class ChannelManager(commands.Cog, name="channelmanager"):
                         prof_parts = prof.split()
                         prof_lastname = prof_parts[-2]
 
-                    semester, year = ChannelManager.get_role_semester()
-
                     # assemble class and category names
                     channel_name = f"{class_type}-{classnum}-{prof_lastname}"
                     category_name = f"{class_type}-{classnum}"
-                    role_name = f"{class_type} {classnum} {semester} {year}"
 
                     if row[days].strip() != "" or row[times].strip() != "":
                         description = f"{row[days].strip()} {row[times].strip()}"
@@ -132,17 +132,16 @@ class ChannelManager(commands.Cog, name="channelmanager"):
 
                     category_names.add(category_name)
 
-                    ChannelManager.create_channel(channel_name, category, context, description)
-
+                    await ChannelManager.create_channel(channel_name, category_name, context, description)
 
         # make a mod role to see all classes
         mod_class_role = find(lambda role: role.name == 'All Classes', context.guild.roles)
         if mod_class_role is None:
             mod_class_role = await ChannelManager.create_role(context, 'All Classes', color=discord.Colour.blue())
-            
 
-        for category in category_names:
-            category_object = await ChannelManager.get_category(category, context)
+        for category_name in category_names:
+            role_name = f"{category_name.replace('-', ' ')} {semester} {year}"
+            category_object = await ChannelManager.get_category(category_name, context)
             category_role = await ChannelManager.create_role(context, role_name, color=discord.Colour.blue())
             # gives basic permissions to a role for its assigned channel
             await category_object.set_permissions(
