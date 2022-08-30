@@ -21,6 +21,9 @@ days = 8  # example: WM
 times = 9  # 09:00 am-12:50 pm
 professor = 19  # example: Zenia Christine Bahorski (P)
 
+# classes we do not want to create channels for
+class_blacklist = ['106', '146', '388']
+
 
 class ChannelManager(commands.Cog, name="channelmanager"):
     def __init__(self, bot):
@@ -114,7 +117,7 @@ class ChannelManager(commands.Cog, name="channelmanager"):
                     classnum = row[course_number][0:3]
                     prof = row[professor]
 
-                    if classnum == "388" or classnum[0] == "5":
+                    if classnum in class_blacklist or classnum[0] == "5":
                         continue
 
                     if prof != "TBA":
