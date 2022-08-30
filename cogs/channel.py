@@ -61,9 +61,9 @@ class ChannelManager(commands.Cog, name="channelmanager"):
 
         return await guild.create_text_channel(channel_name, category=category, topic=description)
 
-    async def create_role(context, role_name: str, permissions: discord.Permissions = discord.Permissions.general(), color=discord.Colour.default()):
+    async def create_role(context, role_name: str, permissions: discord.Permissions = discord.Permissions.none(), color=discord.Colour.default()):
         """
-        [(Required) message context, role name, (optional) permissions, color] creates a role with default general permissions, with specifed name.
+        [(Required) message context, role name, (optional) permissions, color] creates a role with specified permissions, with specifed name.
         """
         return await context.guild.create_role(name=role_name, permissions=permissions, colour=color)
 
