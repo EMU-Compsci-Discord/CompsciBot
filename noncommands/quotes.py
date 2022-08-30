@@ -22,11 +22,12 @@ class Quotes:
         json_data = json.load(f)
         quotes = list(json_data['teacherQuotes'])
         matches = []
+        keywords = keywords.lower()
 
         if keywords:
             random_quote="Sorry! You made a bad search"
             for line in quotes:
-                if keywords in line:
+                if keywords in line.lower():
                     matches.append(line)
             if matches:
                 random_quote = random.choice(matches)

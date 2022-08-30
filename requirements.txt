@@ -12,4 +12,4 @@ numpy
 trafilatura
 inspiro
 uwuify
-RateMyProfessorsAPI
+RateMyProfessorAPI
