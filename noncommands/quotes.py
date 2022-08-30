@@ -27,7 +27,6 @@ class Quotes:
         if keywords:
             random_quote="Sorry! You made a bad search"
             for line in quotes:
-                if keywords in line:
                 if keywords in line.lower():
                     matches.append(line)
             if matches:
