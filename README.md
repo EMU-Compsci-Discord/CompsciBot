@@ -1,37 +1,38 @@
 # Welcome to the new and improved CompsciBot!
 
 ## Conventions
+
 - Please create and commit work into a new branch, instead of directly into main.
 - Use a consistent, clear code structure
 - Comment when needed
 
+## Getting started
 
-
-## Getting started 
-
-This is a tutorial for new developers who have never made or setup a discord bot 
+This is a tutorial for new developers who have never made or setup a discord bot
 before.
 
 ### Prior Knowledge:
 
-This tutorial assumes you have a basic understanding of GitHub,  and python. It also assumes you have git, python, and pip package manager installed on your computer.
+This tutorial assumes you have a basic understanding of GitHub, and python. It also assumes you have git, python, and pip package manager installed on your computer.
 
 If you do not have this skill yet, we recommend you check out:
 
- - [An Intro to Git and GitHub for Beginners](https://product.hubspot.com/blog/git-and-github-tutorial-for-beginners)
- - [Python for Beginners](https://www.python.org/about/gettingstarted/)
- - [IDEs and Text Editors](https://www.pythondiscord.com/resources/tools/) 
- 
- **Note:** we will be using Visual Studio Code in this tutorial
+- [An Intro to Git and GitHub for Beginners](https://product.hubspot.com/blog/git-and-github-tutorial-for-beginners)
+- [Python for Beginners](https://www.python.org/about/gettingstarted/)
+- [IDEs and Text Editors](https://www.pythondiscord.com/resources/tools/)
+
+**Note:** we will be using Visual Studio Code in this tutorial
 
 ### 1. Getting the Code
 
 First things first, we will need to clone the main GitHub to our local repository.
- 
+
 One way to do this is to paste this code in terminal, where you want the files to go:
-``` 
-git clone https://github.com/EMU-Compsci-Discord/CompsciBot 
+
 ```
+git clone https://github.com/EMU-Compsci-Discord/CompsciBot
+```
+
 You should see something similar to this result if you are using Windows Command Prompt, but the command will work on Mac and Linux aswell.
 
 <img src="https://github.com/Nanosplitter/CompsciBot/blob/aefc804e7d6228e9953127c6c7743e3ec695b0aa/imgs/cmdCloneCommand.png" alt="Command Line Output" width="100%"/>
@@ -43,6 +44,7 @@ You can set up a python virtual environment that uses python 3.9 by running this
 ```
 
 ### 2. Getting a Discord Bot
+
 Now that you have the code base, you need to add a bot to discord to test any new code you add.
 
 You should see an interface like this one:
@@ -54,12 +56,13 @@ You will be prompted to give it a name, we suggest using "CompsciBot - [your nam
 
 <img src="https://github.com/Nanosplitter/CompsciBot/blob/aefc804e7d6228e9953127c6c7743e3ec695b0aa/imgs/devAppName.png" alt="Adding a Name" width="50%"/>
 
-You will then be taken to the bots General information.  Note the **APPLICATION ID**, as its important for later.
+You will then be taken to the bots General information. Note the **APPLICATION ID**, as its important for later.
 
 <img id="appId" src="https://github.com/Nanosplitter/CompsciBot/blob/aefc804e7d6228e9953127c6c7743e3ec695b0aa/imgs/appMain.png" alt="General Application Page" width="100%"/>
 
-### 3. Adding a Bot 
-Now that you have an application, you need the actual bot.  
+### 3. Adding a Bot
+
+Now that you have an application, you need the actual bot.
 
 Click on the Bot tab in the sidebar to see this:
 
@@ -68,7 +71,6 @@ Click on the Bot tab in the sidebar to see this:
 Click "Add Bot". The page will ask if you are sure, click "Yes".
 
 Now you will see a Bot Screen, with the default discord logo and name.
-
 
 Notice the **TOKEN** section of the page, as we will use that in the next step.
 <img id="token" src="https://github.com/Nanosplitter/CompsciBot/blob/aefc804e7d6228e9953127c6c7743e3ec695b0aa/imgs/botScreen.png" alt="Bot Page" width="100%"/>
@@ -82,22 +84,22 @@ Click the Administrator Box, so it looks as shown:
 
 ### 4. Config File
 
-Now go to your IDE or Text Editor, and make a copy of `config template.yaml`. Save the copy as `config.yaml`.  This will be the bots config file, and is important to running on discord.
+Now go to your IDE or Text Editor, and make a copy of `config template.yaml`. Save the copy as `config.yaml`. This will be the bots config file, and is important to running on discord.
 
 DO NOT WRITE ON THE TEMPLATE
 
 <img src="https://github.com/Nanosplitter/CompsciBot/blob/aefc804e7d6228e9953127c6c7743e3ec695b0aa/imgs/configTemplate.png" alt="Template" width="50%"/>
 
 On the `config.yaml` file, you will be changing four lines:
- 
- - `bot_prefix`
- - `token`
- - `application_id`
- - `owner_id`
 
- `token` and `application_id` you have seen earlier <a href="#token">here</a> and <a href="#appId">here</a> on the Developer Portal.  Copy and Paste those into the quotations to replace BOT_TOKEN and APPLICATION_ID.
+- `bot_prefix`
+- `token`
+- `application_id`
+- `owner_id`
 
- `bot-prefix` is any character that you want to start your commands with.  Avoid **"!"** as that is what the Official CompSci bot uses.
+`token` and `application_id` you have seen earlier <a href="#token">here</a> and <a href="#appId">here</a> on the Developer Portal. Copy and Paste those into the quotations to replace BOT_TOKEN and APPLICATION_ID.
+
+`bot-prefix` is any character that you want to start your commands with. Avoid **"!"** as that is what the Official CompSci bot uses.
 
 **Generally, avoid using a character another bot uses, as it will call both bots.**
 
@@ -109,12 +111,11 @@ On the `config.yaml` file, you will be changing four lines:
 
 If you get stuck on this step, [here is a good reference to help](https://www.alphr.com/discord-find-user-id/).
 
-
 When you are done getting all of these filled in, your config should be ready to use.
 
 ### 5. Create an Invite Link
 
-Back in the Developer Portal, go to **OAuth2 > URL Generator** and check the `[ ] bot` checkbox.  This will show a second set of options called **Bot Permissions**
+Back in the Developer Portal, go to **OAuth2 > URL Generator** and check the `[ ] bot` checkbox. This will show a second set of options called **Bot Permissions**
 
 In bot permissions, check the `[ ] Administrator` checkbox and scroll to the bottom to get an invite link.
 
@@ -123,11 +124,11 @@ The result should look like this below:
 
 ### 6. Join the Testing Server and Add the bot.
 
-First, join the **[Compsci Bot Testing Server](https://discord.gg/M48HYYYCyT)** if you havent already. 
+First, join the **[Compsci Bot Testing Server](https://discord.gg/M48HYYYCyT)** if you havent already.
 
 Then paste the **Invite Link** you made in step 5. in #general.
 
-If you are just joining, you may not have the permissions to add your bot to the server.  Ask a developer or @Nanosplitter or @chiara5576 and we will give permissions and add your bot. 
+If you are just joining, you may not have the permissions to add your bot to the server. Ask a developer or @Nanosplitter or @chiara5576 and we will give permissions and add your bot.
 
 Now it should show on the server side panel, but it is not shown as being on.
 
@@ -135,17 +136,18 @@ Now it should show on the server side panel, but it is not shown as being on.
 
 ### 7. Running your bot
 
-You are almost done!  Now for the coding part.
+You are almost done! Now for the coding part.
 
 First, we will need to install all of the dependencies in the `requirements.txt` file.
 Go into the file location of requirements.txt on a terminal, and type:
+
 ```
  pip install -r requirements.txt
- ```
+```
 
 It will download all of the dependencies needed for this bot.
 
-Note: the requirements.txt may not download everything.  If it misses something, `pip install <module>` directly, or ask for help in the server for a direct link.
+Note: the requirements.txt may not download everything. If it misses something, `pip install <module>` directly, or ask for help in the server for a direct link.
 
 Once installed, to run your bot, simply type:
 
@@ -157,10 +159,7 @@ This will run your bot!
 
 <img src="https://github.com/Nanosplitter/CompsciBot/blob/aefc804e7d6228e9953127c6c7743e3ec695b0aa/imgs/running.png" alt="running command line" width="100%"/>
 
-You will now see your bot in the ONLINE category, and if you call it with a `<prefix> ping` command it will respond. 
-
-
-
+You will now see your bot in the ONLINE category, and if you call it with a `<prefix> ping` command it will respond.
 
 <img src="https://github.com/Nanosplitter/CompsciBot/blob/aefc804e7d6228e9953127c6c7743e3ec695b0aa/imgs/ping.png" alt="ping response" width="100%"/>
 
