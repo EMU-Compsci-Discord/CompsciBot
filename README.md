@@ -36,6 +36,12 @@ You should see something similar to this result if you are using Windows Command
 
 <img src="https://github.com/Nanosplitter/CompsciBot/blob/aefc804e7d6228e9953127c6c7743e3ec695b0aa/imgs/cmdCloneCommand.png" alt="Command Line Output" width="100%"/>
 
+You can set up a python virtual environment that uses python 3.9 by running this command on windows
+
+```
+&"C:\Program Files\Python39\python.exe" -m venv .venv
+```
+
 ### 2. Getting a Discord Bot
 Now that you have the code base, you need to add a bot to discord to test any new code you add.
 
