@@ -29,7 +29,7 @@ First things first, we will need to clone the main GitHub to our local repositor
 
 One way to do this is to paste this code in terminal, where you want the files to go:
 
-```
+```pwsh
 git clone https://github.com/EMU-Compsci-Discord/CompsciBot
 ```
 
@@ -39,7 +39,7 @@ You should see something similar to this result if you are using Windows Command
 
 You can set up a python virtual environment that uses python 3.9 by running this command on windows
 
-```
+```pwsh
 &"C:\Program Files\Python39\python.exe" -m venv .venv
 ```
 
@@ -141,7 +141,7 @@ You are almost done! Now for the coding part.
 First, we will need to install all of the dependencies in the `requirements.txt` file.
 Go into the file location of requirements.txt on a terminal, and type:
 
-```
+```pwsh
  pip install -r requirements.txt
 ```
 
@@ -151,7 +151,7 @@ Note: the requirements.txt may not download everything. If it misses something, 
 
 Once installed, to run your bot, simply type:
 
-```
+```pwsh
 python bot.py
 ```
 
