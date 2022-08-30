@@ -83,9 +83,9 @@ class ChannelManager(commands.Cog, name="channelmanager"):
             semester = "Fall"
         return (semester, year)
 
-    @commands.command(name="parsechannelcsv")
-    @has_permissions(administrator=True)
-    async def parse_channel_csv(self, context, filename=None):
+    @ commands.command(name="csvparse")
+    @ has_permissions(administrator=True)
+    async def csvparse(self, context, filename=None):
         """
         [(Required) filename] parses a csv into class channels and categories.
         """
