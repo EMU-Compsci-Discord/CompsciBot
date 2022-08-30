@@ -1,5 +1,4 @@
 {
-    "python.analysis.extraPaths": [
-        "./cogs"
-    ]
+    "python.analysis.extraPaths": ["./cogs"],
+    "python.formatting.autopep8Args": ["--max-line-length", "120"]
 }
