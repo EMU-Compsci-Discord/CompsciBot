@@ -65,32 +65,26 @@ class ChannelManager(commands.Cog, name="channelmanager"):
 
         return await guild.create_text_channel(channel_name, category=category, topic=description)
 
-    async def create_role(context, role_name: str, permissions: discord.Permissions = discord.Permissions.none(), color=discord.Colour.default()):
-        """
-        [(Required) message context, role name, (optional) permissions, color] creates a role with specified permissions, with specifed name.
-        """
-        return await context.guild.create_role(name=role_name, permissions=permissions, colour=color)
+    def makeDict(categories, channels):
+        classDict = {}
+        for channel in channels:
+            for category in categories:
+                if (category in channel):
+                    classDict[channel] = category
+        return classDict
 
-    def get_role_semester():
-        today = datetime.date.today()
-        month = today.month
-        year = today.year
-        if month >= 11 or month <= 2:
-            semester = 'Winter'
-        elif 2 < month <= 7:
-            semester = 'Summer'
-        else:
-            semester = "Fall"
-        return (semester, year)
-
-    @commands.command(name="parsechannelcsv")
-    @has_permissions(administrator=True)
-    async def parse_channel_csv(self, context, filename=None):
+    @ commands.command(name="channelparse")
+    @ has_permissions(administrator=True)
+    async def channelparse(self, context, filename=None):
         """
         [(Required) filename] parses a csv into class channels and categories.
         """
 
-        if filename is None:
+        channelnames = []
+        categories = []
+        description = {}
+
+        if (filename is None):
             await context.send("Please specify a .csv file as an argument.")
 
         if re.search("^[a-zA-Z0-9_\-]+\.csv$", filename) is None:
@@ -114,73 +108,68 @@ class ChannelManager(commands.Cog, name="channelmanager"):
                     class_type = row[department]
 
                     # first 3 numbers only (not L1,L2,L3)
-                    classnum = row[course_number][0:3]
-                    prof = row[professor]
+                    classnum = class_info[3][0:3]
+                    prof = class_info[19]
 
-                    if classnum in class_blacklist or classnum[0] == "5":
-                        continue
-
-                    if prof != "TBA":
-                        prof_parts = prof.split()
-                        prof_lastname = prof_parts[-2]
+                    if (prof != "TBA"):
+                        prof = prof.split()
+                        prof_lastname = prof[len(prof)-2]
 
                     # assemble class and category names
-                    channel_name = f"{class_type}-{classnum}-{prof_lastname}"
-                    category_name = f"{class_type}-{classnum}"
+                    channelname = classtype+"-"+classnum+"-"+prof_lastname
+                    categoryname = classtype + "-"+classnum
 
-                    if row[days].strip() != "" or row[times].strip() != "":
-                        description = f"{row[days].strip()} {row[times].strip()}"
+                    if(class_info[8].strip() or class_info[9].strip()):
+                        description[channelname] = class_info[8].strip() + \
+                            " " + class_info[9].strip()
                     else:
-                        description = "No time listed"
+                        description[channelname] = "No time listed"
 
-                    category_names.add(category_name)
+                    if(categoryname not in categories):
+                        categories.append(categoryname)
+                        # create role and save returned Role Object in dict
+                        category_roles[categoryname] = await ChannelManager.createRole(
+                            context, rolename, color=discord.Colour.blue())
 
-                    await ChannelManager.create_channel(channel_name, category_name, context, description)
+                    channelnames.append(channelname)
 
-        # make a mod role to see all classes
-        mod_class_role = find(lambda role: role.name == 'All Classes', context.guild.roles)
-        if mod_class_role is None:
-            mod_class_role = await ChannelManager.create_role(context, 'All Classes', color=discord.Colour.blue())
+            classDict = ChannelManager.makeDict(categories, channelnames)
 
-        for category_name in category_names:
-            role_name = f"{category_name.replace('-', ' ')} {semester} {year}"
-            category_object = await ChannelManager.get_category(category_name, context)
-            category_role = await ChannelManager.create_role(context, role_name, color=discord.Colour.blue())
-            # gives basic permissions to a role for its assigned channel
-            await category_object.set_permissions(
-                category_role,
-                read_messages=True,
-                send_messages=True,
-                add_reactions=True,
-                read_message_history=True)
-            await category_object.set_permissions(
-                mod_class_role,
-                read_messages=True,
-                send_messages=True,
-                add_reactions=True,
-                read_message_history=True)
+            for channel in channelnames:
+                if('388' in channel or '571' in channel or '511' in channel):
+                    continue
+                await ChannelManager.createChannel(channel, classDict[channel], context, description[channel])
 
+            for category in categories:
+                category_object = await ChannelManager.getCategory(category, context)
+                # gives basic permissions to a role for its assigned channel
+                await category_object.set_permissions(
+                    category_roles[category],
+                    read_messages=True,
+                    send_messages=True,
+                    add_reactions=True,
+                    read_message_history=True)
+                await category_object.set_permissions(
+                    modClassRole,
+                    read_messages=True,
+                    send_messages=True,
+                    add_reactions=True,
+                    read_message_history=True)
         await context.send("Channels and Roles created successfully")
 
-    @commands.command(name="deleteclasses")
-    @has_permissions(administrator=True)
-    async def delete_classes(self, context):
+    @ commands.command(name="deleteAllClasses")
+    @ has_permissions(administrator=True)
+    async def deleteAll(self, context):
         """
         [No arguments] Admin Only. Deletes channels and categories with COSC-###, MATH-###, or STAT-### (case insensitive).
         """
         for channel in context.guild.channels:
-            if re.search('(COSC|MATH|STAT)-[0-9]{3}', channel.name, flags=re.I):
+            if re.search('COSC-[0-9]{3}', channel.name) or re.search('cosc-[0-9]{3}', channel.name):
                 await channel.delete()
-
-    @commands.command(name="deleteclassroles")
-    @has_permissions(administrator=True)
-    async def delete_roles(self, context):
-        """
-        [No arguments] Admin Only. Deletes roles with COSC-###, MATH-###, or STAT-### (case insensitive).
-        """
-        for role in context.guild.roles:
-            if re.search('(COSC|MATH|STAT) [0-9]{3}', role.name, flags=re.I):
-                await role.delete()
+            if re.search('MATH-[0-9]{3}', channel.name) or re.search('math-[0-9]{3}', channel.name):
+                await channel.delete()
+            if re.search('STAT-[0-9]{3}', channel.name) or re.search('stat-[0-9]{3}', channel.name):
+                await channel.delete()
 
 
 # And then we finally add the cog to the bot so that it can load, unload, reload and use it's content.
