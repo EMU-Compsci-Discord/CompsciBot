@@ -43,6 +43,12 @@ You can set up a python virtual environment that uses python 3.9 by running this
 &"C:\Program Files\Python39\python.exe" -m venv .venv
 ```
 
+You can set up a python virtual environment that uses python 3.9 by running this command on windows
+
+```
+&"C:\Program Files\Python39\python.exe" -m venv .venv
+```
+
 ### 2. Getting a Discord Bot
 
 Now that you have the code base, you need to add a bot to discord to test any new code you add.
