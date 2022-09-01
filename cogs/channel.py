@@ -124,6 +124,10 @@ class ChannelManager(commands.Cog, name="channelmanager"):
                         prof_parts = prof.split()
                         prof_lastname = prof_parts[-2]
 
+                        # deals with suffixes
+                        if prof_lastname.lower() in ['sr', 'jr', 'ii', 'iii', 'iv']:
+                            prof_lastname = prof_parts[-3]
+
                     # assemble class and category names
                     channel_name = f"{class_type}-{classnum}-{prof_lastname}"
                     category_name = f"{class_type}-{classnum}"
