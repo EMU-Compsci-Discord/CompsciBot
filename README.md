@@ -35,7 +35,7 @@ git clone https://github.com/EMU-Compsci-Discord/CompsciBot
 
 You should see something similar to this result if you are using Windows Command Prompt, but the command will work on Mac and Linux aswell.
 
-<img src="imgs/cmdCloneCommand.png" alt="Command Line Output" width="100%"/>
+<img src="imgs/cmdCloneCommand.webp" alt="Command Line Output" width="100%"/>
 
 You can set up a python virtual environment that uses python 3.9 by running this command on windows
 
@@ -50,17 +50,17 @@ Now that you have the code base, you need to add a bot to discord to test any ne
 Go to the application tab of the [Discord Developer Portal](https://discord.com/developers/applications)
 
 You should see an interface like this one:
-<img src="imgs/devPortal.png" alt="Discord Developer Website"/>
+<img src="imgs/devPortal.webp" alt="Discord Developer Website"/>
 
 Click on "New Application" in the top right.
 
 You will be prompted to give it a name, we suggest using "CompsciBot - [your name]".
 
-<img src="imgs/devAppName.png" alt="Adding a Name" width="50%"/>
+<img src="imgs/devAppName.webp" alt="Adding a Name" width="50%"/>
 
 You will then be taken to the bots General information. Note the **APPLICATION ID**, as its important for later.
 
-<img id="appId" src="imgs/appMain.png" alt="General Application Page" width="100%"/>
+<img id="appId" src="imgs/appMain.webp" alt="General Application Page" width="100%"/>
 
 ### 3. Adding a Bot
 
@@ -68,21 +68,21 @@ Now that you have an application, you need the actual bot.
 
 Click on the Bot tab in the sidebar to see this:
 
-<img src="imgs/appBot.png" alt="Application Bot Page" width="100%"/>
+<img src="imgs/appBot.webp" alt="Application Bot Page" width="100%"/>
 
 Click "Add Bot". The page will ask if you are sure, click "Yes do it!".
 
 Now you will see a Bot Screen, with the default discord logo and name.
 
 Notice the **TOKEN** section of the page, as we will use that in the next step.
-<img id="token" src="imgs/botScreen.png" alt="Bot Page" width="100%"/>
+<img id="token" src="imgs/botScreen.webp" alt="Bot Page" width="100%"/>
 
 ### 4. Bot Permissions
 
 In the Bot page, Scroll down and find **Bot Permissions**
 
 Click the Administrator Box, so it looks as shown:
-<img src="imgs/botPerms.png" alt="Bot Permissions" width="100%"/>
+<img src="imgs/botPerms.webp" alt="Bot Permissions" width="100%"/>
 
 ### 4. Config File
 
@@ -135,7 +135,7 @@ Back in the Developer Portal, go to **OAuth2 > URL Generator** and check the `[ 
 In bot permissions, check the `[ ] Administrator` checkbox and scroll to the bottom to get an invite link.
 
 The result should look like this below:
-<img src="imgs/OAuthChecked.png" alt="Completed OAuth2" width="100%"/>
+<img src="imgs/OAuthChecked.webp" alt="Completed OAuth2" width="100%"/>
 
 ### 6. Join the Testing Server and Add the bot.
 
@@ -147,11 +147,11 @@ Next open the url from step 5 in a browser.
 
 Select "Compsci Bot Testing" then click "Continue", Make sure "Administrator" is checked, then click "Authorize".
 
-<img src="imgs/addBot.png" width="100%"/>
+<img src="imgs/addBot.webp" width="100%"/>
 
 Now it should show on the server side panel, but it is not shown as being on.
 
-<img src="imgs/inactive.png" alt="inactive bot" width="50%"/>
+<img src="imgs/inactive.webp" alt="inactive bot" width="50%"/>
 
 ### 7. Running your bot
 
@@ -179,10 +179,10 @@ python bot.py
 
 This will run your bot!
 
-<img src="imgs/running.png" alt="running command line" width="100%"/>
+<img src="imgs/running.webp" alt="running command line" width="100%"/>
 
 You will now see your bot in the ONLINE category, and if you call it with a `<prefix> ping` command it will respond.
 
-<img src="imgs/ping.png" alt="ping response" width="100%"/>
+<img src="imgs/ping.webp" alt="ping response" width="100%"/>
 
 press Ctrl+C to stop the bot from running, and now you can work on and change the bot as needed!
