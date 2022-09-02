@@ -47,6 +47,8 @@ You can set up a python virtual environment that uses python 3.9 by running this
 
 Now that you have the code base, you need to add a bot to discord to test any new code you add.
 
+Go to the application tab of the [Discord Developer Portal](https://discord.com/developers/applications)
+
 You should see an interface like this one:
 <img src="imgs/devPortal.png" alt="Discord Developer Website"/>
 
@@ -68,7 +70,7 @@ Click on the Bot tab in the sidebar to see this:
 
 <img src="imgs/appBot.png" alt="Application Bot Page" width="100%"/>
 
-Click "Add Bot". The page will ask if you are sure, click "Yes".
+Click "Add Bot". The page will ask if you are sure, click "Yes do it!".
 
 Now you will see a Bot Screen, with the default discord logo and name.
 
@@ -126,9 +128,13 @@ The result should look like this below:
 
 First, join the **[Compsci Bot Testing Server](https://discord.gg/M48HYYYCyT)** if you havent already.
 
-Then paste the **Invite Link** you made in step 5. in #general.
+You will need the @developer role. Ask a developer or @Nanosplitter or @chiara5576 and we will give permissions to add your bot.
 
-If you are just joining, you may not have the permissions to add your bot to the server. Ask a developer or @Nanosplitter or @chiara5576 and we will give permissions and add your bot.
+Next open the url from step 5 in a browser.
+
+Select "Compsci Bot Testing" then click "Continue", Make sure "Administrator" is checked, then click "Authorize".
+
+<img src="imgs/addBot.png" width="100%"/>
 
 Now it should show on the server side panel, but it is not shown as being on.
 
@@ -139,13 +145,16 @@ Now it should show on the server side panel, but it is not shown as being on.
 You are almost done! Now for the coding part.
 
 First, we will need to install all of the dependencies in the `requirements.txt` file.
-Go into the file location of requirements.txt on a terminal, and type:
+
+If you're using a virtual environment, make sure it is activated.
+
+Then run this command in the terminal:
 
 ```pwsh
  pip install -r requirements.txt
 ```
 
-It will download all of the dependencies needed for this bot.
+This will download all of the dependencies needed for the bot.
 
 Note: the requirements.txt may not download everything. If it misses something, `pip install <module>` directly, or ask for help in the server for a direct link.
 
