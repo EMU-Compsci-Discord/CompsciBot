@@ -164,7 +164,7 @@ If you're using a virtual environment, make sure it is activated.
 Then run this command in the terminal:
 
 ```pwsh
- pip install -r requirements.txt
+pip install -r requirements.txt
 ```
 
 This will download all of the dependencies needed for the bot.
