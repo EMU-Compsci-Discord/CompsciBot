@@ -90,7 +90,20 @@ Now go to your IDE or Text Editor, and make a copy of `config template.yaml`. Sa
 
 DO NOT WRITE ON THE TEMPLATE
 
-<img src="imgs/configTemplate.png" alt="Template" width="50%"/>
+```yaml
+bot_prefix: "PREFIX"
+token: "BOT_TOKEN"
+application_id: "APPLICATION_ID"
+owners:
+  - OWNER_ID
+blacklist:
+  - 000000000000000000
+main_color: 0xD75BF4
+error: 0xE02B2B
+success: 0x42F56C
+warning: 0xF59E42
+info: 0x4299F5
+```
 
 On the `config.yaml` file, you will be changing four lines:
 
