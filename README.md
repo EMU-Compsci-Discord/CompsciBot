@@ -185,4 +185,4 @@ You will now see your bot in the ONLINE category, and if you call it with a `<pr
 
 <img src="imgs/ping.webp" alt="ping response" width="100%"/>
 
-press Ctrl+C to stop the bot from running, and now you can work on and change the bot as needed!
+press <kbd>Ctrl</kbd>+<kbd>C</kbd> to stop the bot from running, and now you can work on and change the bot as needed!
