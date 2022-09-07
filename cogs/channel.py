@@ -88,6 +88,10 @@ class ChannelManager(commands.Cog, name="channelmanager"):
     async def csvparse(self, context, filename=None):
         """
         [(Required) filename] parses a csv into class channels and categories.
+        
+        Takes a file in the CompSciBot directory and parses it into class channels 
+        and categories.  Must specify the file with the proper .csv extension. the file
+        can only be named with alphanumeric characters plus \, _ , or -.
         """
 
         if filename is None:
@@ -180,7 +184,7 @@ class ChannelManager(commands.Cog, name="channelmanager"):
     @has_permissions(administrator=True)
     async def delete_roles(self, context):
         """
-        [No arguments] Admin Only. Deletes roles with COSC-###, MATH-###, or STAT-### (case insensitive).
+        [No arguments] Admin Only. Deletes roles that contain COSC ###, MATH ###, or STAT ### (case insensitive).
         """
         for role in context.guild.roles:
             if re.search('(COSC|MATH|STAT) [0-9]{3}', role.name, flags=re.I):
