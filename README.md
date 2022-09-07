@@ -1,5 +1,7 @@
 # Welcome to the new and improved CompsciBot!
 
+- [Creating Channels Guide](./resources/creatingchannels.md)
+
 ## Conventions
 - Please create and commit work into a new branch, instead of directly into main.
 - Use a consistent, clear code structure
