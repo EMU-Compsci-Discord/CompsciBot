@@ -14,8 +14,7 @@ import uuid
 import inspirobot
 import uwuify
 
-if "CompsciBot" not in str(os.getcwd()):
-    os.chdir("./CompsciBot")
+
 with open("config.yaml") as file:
     config = yaml.load(file, Loader=yaml.FullLoader)
 

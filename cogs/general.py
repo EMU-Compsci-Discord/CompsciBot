@@ -8,8 +8,7 @@ import random
 from nextcord.ext import commands
 from noncommands import summarizer, quotes
 
-if "CompsciBot" not in str(os.getcwd()):
-    os.chdir("./CompsciBot")
+
 with open("config.yaml") as file:
     config = yaml.load(file, Loader=yaml.FullLoader)
 
