@@ -13,3 +13,4 @@ trafilatura
 inspiro
 uwuify
 RateMyProfessorAPI
+mysql-connector

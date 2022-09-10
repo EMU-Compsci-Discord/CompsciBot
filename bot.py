@@ -14,7 +14,7 @@ from noncommands import auto_code_block,quotes
 with open("config.yaml") as file:
     config = yaml.load(file, Loader=yaml.FullLoader)
 
-intents = nextcord.Intents.default()
+intents = nextcord.Intents.default().all()
 
 bot = Bot(command_prefix=config["bot_prefix"], intents=intents)
 
