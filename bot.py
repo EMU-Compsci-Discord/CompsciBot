@@ -1,11 +1,12 @@
 import os
 import platform
+import random
 import sys
 import nextcord
 import yaml
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from apscheduler.triggers.cron import CronTrigger
-from nextcord.ext import commands
+from nextcord.ext import commands, tasks
 from nextcord.ext.commands import Bot
 
 from noncommands import auto_code_block,quotes
@@ -30,6 +31,7 @@ async def on_ready():
     print(f"Python version: {platform.python_version()}")
     print(f"Running on: {platform.system()} {platform.release()} ({os.name})")
     print("-------------------")
+    await bot.change_presence(activity=nextcord.Game("/help"))
 
 # Removes the default help command of nextcord.py to be able to create our custom help command.
 bot.remove_command("help")
