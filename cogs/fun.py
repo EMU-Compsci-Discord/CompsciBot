@@ -28,7 +28,7 @@ class Fun(commands.Cog, name="fun"):
         self.bot = bot
     
     @nextcord.slash_command(name="dadjoke", description="Get one of the classics")
-    async def dadjoke(self, interaction: Interaction, searchterm: Optional[str] = SlashOption(description="A term to try and find a dadjoke about", default="", required=False)):
+    async def dadjoke(self, interaction: Interaction, searchterm: str = SlashOption(description="A term to try and find a dadjoke about", default="", required=False)):
         """
         [(Optional)SearchTerm] Get one of the classics.
         """
@@ -42,7 +42,7 @@ class Fun(commands.Cog, name="fun"):
             await interaction.response.send_message("I don't think I've heard a good one about that yet. Try something else.")
     
     @nextcord.slash_command(name="xkcd", description="Get an xkcd comic.")
-    async def xkcd(self, interaction: Interaction, comicnumber: Optional[int] = SlashOption(description="A specific xkcd comic, like '1' to get the first comic", default="", required=False)):
+    async def xkcd(self, interaction: Interaction, comicnumber: int = SlashOption(description="A specific xkcd comic, like '1' to get the first comic", default="", required=False)):
         """
         [(Optional)xkcdNumber] Retrieve a random or specific xkcd comic
         """

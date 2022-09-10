@@ -19,7 +19,7 @@ class Quotes(commands.Cog, name="quotes"):
 
     # Here you can just add your own commands, you'll always need to provide "self" as first parameter.
     @nextcord.slash_command(name="quote", description="Searches CS quotes by keyword, or search one at random.")
-    async def quote(self, interaction: Interaction, keyword: Optional[str] = SlashOption(description="The quote to submit", default="", required=False)):
+    async def quote(self, interaction: Interaction, keyword: str = SlashOption(description="The quote to submit", default="", required=False)):
         """
         [(Optional) Search text] Searches CS quotes by keyword, or search one at random.
         """
