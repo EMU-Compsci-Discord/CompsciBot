@@ -2,12 +2,15 @@ import os
 import platform
 import sys
 import json
-import nextcord
 import yaml
 import random
 from nextcord.ext import commands
 from noncommands import summarizer, quotes
-
+import nextcord
+from typing import Optional
+from nextcord.ext import commands
+from nextcord import Interaction, SlashOption, ChannelType
+from nextcord.abc import GuildChannel
 
 with open("config.yaml") as file:
     config = yaml.load(file, Loader=yaml.FullLoader)
@@ -16,13 +19,13 @@ class general(commands.Cog, name="general"):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.command(name="info", aliases=["botinfo"])
-    async def info(self, context):
+    @nextcord.slash_command(name="info", description="Get some useful (or not) information about the bot.")
+    async def info(self, interaction: Interaction):
         """
-        [No arguments] Get some useful (or not) information about the bot.
+        [No Arguments] Get some useful (or not) information about the bot.
         """
         embed = nextcord.Embed(
-            description="CompsciBot",
+            description="The server's most helpful member.",
             color=config["success"]
         )
         embed.set_author(
@@ -44,16 +47,16 @@ class general(commands.Cog, name="general"):
             inline=False
         )
         embed.set_footer(
-            text=f"Requested by {context.message.author}"
+            text=f"Requested by {interaction.user}"
         )
-        await context.send(embed=embed)
+        await interaction.response.send_message(embed=embed)
 
-    @commands.command(name="serverinfo")
-    async def serverinfo(self, context):
+    @nextcord.slash_command(name="serverinfo", description="Get some useful (or not) information about the server.")
+    async def serverinfo(self, interaction: Interaction):
         """
-        [No arguments] Get some useful (or not) information about the server.
+        [No Arguments] Get some useful (or not) information about the server.
         """
-        server = context.message.guild
+        server = interaction.guild
         roles = [x.name for x in server.roles]
         role_length = len(roles)
         if role_length > 50:
@@ -70,9 +73,11 @@ class general(commands.Cog, name="general"):
             description=f"{server}",
             color=config["success"]
         )
-        embed.set_thumbnail(
-            url=server.icon_url
-        )
+
+        if server.icon != None:
+            embed.set_thumbnail(
+                url=server.icon.url
+            )
         embed.add_field(
             name="Server ID",
             value=server.id
@@ -92,12 +97,12 @@ class general(commands.Cog, name="general"):
         embed.set_footer(
             text=f"Created at: {time}"
         )
-        await context.send(embed=embed)
+        await interaction.response.send_message(embed=embed)
 
-    @commands.command(name="ping")
-    async def ping(self, context):
+    @nextcord.slash_command(name="ping", description="Check if the bot is alive.")
+    async def ping(self, interaction: Interaction):
         """
-        [No arguments] Check if the bot is alive.
+        [No Arguments] Check if the bot is alive.
         """
         embed = nextcord.Embed(
             color=config["success"]
@@ -108,42 +113,58 @@ class general(commands.Cog, name="general"):
             inline=True
         )
         embed.set_footer(
-            text=f"Pong request by {context.message.author}"
+            text=f"Pong request by {interaction.user}"
         )
-        await context.send(embed=embed)
+        await interaction.response.send_message(embed=embed)  
 
-    @commands.command(name="invite")
-    async def invite(self, context):
+    @nextcord.slash_command(name="invite", description="Get the invite link of the bot to be able to invite it to another server.")
+    async def invite(self, interaction: Interaction):
         """
-        [No arguments] Get the invite link of the bot to be able to invite it to another server.
+        [No Arguments] Get the invite link of the Dad to be able to invite him to another server.
         """
-        await context.reply(f"Invite me by clicking here: https://discordapp.com/oauth2/authorize?&client_id={config['application_id']}&scope=bot&permissions=8")
+        await interaction.response.send_message(f"Invite me by clicking here: https://discordapp.com/oauth2/authorize?&client_id={config['application_id']}&scope=bot&permissions=8")
+
     
-    @commands.command(name="tldr")
-    async def tldr(self, context, url):
+    @nextcord.slash_command(name="tldrchannel", description="Get a TLDR of X number of past messages on the channel.")
+    async def tldrchannel(self, interaction: Interaction, number: Optional[int] = SlashOption(description="The number of past messages to summarize", required=True, min_value=5, max_value=200)):
         """
-        [(Required) Link to site] Used skills I learned in the information retreival class to build this!
+        [NumberOfMessages] Get a TLDR of X number of past messages on the channel.
+        """
+
+        messages = await interaction.channel.history(limit=number).flatten()
+        text = ". ".join([m.content for m in messages])
+        text = text.replace(".. ", ". ")
+        embed = summarizer.getSummaryText(config, text)
+
+        await interaction.response.send_message(embed=embed)
+    
+    @nextcord.slash_command(name="tldr", description="Get a TLDR of a web page.")
+    async def tldr(self, interaction: Interaction, url: Optional[str] = SlashOption(description="The URL of the web page to summarize", required=True)):
+        """
+        [URL] Get a TLDR a web page.
         """
         try:
-            await context.send(embed=summarizer.getSummary(config, url))
+            await interaction.response.send_message(embed=summarizer.getSummaryUrl(config, url))
         except:
-             await context.send("There's something odd about that link. Either they won't let me read it or you sent it wrongly.")
+            await interaction.response.send_message("There's something odd about that link. Either they won't let me read it or you sent it wrongly.")
 
-    @commands.command(name="poll")
-    async def poll(self, context, *args):
+    @nextcord.slash_command(name="poll", description="Create a poll where members can vote.")
+    async def poll(self, interaction: Interaction, question: str = SlashOption(description="Question to ask members.", required=True)):
         """
-        [(Required) Question] Create a poll where members can vote on a question.
+        [Question] Create a poll where members can vote.
         """
-        poll_title = " ".join(args)
         embed = nextcord.Embed(
             title="A new poll has been created!",
-            description=f"{poll_title}",
+            description=f"{question}",
             color=config["success"]
         )
+
         embed.set_footer(
-            text=f"Poll created by: {context.message.author} • React to vote!"
+            text=f"Poll created by: {interaction.user} • React to vote!"
         )
-        embed_message = await context.send(embed=embed)
+        
+        embed_message = await interaction.response.send_message(embed=embed)
+        embed_message = await embed_message.fetch()
         await embed_message.add_reaction("👍")
         await embed_message.add_reaction("👎")
         await embed_message.add_reaction("🤷")

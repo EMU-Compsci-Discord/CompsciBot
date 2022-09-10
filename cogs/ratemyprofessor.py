@@ -1,9 +1,13 @@
 import os
 import sys
-import nextcord
 import yaml
 from nextcord.ext import commands
 import ratemyprofessor
+import nextcord
+from typing import Optional
+from nextcord.ext import commands
+from nextcord import Interaction, SlashOption, ChannelType
+from nextcord.abc import GuildChannel
 
 
 with open("config.yaml") as file:
@@ -20,15 +24,14 @@ class RateMyProfessor(commands.Cog, name="rate my professor"):
             "Siyuan Jiang": "https://www.emich.edu/computer-science/images/faculty/s-jiang.jpg",
         }
 
-    @commands.command(name="rmp")
-    async def rmp(self, context, *professorArgs):
+    @nextcord.slash_command(name="rmp", description="Check out what RateMyProfessor has to say about a professor!")
+    async def rmp(self, interaction: nextcord.Interaction, professorname: Optional[str] = SlashOption(name="professorname", description="The name of the professor you want to look up", required=True)):
         """
         [(Required) Professor name] Check out what RateMyProfessor has to say about a professor!
         """
         try:
-            professorSearchTerm = " ".join(professorArgs)
             EMU = ratemyprofessor.get_school_by_name("Eastern Michigan University")
-            prof = ratemyprofessor.get_professor_by_school_and_name(EMU, professorSearchTerm)
+            prof = ratemyprofessor.get_professor_by_school_and_name(EMU, professorname)
 
             ratingsBest = sorted([rating for rating in prof.get_ratings() if rating.comment], key=lambda rating: (rating.rating, rating.date))
             bestRating = ratingsBest[-1]
@@ -40,11 +43,11 @@ class RateMyProfessor(commands.Cog, name="rate my professor"):
             bestembed = self.buildRatingEmbed(nextcord.Embed(title=f"Best Rating for {prof.name}", color=config["success"]), bestRating)
             worstembed = self.buildRatingEmbed(nextcord.Embed(title=f"Worst Rating for {prof.name}",color=config["success"]), worstRating)
             
-            await context.send(embed=profEmbed)
-            await context.send(embed=bestembed)
-            await context.send(embed=worstembed)
+            await interaction.response.send_message(embed=profEmbed)
+            await interaction.followup.send(embed=bestembed)
+            await interaction.followup.send(embed=worstembed)
         except:
-            await context.send(f"Could not find professor '{professorSearchTerm}'. Try only using a last name or check your spelling!")
+            await interaction.response.send_message(f"Could not find professor '{professorname}'. Try only using a last name or check your spelling!")
 
     def buildRatingEmbed(self, embed, rating):
         if rating.rating:

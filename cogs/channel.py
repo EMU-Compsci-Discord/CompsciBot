@@ -2,12 +2,15 @@ import os
 import sys
 import csv
 import yaml
-import discord
-from discord.ext import commands
-from discord.ext.commands import has_permissions
-from discord.utils import find
+from nextcord.ext import commands
+from nextcord.ext.commands import has_permissions
+from nextcord.utils import find
 import datetime
 import re
+import nextcord
+from typing import Optional
+from nextcord import Interaction, SlashOption, ChannelType
+from nextcord.abc import GuildChannel
 
 
 with open("config.yaml") as file:
@@ -35,7 +38,7 @@ class ChannelManager(commands.Cog, name="channelmanager"):
 
         guild = context.guild
         overwrites = {
-            guild.default_role: discord.PermissionOverwrite(read_messages=False)
+            guild.default_role: nextcord.PermissionOverwrite(read_messages=False)
         }
         try:
             return await guild.create_category(category, overwrites=overwrites)
@@ -64,7 +67,7 @@ class ChannelManager(commands.Cog, name="channelmanager"):
 
         return await guild.create_text_channel(channel_name, category=category, topic=description)
 
-    async def create_role(context, role_name: str, permissions: discord.Permissions = discord.Permissions.none(), color=discord.Colour.default()):
+    async def create_role(context, role_name: str, permissions: nextcord.Permissions = nextcord.Permissions.none(), color=nextcord.Colour.default()):
         """
         [(Required) message context, role name, (optional) permissions, color] creates a role with specified permissions, with specifed name.
         """
@@ -143,12 +146,12 @@ class ChannelManager(commands.Cog, name="channelmanager"):
         # make a mod role to see all classes
         mod_class_role = find(lambda role: role.name == 'All Classes', context.guild.roles)
         if mod_class_role is None:
-            mod_class_role = await ChannelManager.create_role(context, 'All Classes', color=discord.Colour.blue())
+            mod_class_role = await ChannelManager.create_role(context, 'All Classes', color=nextcord.Colour.blue())
 
         for category_name in category_names:
             role_name = f"{category_name.replace('-', ' ')} {semester} {year}"
             category_object = await ChannelManager.get_category(category_name, context)
-            category_role = await ChannelManager.create_role(context, role_name, color=discord.Colour.blue())
+            category_role = await ChannelManager.create_role(context, role_name, color=nextcord.Colour.blue())
             # gives basic permissions to a role for its assigned channel
             await category_object.set_permissions(
                 category_role,
