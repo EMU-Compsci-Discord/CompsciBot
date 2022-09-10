@@ -2,7 +2,7 @@ import json
 import random
 import yaml
 import os
-
+import mysql.connector
 
 with open("config.yaml") as file:
     config = yaml.load(file, Loader=yaml.FullLoader)
@@ -10,44 +10,53 @@ with open("config.yaml") as file:
 class Quotes:
     def __init__(self, bot):
         self.bot=bot
+
     async def dailyQuote(self):
-        c=self.bot.get_channel(707293854507991172)
-        dailyquote=await Quotes.quote(self.bot,"")
-        await c.send("Daily Quote:\n"+dailyquote)
+        channel = self.bot.get_channel(707293854507991172)
+        dailyquote = await Quotes.quote(self.bot, "")
+        await channel.send("Daily Quote:\n" + dailyquote)
 
-    async def quote(self,keywords):
+    async def quote(self, keywords):
+        mydb = mysql.connector.connect(
+            host=config["dbhost"],
+            user=config["dbuser"],
+            password=config["dbpassword"],
+            database=config["databasename"],
+            autocommit=True,
+            use_unicode=True
+        )
+        mycursor = mydb.cursor(buffered=True)
+        sql = "SELECT quote FROM quotes WHERE quote LIKE %s ORDER BY RAND() LIMIT 1"
+        val = ("%" + keywords + "%",)
+        mycursor.execute(sql, val)
+        quote = mycursor.fetchone()
+        mycursor.close()
+        mydb.close()
 
-        f = open("resources/quotes.json", encoding="utf-8")
-        json_data = json.load(f)
-        quotes = list(json_data['teacherQuotes'])
-        matches = []
-        keywords = keywords.lower()
-
-        if keywords:
-            random_quote="Sorry! You made a bad search"
-            for line in quotes:
-                if keywords in line.lower():
-                    matches.append(line)
-            if matches:
-                random_quote = random.choice(matches)
+        if quote is None:
+            return "No quotes found with that keyword"
         else:
-            random_quote = random.choice(quotes)
-        return random_quote
-
-        
+            return quote[0]
 
     async def newquote(self, context):
         prefix = config["bot_prefix"]
         startLen = len(prefix) + len("newquote")
         quote = context.message.content[startLen:]
 
-        with open("resources/quotes.json","r",encoding="utf-8") as qfile:
-            qjson = json.load(qfile)
-            qjson["teacherQuotes"].append(quote)
-            qfile = open("resources/quotes.json","w")
-            json.dump(qjson, qfile)
-
-        return quote
-
-
-    
+        mydb = mysql.connector.connect(
+            host=config["dbhost"],
+            user=config["dbuser"],
+            password=config["dbpassword"],
+            database=config["databasename"],
+            autocommit=True,
+            use_unicode=True
+        )
+        mycursor = mydb.cursor(buffered=True)
+        sql = "INSERT INTO quotes (quote) VALUES (%s)"
+        val = (quote,)
+        mycursor.execute(sql, val)
+        mydb.commit()
+        mycursor.close()
+        mydb.close()
+        
+        return quote    
