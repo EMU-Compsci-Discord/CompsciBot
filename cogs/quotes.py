@@ -3,6 +3,11 @@ import sys
 import yaml
 from nextcord.ext import commands
 from noncommands import quotes
+import nextcord
+from typing import Optional
+from nextcord.ext import commands
+from nextcord import Interaction, SlashOption, ChannelType
+from nextcord.abc import GuildChannel
 
 with open("config.yaml") as file:
     config = yaml.load(file, Loader=yaml.FullLoader)
@@ -13,27 +18,24 @@ class Quotes(commands.Cog, name="quotes"):
         self.bot = bot
 
     # Here you can just add your own commands, you'll always need to provide "self" as first parameter.
-    @commands.command(name="quote")
-    async def quote(self, context, **kwargs):
+    @nextcord.slash_command(name="quote", description="Searches CS quotes by keyword, or search one at random.")
+    async def quote(self, interaction: Interaction, keyword: Optional[str] = SlashOption(description="The quote to submit", default="", required=False)):
         """
         [(Optional) Search text] Searches CS quotes by keyword, or search one at random.
         """
         quoteClass = quotes.Quotes(self.bot)
-        prefix = config["bot_prefix"]
-        startLen = len(prefix) + len("quote ")
-        search = context.message.content[startLen:]
-        random_quote = await quoteClass.quote(search)
-        await context.send(random_quote)
+        random_quote = await quoteClass.quote(keyword)
+        await interaction.response.send_message(random_quote)
 
-    @commands.command(name="newquote")
-    async def newquote(self, context):
+    @nextcord.slash_command(name="newquote", description="Creates a new quote to be put into the list of CS quotes.")
+    async def newquote(self, interaction: Interaction, quote: Optional[str] = SlashOption(description="The quote to submit", required=True)):
         """
         [(Required) Quote] Creates a new quote to be put into the list of CS quotes.
         """
         quoteClass = quotes.Quotes(self.bot)
-        newquote = await quoteClass.newquote(context)
+        newquote = await quoteClass.newquote(quote)
 
-        await context.send("Quote submitted! Quote: " + newquote)
+        await interaction.response.send_message("Quote submitted! Quote: " + newquote)
             
 # And then we finally add the cog to the bot so that it can load, unload, reload and use it's content.
 def setup(bot):

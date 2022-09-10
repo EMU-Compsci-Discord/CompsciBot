@@ -1,9 +1,11 @@
 import os
 import sys
-
-import nextcord
 import yaml
+import nextcord
+from typing import Optional
 from nextcord.ext import commands
+from nextcord import Interaction, SlashOption, ChannelType
+from nextcord.abc import GuildChannel
 
 
 with open("config.yaml") as file:
@@ -13,24 +15,13 @@ class Help(commands.Cog, name="help"):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.command(name="help")
-    async def help(self, context):
+    @nextcord.slash_command(name="help", description="How do I find out what all the commands are?")
+    async def help(self, interaction: Interaction):
         """
-        [No arguments] List all commands from every Cog the bot has loaded.
+        How do I find out what all the commands are?
         """
-        prefix = config["bot_prefix"]
-        if not isinstance(prefix, str):
-            prefix = prefix[0]
-        embed = nextcord.Embed(title="Help", description="List of available commands:", color=config["success"])
-        for i in self.bot.cogs:
-            cog = self.bot.get_cog(i.lower())
-            if i not in ["owner", "template", "moderation"]:
-                commands = cog.get_commands()
-                command_list = [command.name for command in commands]
-                command_description = [command.help for command in commands]
-                help_text = '\n'.join(f'{prefix}{n} - {h}' for n, h in zip(command_list, command_description))
-                embed.add_field(name=i.capitalize(), value=f'```{help_text}```', inline=False)
-        await context.send(embed=embed)
+
+        await interaction.response.send_message("This bot uses slash commands! Type a `/` into the chat, click my icon, and you should see all the commands I can take!")
 
 
 def setup(bot):

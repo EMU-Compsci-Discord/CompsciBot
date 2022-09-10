@@ -2,175 +2,77 @@ import asyncio
 import os
 import random
 import sys
-
 import aiohttp
 import aiofiles
 import hashlib
-import nextcord
 import yaml
-from nextcord.ext import commands
 import requests
 import uuid
 import inspirobot
 import uwuify
+import json
+
+import nextcord
+from typing import Optional
+from nextcord.ext import commands
+from nextcord import Interaction, SlashOption, ChannelType
+from nextcord.abc import GuildChannel
 
 
 with open("config.yaml") as file:
     config = yaml.load(file, Loader=yaml.FullLoader)
 
+
 class Fun(commands.Cog, name="fun"):
     def __init__(self, bot):
         self.bot = bot
-
-    @commands.command(name="randomfact")
-    async def randomfact(self, context):
+    
+    @nextcord.slash_command(name="dadjoke", description="Get one of the classics")
+    async def dadjoke(self, interaction: Interaction, searchterm: Optional[str] = SlashOption(description="A term to try and find a dadjoke about", default="", required=False)):
         """
-        [No arguments] A random fact!
+        [(Optional)SearchTerm] Get one of the classics.
         """
-        async with aiohttp.ClientSession() as session:
-            async with session.get("https://uselessfacts.jsph.pl/random.json?language=en") as request:
-                if request.status == 200:
-                    data = await request.json()
-                    embed = nextcord.Embed(description=data["text"], color=config["main_color"])
-                    await context.send(embed=embed)
-                else:
-                    embed = nextcord.Embed(
-                        title="Error!",
-                        description="There is something wrong with the API, please try again later",
-                        color=config["error"]
-                    )
-                    await context.reply(embed=embed)
-
-    @commands.command(name="dadjoke")
-    async def dadjoke(self, context, searchTerm="", *args):
-        """
-        [No arguments] Get one of the classics
-        """
-        url = "https://icanhazdadjoke.com/search?term=" + searchTerm
+        url = "https://icanhazdadjoke.com/search?term=" + searchterm
         headers = {'Accept': 'application/json'}
         r = requests.get(url, headers=headers)
         json = r.json()
         try:
-            await context.reply(random.choice(json["results"])["joke"])
+            await interaction.response.send_message(random.choice(json["results"])["joke"])
         except:
-            await context.reply("I don't think I've heard a good one about that yet. Try something else.")
+            await interaction.response.send_message("I don't think I've heard a good one about that yet. Try something else.")
     
-    @commands.command(name="inspire")
-    async def inspire(self, context):
+    @nextcord.slash_command(name="xkcd", description="Get an xkcd comic.")
+    async def xkcd(self, interaction: Interaction, comicnumber: Optional[int] = SlashOption(description="A specific xkcd comic, like '1' to get the first comic", default="", required=False)):
         """
-        [No arguments] Get an inspirational poster courtesy of https://inspirobot.me/
-        """
-        quote = inspirobot.generate()
-        await context.reply(quote.url)
-    
-    @commands.command(name="wisdom")
-    async def wisdom(self, context):
-        """
-        [No arguments] Get some wisdom courtesy of https://inspirobot.me/
-        """
-        flow = inspirobot.flow()  # Generate a flow object
-        res = ""
-        for quote in flow:
-            res += quote.text + "\n"
-        
-        await context.reply(res)
-
-    @commands.command(name="advice")
-    async def advice(self, context):
-        """
-        [No arguments] Get some advice.
-        """
-        r = requests.get("https://api.adviceslip.com/advice")
-        await context.reply(r.json()['slip']['advice'])
-    
-    @commands.command(name="xkcd")
-    async def xkcd(self, context, search=""):
-        """
-        [(Optional) Comic number] Retrieve a random or specific xkcd comic, specify a number like "!xkcd 1" to get the first xkcd comic.
+        [(Optional)xkcdNumber] Retrieve a random or specific xkcd comic
         """
         r = requests.get("http://xkcd.com/info.0.json")
-        search = search if search != "" else str(random.choice(range(1, r.json()['num'])))
+        comicnumber = comicnumber if comicnumber != "" else str(random.choice(range(1, r.json()['num'])))
 
-        r = requests.get("http://xkcd.com/" + search + "/info.0.json")
+        r = requests.get("http://xkcd.com/" + str(comicnumber) + "/info.0.json")
 
         try:
-            await context.reply(r.json()['img'])
+            await interaction.response.send_message(r.json()['img'])
         except:
-            await context.reply("I can't find that xkcd comic, try another.")
+            await interaction.response.send_message("I can't find that xkcd comic, try another.")
     
-    @commands.command(name="rps")
-    async def rock_paper_scissors(self, context):
+    @nextcord.slash_command(name="iswanted", description="See if someone is on the FBI's most wanted list.")
+    async def iswanted(self, interaction: Interaction, name: Optional[str] = SlashOption(description="The name of the person you want to check", required=True)):
         """
-        [No arguments] Play a round of Rock-Paper-Scissors.
+        [SearchTerm] See if someone is on the FBI's most wanted list.
         """
-        choices = {
-            0: "rock",
-            1: "paper",
-            2: "scissors"
-        }
-        reactions = {
-            "🪨": 0,
-            "🧻": 1,
-            "✂": 2
-        }
-        embed = nextcord.Embed(title="Please choose", color=config["warning"])
-        embed.set_author(name=context.author.display_name, icon_url=context.author.avatar.url)
-        choose_message = await context.send(embed=embed)
-        for emoji in reactions:
-            await choose_message.add_reaction(emoji)
-
-        def check(reaction, user):
-            return user == context.message.author and str(reaction) in reactions
+        r = requests.get("https://api.fbi.gov/wanted/v1/list", params={"title": name})
 
         try:
-            reaction, user = await self.bot.wait_for("reaction_add", timeout=10, check=check)
-
-            user_choice_emote = reaction.emoji
-            user_choice_index = reactions[user_choice_emote]
-
-            bot_choice_emote = random.choice(list(reactions.keys()))
-            bot_choice_index = reactions[bot_choice_emote]
-
-            result_embed = nextcord.Embed(color=config["success"])
-            result_embed.set_author(name=context.author.display_name, icon_url=context.author.avatar.url)
-            await choose_message.clear_reactions()
-
-            if user_choice_index == bot_choice_index:
-                result_embed.description = f"**That's a draw!**\nYou've chosen {user_choice_emote} and I've chosen {bot_choice_emote}."
-                result_embed.colour = config["warning"]
-            elif user_choice_index == 0 and bot_choice_index == 2:
-                result_embed.description = f"**You won!**\nYou've chosen {user_choice_emote} and I've chosen {bot_choice_emote}."
-                result_embed.colour = config["success"]
-            elif user_choice_index == 1 and bot_choice_index == 0:
-                result_embed.description = f"**You won!**\nYou've chosen {user_choice_emote} and I've chosen {bot_choice_emote}."
-                result_embed.colour = config["success"]
-            elif user_choice_index == 2 and bot_choice_index == 1:
-                result_embed.description = f"**You won!**\nYou've chosen {user_choice_emote} and I've chosen {bot_choice_emote}."
-                result_embed.colour = config["success"]
-            else:
-                result_embed.description = f"**I won!**\nYou've chosen {user_choice_emote} and I've chosen {bot_choice_emote}."
-                result_embed.colour = config["error"]
-                await choose_message.add_reaction("🇱")
-            await choose_message.edit(embed=result_embed)
-        except asyncio.exceptions.TimeoutError:
-            await choose_message.clear_reactions()
-            timeout_embed = nextcord.Embed(title="Too late", color=config["error"])
-            timeout_embed.set_author(name=context.author.display_name, icon_url=context.author.avatar.url)
-            await choose_message.edit(embed=timeout_embed)
-
-    @commands.command(name="uwu")
-    async def uwu(self, context):
-        """
-        [No arguments] (Reply to a message with this) UwU
-        """
-        message = await context.channel.fetch_message(context.message.reference.message_id)
-        flags = uwuify.SMILEY | uwuify.YU
-        await context.reply(uwuify.uwu(message.content, flags=flags))
+            url = random.choice(r.json()['items'])["files"][0]['url']
+            await interaction.response.send_message(name + " might be wanted by the FBI:\n" + url)
+        except:
+            await interaction.response.send_message("No one with that name is currently wanted by the FBI")
     
-    @commands.command(name="8ball")
-    async def eight_ball(self, context, *args):
+    @nextcord.slash_command(name="eightball", description="Ask any yes/no question and get an answer.")
+    async def eight_ball(self, interaction: Interaction, question: Optional[str] = SlashOption(description="The question you want to ask", required=True)):
         """
-        [(Required) Question] Ask any question to the bot.
+        [Question] Ask any question to the bot.
         """
         answers = ['It is certain.', 'It is decidedly so.', 'You may rely on it.', 'Without a doubt.',
                    'Yes - definitely.', 'As I see, yes.', 'Most likely.', 'Outlook good.', 'Yes.',
@@ -183,71 +85,58 @@ class Fun(commands.Cog, name="fun"):
             color=config["success"]
         )
         embed.set_footer(
-            text=f"Question asked by: {context.message.author}"
+            text=f"Question asked by: {interaction.user}"
         )
-        await context.send(embed=embed)
 
-    @commands.command(name="newcat")
-    async def newcat(self, context):
+        await interaction.response.send_message(embed=embed)
+
+    @nextcord.slash_command(name="randomfact", description="The world has so much to offer, let's learn about it!")
+    async def randomfact(self, interaction: Interaction):
         """
-        [No arguments] Creates a picture of a cat that does not exist. (From https://thiscatdoesnotexist.com/)
+        [No Arguments] Get a random fact.
         """
-        fileName = str(uuid.uuid1()) + str(random.choice(range(1, 1337))) + ".png"
-        await self.save_online_cat(fileName)
-        file = nextcord.File(fileName, filename="newcat.png")
-        await context.send("", file=file)
-        os.remove(fileName)
-
-    async def get_online_person(self) -> bytes:
-        url = "https://thispersondoesnotexist.com/image"
-        headers = {
-            'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.116 Safari/537.36'
-        }
-        async with aiohttp.ClientSession() as s:
-            async with s.get(url, headers=headers) as r:
-                return await r.read()
-
-    async def save_online_person(self, file: str = None) -> int:
-        picture = await self.get_online_person()
-        return await self.save_picture(picture, file)
+        # This will prevent your bot from stopping everything when doing a web request - see: https://nextcordpy.readthedocs.io/en/stable/faq.html#how-do-i-make-a-web-request
+        async with aiohttp.ClientSession() as session:
+            async with session.get("https://uselessfacts.jsph.pl/random.json?language=en") as request:
+                if request.status == 200:
+                    data = await request.json()
+                    embed = nextcord.Embed(description=data["text"], color=config["main_color"])
+                    await interaction.response.send_message(embed=embed)
+                else:
+                    embed = nextcord.Embed(
+                        title="Error!",
+                        description="There is something wrong with the API, please try again later",
+                        color=config["error"]
+                    )
+                    await interaction.response.send_message(embed=embed)
     
-    async def get_online_cat(self) -> bytes:
-        url = "https://thiscatdoesnotexist.com"
-        headers = {
-            'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.116 Safari/537.36'
-        }
-        async with aiohttp.ClientSession() as s:
-            async with s.get(url, headers=headers) as r:
-                return await r.read()
+    @nextcord.slash_command(name="inspire", description="Get an inspirational poster courtesy of https://inspirobot.me/")
+    async def inspire(self, interaction: Interaction):
+        """
+        [No Arguments] Get an inspirational poster courtesy of https://inspirobot.me/
+        """
+        quote = inspirobot.generate()
+        await interaction.response.send_message(quote.url)
+    
+    @nextcord.slash_command(name="wisdom", description="Get some wisdom courtesy of https://inspirobot.me/")
+    async def wisdom(self, interaction: Interaction):
+        """
+        [No Arguments] Get some wisdom courtesy of https://inspirobot.me/
+        """
+        flow = inspirobot.flow()  # Generate a flow object
+        res = ""
+        for quote in flow:
+            res += quote.text + "\n"
+        
+        await interaction.response.send_message(res)
 
-    async def save_online_cat(self, file: str = None) -> int:
-        picture = await self.get_online_cat()
-        return await self.save_picture(picture, file)
-    
-    async def get_checksum_from_picture(self, picture: bytes, method: str = "md5") -> str:
-        """Calculate the checksum of the provided picture, using the desired method.
-        Available methods can be fetched using the the algorithms_available function.
-        :param picture: picture as bytes
-        :param method: hashing method as string (optional, default=md5)
-        :return: checksum as string
+    @nextcord.slash_command(name="advice", description="Get some advice.")
+    async def advice(self, interaction: Interaction):
         """
-        h = hashlib.new(method.lower())
-        h.update(picture)
-        return h.hexdigest()
-    
-    async def save_picture(self, picture: bytes, file: str = None) -> None:
-        """Save a picture to a file.
-        The picture must be provided as it content as bytes.
-        The filename must be provided as a str with the absolute or relative path where to store it.
-        If no filename is provided, a filename will be generated using the MD5 checksum of the picture, with jpeg extension.
-        :param picture: picture content as bytes
-        :param file: filename as string, relative or absolute path (optional)
-        :return: None
+        [No Arguments] Get some advice.
         """
-        if file is None:
-            file = self.get_checksum_from_picture(picture) + ".jpeg"
-        async with aiofiles.open(file, "wb") as f:
-            await f.write(picture)
+        r = requests.get("https://api.adviceslip.com/advice")
+        await interaction.response.send_message(r.json()['slip']['advice'])
 
 def setup(bot):
     bot.add_cog(Fun(bot))

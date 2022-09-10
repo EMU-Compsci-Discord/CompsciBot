@@ -38,11 +38,7 @@ class Quotes:
         else:
             return quote[0]
 
-    async def newquote(self, context):
-        prefix = config["bot_prefix"]
-        startLen = len(prefix) + len("newquote")
-        quote = context.message.content[startLen:]
-
+    async def newquote(self, quote):
         mydb = mysql.connector.connect(
             host=config["dbhost"],
             user=config["dbuser"],
