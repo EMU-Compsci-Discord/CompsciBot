@@ -57,7 +57,7 @@ class Fun(commands.Cog, name="fun"):
             await interaction.response.send_message("I can't find that xkcd comic, try another.")
     
     @nextcord.slash_command(name="iswanted", description="See if someone is on the FBI's most wanted list.")
-    async def iswanted(self, interaction: Interaction, name: Optional[str] = SlashOption(description="The name of the person you want to check", required=True)):
+    async def iswanted(self, interaction: Interaction, name: str = SlashOption(description="The name of the person you want to check", required=True)):
         """
         [SearchTerm] See if someone is on the FBI's most wanted list.
         """
@@ -70,7 +70,7 @@ class Fun(commands.Cog, name="fun"):
             await interaction.response.send_message("No one with that name is currently wanted by the FBI")
     
     @nextcord.slash_command(name="eightball", description="Ask any yes/no question and get an answer.")
-    async def eight_ball(self, interaction: Interaction, question: Optional[str] = SlashOption(description="The question you want to ask", required=True)):
+    async def eight_ball(self, interaction: Interaction, question: str = SlashOption(description="The question you want to ask", required=True)):
         """
         [Question] Ask any question to the bot.
         """
@@ -80,7 +80,7 @@ class Fun(commands.Cog, name="fun"):
                    'Cannot predict now.', 'Concentrate and ask again later.', 'Don\'t count on it.', 'My reply is no.',
                    'My sources say no.', 'Outlook not so good.', 'Very doubtful.']
         embed = nextcord.Embed(
-            title="**My Answer:**",
+            title=f"**My Answer to '{question}':**",
             description=f"{answers[random.randint(0, len(answers) - 1)]}",
             color=config["success"]
         )

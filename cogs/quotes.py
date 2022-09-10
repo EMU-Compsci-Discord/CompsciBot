@@ -28,7 +28,7 @@ class Quotes(commands.Cog, name="quotes"):
         await interaction.response.send_message(random_quote)
 
     @nextcord.slash_command(name="newquote", description="Creates a new quote to be put into the list of CS quotes.")
-    async def newquote(self, interaction: Interaction, quote: Optional[str] = SlashOption(description="The quote to submit", required=True)):
+    async def newquote(self, interaction: Interaction, quote: str = SlashOption(description="The quote to submit", required=True)):
         """
         [(Required) Quote] Creates a new quote to be put into the list of CS quotes.
         """

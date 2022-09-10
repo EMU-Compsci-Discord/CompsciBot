@@ -25,7 +25,7 @@ class RateMyProfessor(commands.Cog, name="rate my professor"):
         }
 
     @nextcord.slash_command(name="rmp", description="Check out what RateMyProfessor has to say about a professor!")
-    async def rmp(self, interaction: nextcord.Interaction, professorname: Optional[str] = SlashOption(name="professorname", description="The name of the professor you want to look up", required=True)):
+    async def rmp(self, interaction: nextcord.Interaction, professorname: str = SlashOption(name="professorname", description="The name of the professor you want to look up", required=True)):
         """
         [(Required) Professor name] Check out what RateMyProfessor has to say about a professor!
         """

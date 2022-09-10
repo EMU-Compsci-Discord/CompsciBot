@@ -121,7 +121,7 @@ class general(commands.Cog, name="general"):
 
     
     @nextcord.slash_command(name="tldrchannel", description="Get a TLDR of X number of past messages on the channel.")
-    async def tldrchannel(self, interaction: Interaction, number: Optional[int] = SlashOption(description="The number of past messages to summarize", required=True, min_value=5, max_value=200)):
+    async def tldrchannel(self, interaction: Interaction, number: int = SlashOption(description="The number of past messages to summarize", required=True, min_value=5, max_value=200)):
         """
         [NumberOfMessages] Get a TLDR of X number of past messages on the channel.
         """
@@ -134,7 +134,7 @@ class general(commands.Cog, name="general"):
         await interaction.response.send_message(embed=embed)
     
     @nextcord.slash_command(name="tldr", description="Get a TLDR of a web page.")
-    async def tldr(self, interaction: Interaction, url: Optional[str] = SlashOption(description="The URL of the web page to summarize", required=True)):
+    async def tldr(self, interaction: Interaction, url: str = SlashOption(description="The URL of the web page to summarize", required=True)):
         """
         [URL] Get a TLDR a web page.
         """
