@@ -41,11 +41,6 @@ class general(commands.Cog, name="general"):
             value=f"{platform.python_version()}",
             inline=True
         )
-        embed.add_field(
-            name="Prefix:",
-            value=f"{config['bot_prefix']}",
-            inline=False
-        )
         embed.set_footer(
             text=f"Requested by {interaction.user}"
         )

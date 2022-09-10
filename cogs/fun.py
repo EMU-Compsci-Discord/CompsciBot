@@ -26,8 +26,6 @@ with open("config.yaml") as file:
 class Fun(commands.Cog, name="fun"):
     def __init__(self, bot):
         self.bot = bot
-        with open("./resources/emoji-mappings.json", encoding="utf8") as file:
-            self.emoji_mappings = json.load(file)
     
     @nextcord.slash_command(name="dadjoke", description="Get one of the classics")
     async def dadjoke(self, interaction: Interaction, searchterm: Optional[str] = SlashOption(description="A term to try and find a dadjoke about", default="", required=False)):
