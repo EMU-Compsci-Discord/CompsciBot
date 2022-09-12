@@ -77,7 +77,14 @@ Now you will see a Bot Screen, with the default discord logo and name.
 Notice the **TOKEN** section of the page, as we will use that in the next step.
 <img id="token" src="imgs/botScreen.webp" alt="Bot Page" width="100%"/>
 
-### 4. Config File
+### 4. Bot Permissions
+
+In the Bot page, Scroll down and find **Privileged Gateway Intents**
+
+Enable the "MESSAGE CONTENT INTENT" and click "Save Changes"
+<img src="imgs/messagePermission.webp" width="100%"/>
+
+### 5. Config File
 
 Now go to your IDE or Text Editor, and make a copy of `config template.yaml`. Save the copy as `config.yaml`. This will be the bots config file, and is important to running on discord.
 
@@ -121,7 +128,7 @@ If you get stuck on this step, [here is a good reference to help](https://www.al
 
 When you are done getting all of these filled in, your config should be ready to use.
 
-### 5. Create an Invite Link
+### 6. Create an Invite Link
 
 Back in the Developer Portal, go to **OAuth2 > URL Generator** and check the `[ ] bot` checkbox. This will show a second set of options called **Bot Permissions**
 
@@ -130,7 +137,7 @@ In bot permissions, check the `[ ] Administrator` checkbox and scroll to the bot
 The result should look like this below:
 <img src="imgs/OAuthChecked.webp" alt="Completed OAuth2" width="100%"/>
 
-### 6. Join the Testing Server and Add the bot.
+### 7. Join the Testing Server and Add the bot.
 
 First, join the **[Compsci Bot Testing Server](https://discord.gg/M48HYYYCyT)** if you havent already.
 
@@ -146,7 +153,7 @@ Now it should show on the server side panel, but it is not shown as being on.
 
 <img src="imgs/inactive.webp" alt="inactive bot" width="50%"/>
 
-### 7. Running your bot
+### 8. Running your bot
 
 You are almost done! Now for the coding part.
 
