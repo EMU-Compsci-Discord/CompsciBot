@@ -77,13 +77,6 @@ Now you will see a Bot Screen, with the default discord logo and name.
 Notice the **TOKEN** section of the page, as we will use that in the next step.
 <img id="token" src="imgs/botScreen.webp" alt="Bot Page" width="100%"/>
 
-### 4. Bot Permissions
-
-In the Bot page, Scroll down and find **Bot Permissions**
-
-Click the Administrator Box, so it looks as shown:
-<img src="imgs/botPerms.webp" alt="Bot Permissions" width="100%"/>
-
 ### 4. Config File
 
 Now go to your IDE or Text Editor, and make a copy of `config template.yaml`. Save the copy as `config.yaml`. This will be the bots config file, and is important to running on discord.
