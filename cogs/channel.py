@@ -1,16 +1,13 @@
-import os
 import sys
 import csv
 import yaml
-from nextcord.ext import commands
-from nextcord.ext.commands import has_permissions
+from nextcord.ext.commands import Cog
+from nextcord.ext.application_checks import has_permissions
 from nextcord.utils import find
 import datetime
 import re
 import nextcord
-from typing import Optional
-from nextcord import Interaction, SlashOption, ChannelType
-from nextcord.abc import GuildChannel
+from nextcord import Interaction, SlashOption, PermissionOverwrite, Permissions, Colour
 
 
 with open("config.yaml") as file:
@@ -27,51 +24,51 @@ professor = 19  # example: Zenia Christine Bahorski (P)
 class_blacklist = ['106', '146', '388']
 
 
-class ChannelManager(commands.Cog, name="channelmanager"):
+class ChannelManager(Cog, name="channelmanager"):
     def __init__(self, bot):
         self.bot = bot
 
-    async def create_category(category, context):
+    async def create_category(category_name, interaction: Interaction):
         """
-        [(Required) category name, message context] creates a category and returns category object
+        creates a category and returns category object
         """
 
-        guild = context.guild
+        guild = interaction.guild
         overwrites = {
-            guild.default_role: nextcord.PermissionOverwrite(read_messages=False)
+            guild.default_role: PermissionOverwrite(read_messages=False)
         }
         try:
-            return await guild.create_category(category, overwrites=overwrites)
+            return await guild.create_category(category_name, overwrites=overwrites)
         except:
-            print("Issue with ", category, ".  Error: ", sys.exc_info()[0])
+            print("Issue with ", category_name, ".  Error: ", sys.exc_info()[0])
 
-    async def get_category(category_name, context):
+    async def get_category(category_name, interaction: Interaction):
         """
-        [(Required) category name, mesage context] get category and if no category match, create a category. Returns category object.
+        get category and if no category match, create a category. Returns category object.
         """
-        guild = context.guild
+        guild = interaction.guild
 
         # get category by category name
         category = find(lambda category: category.name == category_name, guild.categories)
         if(category is None):
-            category = await ChannelManager.create_category(category_name, context)
+            category = await ChannelManager.create_category(category_name, interaction)
         return category
 
-    async def create_channel(channel_name: str, category_name: str, context, description: str):
+    async def create_channel(channel_name: str, category_name: str, interaction: Interaction, description: str):
         """
-        [(Required) channel name, category name, message context, description] creates channel in category with description and name, returns channel object.
+        creates channel in category with description and name, returns channel object.
         """
-        guild = context.guild
+        guild = interaction.guild
 
-        category = await ChannelManager.get_category(category_name, context)
+        category = await ChannelManager.get_category(category_name, interaction)
 
         return await guild.create_text_channel(channel_name, category=category, topic=description)
 
-    async def create_role(context, role_name: str, permissions: nextcord.Permissions = nextcord.Permissions.none(), color=nextcord.Colour.default()):
+    async def create_role(interaction: Interaction, role_name: str, permissions: Permissions = Permissions.none(), color=Colour.default()):
         """
-        [(Required) message context, role name, (optional) permissions, color] creates a role with specified permissions, with specifed name.
+        creates a role with specified permissions, with specifed name.
         """
-        return await context.guild.create_role(name=role_name, permissions=permissions, colour=color)
+        return await interaction.guild.create_role(name=role_name, permissions=permissions, colour=color)
 
     def get_role_semester():
         today = datetime.date.today()
@@ -85,19 +82,14 @@ class ChannelManager(commands.Cog, name="channelmanager"):
             semester = "Fall"
         return (semester, year)
 
-    @ commands.command(name="csvparse")
-    @ has_permissions(administrator=True)
-    async def csvparse(self, context, filename=None):
-        """
-        [(Required) filename] parses a csv into class channels and categories.
-        """
-
-        if filename is None:
-            await context.send("Please specify a .csv file as an argument.")
-
+    @nextcord.slash_command(name="csvparse", description="Parse a csv file and create channels and roles for each class.")
+    @has_permissions(administrator=True)
+    async def csvparse(self, interaction: Interaction, filename: str = SlashOption(description="The name of the csv file to parse.", required=True)):
         if re.search("^[a-zA-Z0-9_\-]+\.csv$", filename) is None:
-            await context.send("Please input a .csv filename without special characters or extensions.")
+            await interaction.response.send_message("Please input a .csv filename without special characters or extensions.")
             return
+
+        await interaction.response.defer()
 
         category_names = set()
 
@@ -141,17 +133,17 @@ class ChannelManager(commands.Cog, name="channelmanager"):
 
                     category_names.add(category_name)
 
-                    await ChannelManager.create_channel(channel_name, category_name, context, description)
+                    await ChannelManager.create_channel(channel_name, category_name, interaction, description)
 
         # make a mod role to see all classes
-        mod_class_role = find(lambda role: role.name == 'All Classes', context.guild.roles)
+        mod_class_role = find(lambda role: role.name == 'All Classes', interaction.guild.roles)
         if mod_class_role is None:
-            mod_class_role = await ChannelManager.create_role(context, 'All Classes', color=nextcord.Colour.blue())
+            mod_class_role = await ChannelManager.create_role(interaction, 'All Classes', color=nextcord.Colour.blue())
 
         for category_name in category_names:
             role_name = f"{category_name.replace('-', ' ')} {semester} {year}"
-            category_object = await ChannelManager.get_category(category_name, context)
-            category_role = await ChannelManager.create_role(context, role_name, color=nextcord.Colour.blue())
+            category_object = await ChannelManager.get_category(category_name, interaction)
+            category_role = await ChannelManager.create_role(interaction, role_name, color=nextcord.Colour.blue())
             # gives basic permissions to a role for its assigned channel
             await category_object.set_permissions(
                 category_role,
@@ -166,27 +158,29 @@ class ChannelManager(commands.Cog, name="channelmanager"):
                 add_reactions=True,
                 read_message_history=True)
 
-        await context.send("Channels and Roles created successfully")
+        await interaction.followup.send("Channels and Roles created successfully")
 
-    @commands.command(name="deleteclasses")
+    @nextcord.slash_command(name="deleteclasses", description="Admin Only. Deletes channels and categories with COSC-###, MATH-###, or STAT-### (case insensitive).")
     @has_permissions(administrator=True)
-    async def delete_classes(self, context):
-        """
-        [No arguments] Admin Only. Deletes channels and categories with COSC-###, MATH-###, or STAT-### (case insensitive).
-        """
-        for channel in context.guild.channels:
+    async def delete_classes(self, interaction: Interaction):
+        await interaction.response.defer()
+        count = 0
+        for channel in interaction.guild.channels:
             if re.search('(COSC|MATH|STAT)-[0-9]{3}', channel.name, flags=re.I):
                 await channel.delete()
+                count += 1
+        await interaction.followup.send(f"Deleted {count} channels.")
 
-    @commands.command(name="deleteclassroles")
+    @nextcord.slash_command(name="deleteclassroles", description="Admin Only. Deletes roles with COSC-###, MATH-###, or STAT-### (case insensitive).")
     @has_permissions(administrator=True)
-    async def delete_roles(self, context):
-        """
-        [No arguments] Admin Only. Deletes roles with COSC-###, MATH-###, or STAT-### (case insensitive).
-        """
-        for role in context.guild.roles:
+    async def delete_roles(self, interaction: Interaction):
+        await interaction.response.defer()
+        count = 0
+        for role in interaction.guild.roles:
             if re.search('(COSC|MATH|STAT) [0-9]{3}', role.name, flags=re.I):
                 await role.delete()
+                count += 1
+        await interaction.followup.send(f"Deleted {count} roles.")
 
 
 
