@@ -91,7 +91,6 @@ Now go to your IDE or Text Editor, and make a copy of `config template.yaml`. Sa
 DO NOT WRITE ON THE TEMPLATE
 
 ```yaml
-bot_prefix: "PREFIX"
 token: "BOT_TOKEN"
 application_id: "APPLICATION_ID"
 owners:
@@ -107,14 +106,11 @@ info: 0x4299F5
 
 On the `config.yaml` file, you will be changing four lines:
 
-- `bot_prefix`
 - `token`
 - `application_id`
 - `owner_id`
 
 `token` and `application_id` you have seen earlier <a href="#token">here</a> and <a href="#appId">here</a> on the Developer Portal. Copy and Paste those into the quotations to replace BOT_TOKEN and APPLICATION_ID.
-
-`bot-prefix` is any character that you want to start your commands with. Avoid **"!"** as that is what the Official CompSci bot uses.
 
 **Generally, avoid using a character another bot uses, as it will call both bots.**
 
@@ -181,7 +177,7 @@ This will run your bot!
 
 <img src="imgs/running.webp" alt="running command line" width="100%"/>
 
-You will now see your bot in the ONLINE category, and if you call it with a `<prefix> ping` command it will respond.
+You will now see your bot in the ONLINE category, and if you call it with a `/ping` command it will respond.
 
 <img src="imgs/ping.webp" alt="ping response" width="100%"/>
 
