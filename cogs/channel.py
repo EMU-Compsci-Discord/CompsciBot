@@ -160,27 +160,24 @@ class ChannelManager(Cog, name="channelmanager"):
 
         await interaction.followup.send("Channels and Roles created successfully")
 
-    @nextcord.slash_command(name="deleteclasses", description="Admin Only. Deletes channels and categories with COSC-###, MATH-###, or STAT-### (case insensitive).")
+    @nextcord.slash_command(name="deleteclasses", description="Admin Only. Deletes channels, categories, and roles with course names in them.")
     @has_permissions(administrator=True)
     async def delete_classes(self, interaction: Interaction):
         await interaction.response.defer()
-        count = 0
+
+        count_channels = 0
         for channel in interaction.guild.channels:
             if re.search('(COSC|MATH|STAT)-[0-9]{3}', channel.name, flags=re.I):
                 await channel.delete()
-                count += 1
-        await interaction.followup.send(f"Deleted {count} channels.")
+                count_channels += 1
 
-    @nextcord.slash_command(name="deleteclassroles", description="Admin Only. Deletes roles with COSC-###, MATH-###, or STAT-### (case insensitive).")
-    @has_permissions(administrator=True)
-    async def delete_roles(self, interaction: Interaction):
-        await interaction.response.defer()
-        count = 0
+        count_roles = 0
         for role in interaction.guild.roles:
             if re.search('(COSC|MATH|STAT) [0-9]{3}', role.name, flags=re.I):
                 await role.delete()
-                count += 1
-        await interaction.followup.send(f"Deleted {count} roles.")
+                count_roles += 1
+
+        await interaction.followup.send(f"Deleted {count_channels} channels and categories and {count_roles} roles.")
 
 
 
