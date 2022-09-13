@@ -100,7 +100,7 @@ class ChannelManager(Cog, name="channelmanager"):
 
         # get category by category name
         category = find(lambda category: category.name == category_name, guild.categories)
-        if(category is None):
+        if (category is None):
             category = await ChannelManager.create_category(category_name, interaction)
         return category
 
@@ -218,7 +218,6 @@ class ChannelManager(Cog, name="channelmanager"):
                 count_roles += 1
 
         await interaction.followup.send(f"Deleted {count_channels} channels and categories and {count_roles} roles.")
-
 
 
 # And then we finally add the cog to the bot so that it can load, unload, reload and use it's content.
