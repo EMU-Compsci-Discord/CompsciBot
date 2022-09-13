@@ -1,5 +1,8 @@
+from pathlib import Path
 import sys
 import csv
+from typing import TypedDict
+import json
 import yaml
 from nextcord.ext.commands import Cog
 from nextcord.ext.application_checks import has_permissions
@@ -13,15 +16,62 @@ from nextcord import Interaction, SlashOption, PermissionOverwrite, Permissions,
 with open("config.yaml") as file:
     config = yaml.load(file, Loader=yaml.FullLoader)
 
-# csv column names
-department = 2  # example: COSC
-course_number = 3  # example: 101
-days = 8  # example: WM
-times = 9  # 09:00 am-12:50 pm
-professor = 19  # example: Zenia Christine Bahorski (P)
 
 # classes we do not want to create channels for
-class_blacklist = ['106', '146', '388']
+course_blacklist = ['106', '146', '388']
+
+
+class Section(TypedDict):
+
+    subject: str
+    """`COSC`, `STAT`, `MATH`"""
+
+    course: str
+    """`111`, `211`, `341W`, `388L4`"""
+
+    days: str
+    """`MW`, `TR`, `T`"""
+
+    time: str
+    """`09:00 am-10:50 am`, `11:00 am-12:50 pm`"""
+
+    instructor: str
+    """`Suchindran Maniccam (P)`, `Philip Lynn Francis III (P)`"""
+
+
+class SectionJson(TypedDict):
+
+    term: str
+    """`Fall 2022`, `Summer 2017`, `Winter 2020-COVID Term Impact`"""
+
+    timestamp: int
+    """milliseconds since 1970 """
+
+    classes: list[Section]
+
+
+JSON_SCHEMA = "https://raw.githubusercontent.com/EMU-Compsci-Discord/compsci-class-scraper/main/json-schema/output-v1.schema.json"
+
+
+def read_class_json(file_name: str) -> SectionJson:
+    if not file_name.endswith('.json'):
+        raise Exception("File name must end with .json")
+
+    if re.search("^[a-zA-Z0-9_\-]+\.json$", file_name) is None:
+        raise Exception("File name can only contain letters, numbers, dashes and underscores")
+
+    file_path = Path("resources", file_name)
+
+    if not file_path.is_file():
+        raise Exception(f"File {file_path} does not exist")
+
+    with open(file_path) as file:
+        data = json.load(file)
+
+        if data["$schema"] != JSON_SCHEMA:
+            raise Exception(f"Incorrect JSON schema\nExpected: {JSON_SCHEMA}\nFound: {data['$schema']}")
+
+        return data
 
 
 class ChannelManager(Cog, name="channelmanager"):
@@ -82,58 +132,48 @@ class ChannelManager(Cog, name="channelmanager"):
             semester = "Fall"
         return (semester, year)
 
-    @nextcord.slash_command(name="csvparse", description="Parse a csv file and create channels and roles for each class.")
+    @nextcord.slash_command(name="importclasses", description="Import a JSON file and create channels and roles for each class.")
     @has_permissions(administrator=True)
-    async def csvparse(self, interaction: Interaction, filename: str = SlashOption(description="The name of the csv file to parse.", required=True)):
-        if re.search("^[a-zA-Z0-9_\-]+\.csv$", filename) is None:
-            await interaction.response.send_message("Please input a .csv filename without special characters or extensions.")
+    async def import_classes(self, interaction: Interaction, file_name: str = SlashOption(description="The name of the JSON file to parse.", required=True)):
+        try:
+            json = read_class_json(file_name)
+        except Exception as e:
+            await interaction.response.send_message(f"Error: {e}", ephemeral=True)
             return
 
         await interaction.response.defer()
 
-        category_names = set()
+        category_names: set[str] = set()
 
-        filename = "./resources/" + filename
+        for section in json["classes"]:
 
-        # read and parse the csv
-        with open(filename) as csv_file:
-            semester, year = ChannelManager.get_role_semester()
+            # first 3 numbers only (not L1,L2,L3)
+            course_number = section["course"][0:3]
+            professor = section["instructor"]
 
-            csv_reader = csv.reader(csv_file, delimiter=',')
-            for row in csv_reader:
+            if course_number in course_blacklist or course_number[0] == "5":
+                continue
 
-                # check if those attributes exist
-                if row[department].strip() != "" and row[course_number].strip() != "" and row[professor].strip() != "":
+            if professor != "TBA":
+                prof_parts = professor.split()
+                prof_lastname = prof_parts[-2]
 
-                    class_type = row[department]
+                # deals with suffixes
+                if prof_lastname.lower() in ['sr', 'jr', 'ii', 'iii', 'iv']:
+                    prof_lastname = prof_parts[-3]
 
-                    # first 3 numbers only (not L1,L2,L3)
-                    classnum = row[course_number][0:3]
-                    prof = row[professor]
+            # assemble class and category names
+            channel_name = f"{section['subject']}-{course_number}-{prof_lastname}"
+            category_name = f"{section['subject']}-{course_number}"
 
-                    if classnum in class_blacklist or classnum[0] == "5":
-                        continue
+            if section["days"] != "" or section["time"] != "":
+                description = f"{section['days']} {section['time']}"
+            else:
+                description = "No time listed"
 
-                    if prof != "TBA":
-                        prof_parts = prof.split()
-                        prof_lastname = prof_parts[-2]
+            category_names.add(category_name)
 
-                        # deals with suffixes
-                        if prof_lastname.lower() in ['sr', 'jr', 'ii', 'iii', 'iv']:
-                            prof_lastname = prof_parts[-3]
-
-                    # assemble class and category names
-                    channel_name = f"{class_type}-{classnum}-{prof_lastname}"
-                    category_name = f"{class_type}-{classnum}"
-
-                    if row[days].strip() != "" or row[times].strip() != "":
-                        description = f"{row[days].strip()} {row[times].strip()}"
-                    else:
-                        description = "No time listed"
-
-                    category_names.add(category_name)
-
-                    await ChannelManager.create_channel(channel_name, category_name, interaction, description)
+            await ChannelManager.create_channel(channel_name, category_name, interaction, description)
 
         # make a mod role to see all classes
         mod_class_role = find(lambda role: role.name == 'All Classes', interaction.guild.roles)
@@ -141,7 +181,7 @@ class ChannelManager(Cog, name="channelmanager"):
             mod_class_role = await ChannelManager.create_role(interaction, 'All Classes', color=nextcord.Colour.blue())
 
         for category_name in category_names:
-            role_name = f"{category_name.replace('-', ' ')} {semester} {year}"
+            role_name = f"{category_name.replace('-', ' ')} {json['term']}"
             category_object = await ChannelManager.get_category(category_name, interaction)
             category_role = await ChannelManager.create_role(interaction, role_name, color=nextcord.Colour.blue())
             # gives basic permissions to a role for its assigned channel
