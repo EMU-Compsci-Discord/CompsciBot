@@ -157,3 +157,6 @@ newperson.png
 */*.pyc
 config-main.yaml
 config-test.yaml
+
+# files that can be imported by commands
+/resources/*
