@@ -143,6 +143,9 @@ class ChannelManager(Cog, name="channelmanager"):
 
         await interaction.response.defer()
 
+        channels_count = 0
+        roles_count = 0
+
         category_names: set[str] = set()
 
         for section in json["classes"]:
@@ -174,16 +177,19 @@ class ChannelManager(Cog, name="channelmanager"):
             category_names.add(category_name)
 
             await ChannelManager.create_channel(channel_name, category_name, interaction, description)
+            channels_count += 1
 
         # make a mod role to see all classes
         mod_class_role = find(lambda role: role.name == 'All Classes', interaction.guild.roles)
         if mod_class_role is None:
             mod_class_role = await ChannelManager.create_role(interaction, 'All Classes', color=nextcord.Colour.blue())
+            roles_count += 1
 
         for category_name in category_names:
             role_name = f"{category_name.replace('-', ' ')} {json['term']}"
             category_object = await ChannelManager.get_category(category_name, interaction)
             category_role = await ChannelManager.create_role(interaction, role_name, color=nextcord.Colour.blue())
+            roles_count += 1
             # gives basic permissions to a role for its assigned channel
             await category_object.set_permissions(
                 category_role,
@@ -198,26 +204,27 @@ class ChannelManager(Cog, name="channelmanager"):
                 add_reactions=True,
                 read_message_history=True)
 
-        await interaction.followup.send("Channels and Roles created successfully")
+        await interaction.followup.send(f"Created {channels_count} channels and {roles_count} roles.")
 
     @nextcord.slash_command(name="deleteclasses", description="Admin Only. Deletes channels, categories, and roles with course names in them.")
     @has_permissions(administrator=True)
     async def delete_classes(self, interaction: Interaction):
         await interaction.response.defer()
 
-        count_channels = 0
+        channels_count = 0
+        roles_count = 0
+
         for channel in interaction.guild.channels:
             if re.search('(COSC|MATH|STAT)-[0-9]{3}', channel.name, flags=re.I):
                 await channel.delete()
-                count_channels += 1
+                channels_count += 1
 
-        count_roles = 0
         for role in interaction.guild.roles:
             if re.search('(COSC|MATH|STAT) [0-9]{3}', role.name, flags=re.I):
                 await role.delete()
-                count_roles += 1
+                roles_count += 1
 
-        await interaction.followup.send(f"Deleted {count_channels} channels and categories and {count_roles} roles.")
+        await interaction.followup.send(f"Deleted {channels_count} channels and categories and {roles_count} roles.")
 
 
 # And then we finally add the cog to the bot so that it can load, unload, reload and use it's content.
