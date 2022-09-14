@@ -202,15 +202,19 @@ class ChannelManager(Cog, name="channelmanager"):
         channels_count = 0
         roles_count = 0
 
+        coroutines = []
+
         for channel in interaction.guild.channels:
             if re.search('(COSC|MATH|STAT)-[0-9]{3}', channel.name, flags=re.I):
-                await channel.delete()
+                coroutines.append(channel.delete())
                 channels_count += 1
 
         for role in interaction.guild.roles:
             if re.search('(COSC|MATH|STAT) [0-9]{3}', role.name, flags=re.I):
-                await role.delete()
+                coroutines.append(role.delete())
                 roles_count += 1
+
+        await asyncio.gather(*coroutines)
 
         await interaction.followup.send(f"Deleted {channels_count} channels and categories and {roles_count} roles.")
 
