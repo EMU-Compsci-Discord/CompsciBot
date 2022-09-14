@@ -22,6 +22,9 @@ course_blacklist = ['106', '146', '388']
 
 
 class Section(TypedDict):
+    """
+    A section of a course imported from JSON
+    """
 
     subject: str
     """`COSC`, `STAT`, `MATH`"""
@@ -40,6 +43,9 @@ class Section(TypedDict):
 
 
 class SectionJson(TypedDict):
+    """
+    The JSON imported from a file
+    """
 
     term: str
     """`Fall 2022`, `Summer 2017`, `Winter 2020-COVID Term Impact`"""
@@ -54,6 +60,10 @@ JSON_SCHEMA = "https://raw.githubusercontent.com/EMU-Compsci-Discord/compsci-cla
 
 
 def read_class_json(file_name: str) -> SectionJson:
+    """
+    reads a json file containing classes
+    """
+
     if not file_name.endswith('.json'):
         raise Exception("File name must end with .json")
 
@@ -93,15 +103,15 @@ async def create_channel(channel_name: str, category: nextcord.CategoryChannel, 
     """
     creates channel in category with description and name, returns channel object.
     """
-    guild = interaction.guild
 
-    return await guild.create_text_channel(channel_name, category=category, topic=description)
+    return await interaction.guild.create_text_channel(channel_name, category=category, topic=description)
 
 
 async def create_role(interaction: Interaction, role_name: str, permissions: Permissions = Permissions.none(), color=Colour.default()):
     """
     creates a role with specified permissions, with specifed name.
     """
+
     return await interaction.guild.create_role(name=role_name, permissions=permissions, colour=color)
 
 
@@ -123,9 +133,13 @@ class ChannelManager(Cog, name="channelmanager"):
     def __init__(self, bot):
         self.bot = bot
 
-    @nextcord.slash_command(name="importclasses", description="Import a JSON file and create channels and roles for each class.")
+    @nextcord.slash_command(name="importclasses")
     @has_permissions(administrator=True)
     async def import_classes(self, interaction: Interaction, file_name: str = SlashOption(description="The name of the JSON file to parse.", required=True)):
+        """
+        Import a JSON file and create channels and roles for each class.
+        """
+
         try:
             json = read_class_json(file_name)
         except Exception as e:
@@ -209,9 +223,13 @@ class ChannelManager(Cog, name="channelmanager"):
 
         await interaction.followup.send(f"Created {channels_count} channels, {categories_count} categories, and {roles_count} roles.")
 
-    @nextcord.slash_command(name="deleteclasses", description="Admin Only. Deletes channels, categories, and roles with course names in them.")
+    @nextcord.slash_command(name="deleteclasses")
     @has_permissions(administrator=True)
     async def delete_classes(self, interaction: Interaction):
+        """
+        Admin Only. Deletes channels, categories, and roles with course names in them.
+        """
+
         await interaction.response.defer()
 
         channels_count = 0
