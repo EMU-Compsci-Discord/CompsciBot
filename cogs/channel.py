@@ -1,7 +1,11 @@
+
+import asyncio
+from collections import OrderedDict
 from pathlib import Path
 import sys
 import csv
-from typing import TypedDict
+from types import coroutine
+from typing import Coroutine, TypedDict
 import json
 import yaml
 from nextcord.ext.commands import Cog
@@ -92,25 +96,11 @@ class ChannelManager(Cog, name="channelmanager"):
         except:
             print("Issue with ", category_name, ".  Error: ", sys.exc_info()[0])
 
-    async def get_category(category_name, interaction: Interaction):
-        """
-        get category and if no category match, create a category. Returns category object.
-        """
-        guild = interaction.guild
-
-        # get category by category name
-        category = find(lambda category: category.name == category_name, guild.categories)
-        if (category is None):
-            category = await ChannelManager.create_category(category_name, interaction)
-        return category
-
-    async def create_channel(channel_name: str, category_name: str, interaction: Interaction, description: str):
+    async def create_channel(channel_name: str, category: nextcord.CategoryChannel, interaction: Interaction, description: str):
         """
         creates channel in category with description and name, returns channel object.
         """
         guild = interaction.guild
-
-        category = await ChannelManager.get_category(category_name, interaction)
 
         return await guild.create_text_channel(channel_name, category=category, topic=description)
 
@@ -119,6 +109,19 @@ class ChannelManager(Cog, name="channelmanager"):
         creates a role with specified permissions, with specifed name.
         """
         return await interaction.guild.create_role(name=role_name, permissions=permissions, colour=color)
+
+    async def create_role_for_category(interaction: Interaction, category: nextcord.CategoryChannel, term: str):
+        role_name = f"{category.name.replace('-', ' ')} {term}"
+        role = await ChannelManager.create_role(interaction, role_name)
+        # gives basic permissions to a role for its assigned channel
+        await category.set_permissions(
+            role,
+            read_messages=True,
+            send_messages=True,
+            add_reactions=True,
+            read_message_history=True
+        )
+        return role
 
     @nextcord.slash_command(name="importclasses", description="Import a JSON file and create channels and roles for each class.")
     @has_permissions(administrator=True)
@@ -131,41 +134,30 @@ class ChannelManager(Cog, name="channelmanager"):
 
         await interaction.response.defer()
 
+        categories_count = 0
         channels_count = 0
         roles_count = 0
 
-        category_names: set[str] = set()
+        courses_by_category_name: OrderedDict[str, list[Section]] = OrderedDict()
 
         for section in json["classes"]:
 
             # first 3 numbers only (not L1,L2,L3)
             course_number = section["course"][0:3]
-            professor = section["instructor"]
 
             if course_number in course_blacklist or course_number[0] == "5":
                 continue
 
-            if professor != "TBA":
-                prof_parts = professor.split()
-                prof_lastname = prof_parts[-2]
-
-                # deals with suffixes
-                if prof_lastname.lower() in ['sr', 'jr', 'ii', 'iii', 'iv']:
-                    prof_lastname = prof_parts[-3]
-
-            # assemble class and category names
-            channel_name = f"{section['subject']}-{course_number}-{prof_lastname}"
             category_name = f"{section['subject']}-{course_number}"
 
-            if section["days"] != "" or section["time"] != "":
-                description = f"{section['days']} {section['time']}"
-            else:
-                description = "No time listed"
+            courses_by_category_name.setdefault(category_name, []).append(section)
 
-            category_names.add(category_name)
+        category_coroutine_by_category_name: dict[str, Coroutine[None, None, nextcord.CategoryChannel]] = {}
 
-            await ChannelManager.create_channel(channel_name, category_name, interaction, description)
-            channels_count += 1
+        for category_name in courses_by_category_name:
+            category_coroutine_by_category_name[category_name] = ChannelManager.create_category(
+                category_name, interaction)
+            categories_count += 1
 
         # make a mod role to see all classes
         mod_class_role = find(lambda role: role.name == 'All Classes', interaction.guild.roles)
@@ -173,26 +165,50 @@ class ChannelManager(Cog, name="channelmanager"):
             mod_class_role = await ChannelManager.create_role(interaction, 'All Classes', color=nextcord.Colour.blue())
             roles_count += 1
 
-        for category_name in category_names:
-            role_name = f"{category_name.replace('-', ' ')} {json['term']}"
-            category_object = await ChannelManager.get_category(category_name, interaction)
-            category_role = await ChannelManager.create_role(interaction, role_name, color=nextcord.Colour.blue())
-            roles_count += 1
-            # gives basic permissions to a role for its assigned channel
-            await category_object.set_permissions(
-                category_role,
-                read_messages=True,
-                send_messages=True,
-                add_reactions=True,
-                read_message_history=True)
-            await category_object.set_permissions(
-                mod_class_role,
-                read_messages=True,
-                send_messages=True,
-                add_reactions=True,
-                read_message_history=True)
+        coroutines = []
 
-        await interaction.followup.send(f"Created {channels_count} channels and {roles_count} roles.")
+        for category_name in courses_by_category_name:
+            category = await category_coroutine_by_category_name[category_name]
+
+            for section in courses_by_category_name[category_name]:
+
+                professor = section["instructor"]
+
+                if professor != "TBA":
+                    prof_parts = professor.split()
+                    prof_lastname = prof_parts[-2]
+
+                    # deals with suffixes
+                    if prof_lastname.lower() in ['sr', 'jr', 'ii', 'iii', 'iv']:
+                        prof_lastname = prof_parts[-3]
+
+                # assemble class and category names
+                channel_name = f"{category_name}-{prof_lastname}"
+
+                if section["days"] != "" or section["time"] != "":
+                    description = f"{section['days']} {section['time']}"
+                else:
+                    description = "No time listed"
+
+                coroutines.append(ChannelManager.create_channel(channel_name, category, interaction, description))
+                channels_count += 1
+
+            coroutines.append(ChannelManager.create_role_for_category(interaction, category, json["term"]))
+            roles_count += 1
+
+            coroutines.append(
+                category.set_permissions(
+                    mod_class_role,
+                    read_messages=True,
+                    send_messages=True,
+                    add_reactions=True,
+                    read_message_history=True
+                )
+            )
+
+        await asyncio.gather(*coroutines)
+
+        await interaction.followup.send(f"Created {channels_count} channels, {categories_count} categories, and {roles_count} roles.")
 
     @nextcord.slash_command(name="deleteclasses", description="Admin Only. Deletes channels, categories, and roles with course names in them.")
     @has_permissions(administrator=True)
