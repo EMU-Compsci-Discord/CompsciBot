@@ -74,50 +74,54 @@ def read_class_json(file_name: str) -> SectionJson:
         return data
 
 
+async def create_category(category_name, interaction: Interaction):
+    """
+    creates a category and returns category object
+    """
+
+    guild = interaction.guild
+    overwrites = {
+        guild.default_role: PermissionOverwrite(read_messages=False)
+    }
+    try:
+        return await guild.create_category(category_name, overwrites=overwrites)
+    except:
+        print("Issue with ", category_name, ".  Error: ", sys.exc_info()[0])
+
+
+async def create_channel(channel_name: str, category: nextcord.CategoryChannel, interaction: Interaction, description: str):
+    """
+    creates channel in category with description and name, returns channel object.
+    """
+    guild = interaction.guild
+
+    return await guild.create_text_channel(channel_name, category=category, topic=description)
+
+
+async def create_role(interaction: Interaction, role_name: str, permissions: Permissions = Permissions.none(), color=Colour.default()):
+    """
+    creates a role with specified permissions, with specifed name.
+    """
+    return await interaction.guild.create_role(name=role_name, permissions=permissions, colour=color)
+
+
+async def create_role_for_category(interaction: Interaction, category: nextcord.CategoryChannel, term: str):
+    role_name = f"{category.name.replace('-', ' ')} {term}"
+    role = await create_role(interaction, role_name)
+    # gives basic permissions to a role for its assigned channel
+    await category.set_permissions(
+        role,
+        read_messages=True,
+        send_messages=True,
+        add_reactions=True,
+        read_message_history=True
+    )
+    return role
+
+
 class ChannelManager(Cog, name="channelmanager"):
     def __init__(self, bot):
         self.bot = bot
-
-    async def create_category(category_name, interaction: Interaction):
-        """
-        creates a category and returns category object
-        """
-
-        guild = interaction.guild
-        overwrites = {
-            guild.default_role: PermissionOverwrite(read_messages=False)
-        }
-        try:
-            return await guild.create_category(category_name, overwrites=overwrites)
-        except:
-            print("Issue with ", category_name, ".  Error: ", sys.exc_info()[0])
-
-    async def create_channel(channel_name: str, category: nextcord.CategoryChannel, interaction: Interaction, description: str):
-        """
-        creates channel in category with description and name, returns channel object.
-        """
-        guild = interaction.guild
-
-        return await guild.create_text_channel(channel_name, category=category, topic=description)
-
-    async def create_role(interaction: Interaction, role_name: str, permissions: Permissions = Permissions.none(), color=Colour.default()):
-        """
-        creates a role with specified permissions, with specifed name.
-        """
-        return await interaction.guild.create_role(name=role_name, permissions=permissions, colour=color)
-
-    async def create_role_for_category(interaction: Interaction, category: nextcord.CategoryChannel, term: str):
-        role_name = f"{category.name.replace('-', ' ')} {term}"
-        role = await ChannelManager.create_role(interaction, role_name)
-        # gives basic permissions to a role for its assigned channel
-        await category.set_permissions(
-            role,
-            read_messages=True,
-            send_messages=True,
-            add_reactions=True,
-            read_message_history=True
-        )
-        return role
 
     @nextcord.slash_command(name="importclasses", description="Import a JSON file and create channels and roles for each class.")
     @has_permissions(administrator=True)
@@ -151,14 +155,13 @@ class ChannelManager(Cog, name="channelmanager"):
         category_coroutine_by_category_name: dict[str, Coroutine[None, None, nextcord.CategoryChannel]] = {}
 
         for category_name in courses_by_category_name:
-            category_coroutine_by_category_name[category_name] = ChannelManager.create_category(
-                category_name, interaction)
+            category_coroutine_by_category_name[category_name] = create_category(category_name, interaction)
             categories_count += 1
 
         # make a mod role to see all classes
         mod_class_role = find(lambda role: role.name == 'All Classes', interaction.guild.roles)
         if mod_class_role is None:
-            mod_class_role = await ChannelManager.create_role(interaction, 'All Classes', color=nextcord.Colour.blue())
+            mod_class_role = await create_role(interaction, 'All Classes', color=nextcord.Colour.blue())
             roles_count += 1
 
         coroutines = []
@@ -186,10 +189,10 @@ class ChannelManager(Cog, name="channelmanager"):
                 else:
                     description = "No time listed"
 
-                coroutines.append(ChannelManager.create_channel(channel_name, category, interaction, description))
+                coroutines.append(create_channel(channel_name, category, interaction, description))
                 channels_count += 1
 
-            coroutines.append(ChannelManager.create_role_for_category(interaction, category, json["term"]))
+            coroutines.append(create_role_for_category(interaction, category, json["term"]))
             roles_count += 1
 
             coroutines.append(
