@@ -2,15 +2,12 @@ import asyncio
 from collections import OrderedDict
 from pathlib import Path
 import sys
-import csv
-from types import coroutine
 from typing import Coroutine, TypedDict
 import json
 import yaml
 from nextcord.ext.commands import Cog
 from nextcord.ext.application_checks import has_permissions
 from nextcord.utils import find
-import datetime
 import re
 import nextcord
 from nextcord import Interaction, SlashOption, PermissionOverwrite, Permissions, Colour
