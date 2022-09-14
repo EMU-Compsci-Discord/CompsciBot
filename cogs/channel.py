@@ -120,18 +120,6 @@ class ChannelManager(Cog, name="channelmanager"):
         """
         return await interaction.guild.create_role(name=role_name, permissions=permissions, colour=color)
 
-    def get_role_semester():
-        today = datetime.date.today()
-        month = today.month
-        year = today.year
-        if month >= 11 or month <= 2:
-            semester = 'Winter'
-        elif 2 < month <= 7:
-            semester = 'Summer'
-        else:
-            semester = "Fall"
-        return (semester, year)
-
     @nextcord.slash_command(name="importclasses", description="Import a JSON file and create channels and roles for each class.")
     @has_permissions(administrator=True)
     async def import_classes(self, interaction: Interaction, file_name: str = SlashOption(description="The name of the JSON file to parse.", required=True)):
