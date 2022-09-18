@@ -1,193 +1,255 @@
-import os
+import asyncio
+from collections import OrderedDict
+from pathlib import Path
 import sys
-import csv
+from typing import Coroutine, TypedDict
+import json
 import yaml
-from nextcord.ext import commands
-from nextcord.ext.commands import has_permissions
+from nextcord.ext.commands import Cog
+from nextcord.ext.application_checks import has_permissions
 from nextcord.utils import find
-import datetime
 import re
 import nextcord
-from typing import Optional
-from nextcord import Interaction, SlashOption, ChannelType
-from nextcord.abc import GuildChannel
+from nextcord import Interaction, SlashOption, PermissionOverwrite, Permissions, Colour
 
 
 with open("config.yaml") as file:
     config = yaml.load(file, Loader=yaml.FullLoader)
 
-# csv column names
-department = 2  # example: COSC
-course_number = 3  # example: 101
-days = 8  # example: WM
-times = 9  # 09:00 am-12:50 pm
-professor = 19  # example: Zenia Christine Bahorski (P)
 
 # classes we do not want to create channels for
-class_blacklist = ['106', '146', '388']
+course_blacklist = ['106', '146', '388']
 
 
-class ChannelManager(commands.Cog, name="channelmanager"):
+class Section(TypedDict):
+    """
+    A section of a course imported from JSON
+    """
+
+    subject: str
+    """`COSC`, `STAT`, `MATH`"""
+
+    course: str
+    """`111`, `211`, `341W`, `388L4`"""
+
+    days: str
+    """`MW`, `TR`, `T`"""
+
+    time: str
+    """`09:00 am-10:50 am`, `11:00 am-12:50 pm`"""
+
+    instructor: str
+    """`Suchindran Maniccam (P)`, `Philip Lynn Francis III (P)`"""
+
+
+class SectionJson(TypedDict):
+    """
+    The JSON imported from a file
+    """
+
+    term: str
+    """`Fall 2022`, `Summer 2017`, `Winter 2020-COVID Term Impact`"""
+
+    timestamp: int
+    """milliseconds since 1970 """
+
+    classes: list[Section]
+
+
+JSON_SCHEMA = "https://raw.githubusercontent.com/EMU-Compsci-Discord/compsci-class-scraper/main/json-schema/output-v1.schema.json"
+
+
+def read_class_json(file_name: str) -> SectionJson:
+    """
+    reads a json file containing classes
+    """
+
+    if not file_name.endswith('.json'):
+        raise Exception("File name must end with .json")
+
+    if re.search("^[a-zA-Z0-9_\-]+\.json$", file_name) is None:
+        raise Exception("File name can only contain letters, numbers, dashes and underscores")
+
+    file_path = Path("resources", file_name)
+
+    if not file_path.is_file():
+        raise Exception(f"File {file_path} does not exist")
+
+    with open(file_path) as file:
+        data = json.load(file)
+
+        if data["$schema"] != JSON_SCHEMA:
+            raise Exception(f"Incorrect JSON schema\nExpected: {JSON_SCHEMA}\nFound: {data['$schema']}")
+
+        return data
+
+
+async def create_category(category_name, interaction: Interaction):
+    """
+    creates a category and returns category object
+    """
+
+    guild = interaction.guild
+    overwrites = {
+        guild.default_role: PermissionOverwrite(read_messages=False)
+    }
+    try:
+        return await guild.create_category(category_name, overwrites=overwrites)
+    except:
+        print("Issue with ", category_name, ".  Error: ", sys.exc_info()[0])
+
+
+async def create_channel(channel_name: str, category: nextcord.CategoryChannel, interaction: Interaction, description: str):
+    """
+    creates channel in category with description and name, returns channel object.
+    """
+
+    return await interaction.guild.create_text_channel(channel_name, category=category, topic=description)
+
+
+async def create_role(interaction: Interaction, role_name: str, permissions: Permissions = Permissions.none(), color=Colour.default()):
+    """
+    creates a role with specified permissions, with specifed name.
+    """
+
+    return await interaction.guild.create_role(name=role_name, permissions=permissions, colour=color)
+
+
+async def create_role_for_category(interaction: Interaction, category: nextcord.CategoryChannel, term: str):
+    role_name = f"{category.name.replace('-', ' ')} {term}"
+    role = await create_role(interaction, role_name, color=nextcord.Colour.blue())
+    # gives basic permissions to a role for its assigned channel
+    await category.set_permissions(
+        role,
+        read_messages=True,
+        send_messages=True,
+        add_reactions=True,
+        read_message_history=True
+    )
+    return role
+
+
+class ChannelManager(Cog, name="channelmanager"):
     def __init__(self, bot):
         self.bot = bot
 
-    async def create_category(category, context):
+    @nextcord.slash_command(name="importclasses")
+    @has_permissions(administrator=True)
+    async def import_classes(self, interaction: Interaction, file_name: str = SlashOption(description="The name of the JSON file to parse.", required=True)):
         """
-        [(Required) category name, message context] creates a category and returns category object
+        Import a JSON file and create channels and roles for each class.
         """
 
-        guild = context.guild
-        overwrites = {
-            guild.default_role: nextcord.PermissionOverwrite(read_messages=False)
-        }
         try:
-            return await guild.create_category(category, overwrites=overwrites)
-        except:
-            print("Issue with ", category, ".  Error: ", sys.exc_info()[0])
-
-    async def get_category(category_name, context):
-        """
-        [(Required) category name, mesage context] get category and if no category match, create a category. Returns category object.
-        """
-        guild = context.guild
-
-        # get category by category name
-        category = find(lambda category: category.name == category_name, guild.categories)
-        if(category is None):
-            category = await ChannelManager.create_category(category_name, context)
-        return category
-
-    async def create_channel(channel_name: str, category_name: str, context, description: str):
-        """
-        [(Required) channel name, category name, message context, description] creates channel in category with description and name, returns channel object.
-        """
-        guild = context.guild
-
-        category = await ChannelManager.get_category(category_name, context)
-
-        return await guild.create_text_channel(channel_name, category=category, topic=description)
-
-    async def create_role(context, role_name: str, permissions: nextcord.Permissions = nextcord.Permissions.none(), color=nextcord.Colour.default()):
-        """
-        [(Required) message context, role name, (optional) permissions, color] creates a role with specified permissions, with specifed name.
-        """
-        return await context.guild.create_role(name=role_name, permissions=permissions, colour=color)
-
-    def get_role_semester():
-        today = datetime.date.today()
-        month = today.month
-        year = today.year
-        if month >= 11 or month <= 2:
-            semester = 'Winter'
-        elif 2 < month <= 7:
-            semester = 'Summer'
-        else:
-            semester = "Fall"
-        return (semester, year)
-
-    @ commands.command(name="csvparse")
-    @ has_permissions(administrator=True)
-    async def csvparse(self, context, filename=None):
-        """
-        [(Required) filename] parses a csv into class channels and categories.
-        """
-
-        if filename is None:
-            await context.send("Please specify a .csv file as an argument.")
-
-        if re.search("^[a-zA-Z0-9_\-]+\.csv$", filename) is None:
-            await context.send("Please input a .csv filename without special characters or extensions.")
+            json = read_class_json(file_name)
+        except Exception as e:
+            await interaction.response.send_message(f"Error: {e}", ephemeral=True)
             return
 
-        category_names = set()
+        await interaction.response.defer()
 
-        filename = "./resources/" + filename
+        categories_count = 0
+        channels_count = 0
+        roles_count = 0
 
-        # read and parse the csv
-        with open(filename) as csv_file:
-            semester, year = ChannelManager.get_role_semester()
+        courses_by_category_name: OrderedDict[str, list[Section]] = OrderedDict()
 
-            csv_reader = csv.reader(csv_file, delimiter=',')
-            for row in csv_reader:
+        for section in json["classes"]:
 
-                # check if those attributes exist
-                if row[department].strip() != "" and row[course_number].strip() != "" and row[professor].strip() != "":
+            # first 3 numbers only (not L1,L2,L3)
+            course_number = section["course"][0:3]
 
-                    class_type = row[department]
+            if course_number in course_blacklist or course_number[0] == "5":
+                continue
 
-                    # first 3 numbers only (not L1,L2,L3)
-                    classnum = row[course_number][0:3]
-                    prof = row[professor]
+            category_name = f"{section['subject']}-{course_number}"
 
-                    if classnum in class_blacklist or classnum[0] == "5":
-                        continue
+            courses_by_category_name.setdefault(category_name, []).append(section)
 
-                    if prof != "TBA":
-                        prof_parts = prof.split()
-                        prof_lastname = prof_parts[-2]
+        category_coroutine_by_category_name: dict[str, Coroutine[None, None, nextcord.CategoryChannel]] = {}
 
-                        # deals with suffixes
-                        if prof_lastname.lower() in ['sr', 'jr', 'ii', 'iii', 'iv']:
-                            prof_lastname = prof_parts[-3]
-
-                    # assemble class and category names
-                    channel_name = f"{class_type}-{classnum}-{prof_lastname}"
-                    category_name = f"{class_type}-{classnum}"
-
-                    if row[days].strip() != "" or row[times].strip() != "":
-                        description = f"{row[days].strip()} {row[times].strip()}"
-                    else:
-                        description = "No time listed"
-
-                    category_names.add(category_name)
-
-                    await ChannelManager.create_channel(channel_name, category_name, context, description)
+        for category_name in courses_by_category_name:
+            category_coroutine_by_category_name[category_name] = create_category(category_name, interaction)
+            categories_count += 1
 
         # make a mod role to see all classes
-        mod_class_role = find(lambda role: role.name == 'All Classes', context.guild.roles)
+        mod_class_role = find(lambda role: role.name == 'All Classes', interaction.guild.roles)
         if mod_class_role is None:
-            mod_class_role = await ChannelManager.create_role(context, 'All Classes', color=nextcord.Colour.blue())
+            mod_class_role = await create_role(interaction, 'All Classes', color=nextcord.Colour.blue())
+            roles_count += 1
 
-        for category_name in category_names:
-            role_name = f"{category_name.replace('-', ' ')} {semester} {year}"
-            category_object = await ChannelManager.get_category(category_name, context)
-            category_role = await ChannelManager.create_role(context, role_name, color=nextcord.Colour.blue())
-            # gives basic permissions to a role for its assigned channel
-            await category_object.set_permissions(
-                category_role,
-                read_messages=True,
-                send_messages=True,
-                add_reactions=True,
-                read_message_history=True)
-            await category_object.set_permissions(
-                mod_class_role,
-                read_messages=True,
-                send_messages=True,
-                add_reactions=True,
-                read_message_history=True)
+        coroutines = []
 
-        await context.send("Channels and Roles created successfully")
+        for category_name in courses_by_category_name:
+            category = await category_coroutine_by_category_name[category_name]
 
-    @commands.command(name="deleteclasses")
+            for section in courses_by_category_name[category_name]:
+
+                professor = section["instructor"]
+
+                if professor != "TBA":
+                    prof_parts = professor.split()
+                    prof_lastname = prof_parts[-2]
+
+                    # deals with suffixes
+                    if prof_lastname.lower() in ['sr', 'jr', 'ii', 'iii', 'iv']:
+                        prof_lastname = prof_parts[-3]
+
+                # assemble class and category names
+                channel_name = f"{category_name}-{prof_lastname}"
+
+                if section["days"] != "" or section["time"] != "":
+                    description = f"{section['days']} {section['time']}"
+                else:
+                    description = "No time listed"
+
+                coroutines.append(create_channel(channel_name, category, interaction, description))
+                channels_count += 1
+
+            coroutines.append(create_role_for_category(interaction, category, json["term"]))
+            roles_count += 1
+
+            coroutines.append(
+                category.set_permissions(
+                    mod_class_role,
+                    read_messages=True,
+                    send_messages=True,
+                    add_reactions=True,
+                    read_message_history=True
+                )
+            )
+
+        await asyncio.gather(*coroutines)
+
+        await interaction.followup.send(f"Created {channels_count} channels, {categories_count} categories, and {roles_count} roles.")
+
+    @nextcord.slash_command(name="deleteclasses")
     @has_permissions(administrator=True)
-    async def delete_classes(self, context):
+    async def delete_classes(self, interaction: Interaction):
         """
-        [No arguments] Admin Only. Deletes channels and categories with COSC-###, MATH-###, or STAT-### (case insensitive).
+        Admin Only. Deletes channels, categories, and roles with course names in them.
         """
-        for channel in context.guild.channels:
+
+        await interaction.response.defer()
+
+        channels_count = 0
+        roles_count = 0
+
+        coroutines = []
+
+        for channel in interaction.guild.channels:
             if re.search('(COSC|MATH|STAT)-[0-9]{3}', channel.name, flags=re.I):
-                await channel.delete()
+                coroutines.append(channel.delete())
+                channels_count += 1
 
-    @commands.command(name="deleteclassroles")
-    @has_permissions(administrator=True)
-    async def delete_roles(self, context):
-        """
-        [No arguments] Admin Only. Deletes roles with COSC-###, MATH-###, or STAT-### (case insensitive).
-        """
-        for role in context.guild.roles:
+        for role in interaction.guild.roles:
             if re.search('(COSC|MATH|STAT) [0-9]{3}', role.name, flags=re.I):
-                await role.delete()
+                coroutines.append(role.delete())
+                roles_count += 1
 
+        await asyncio.gather(*coroutines)
+
+        await interaction.followup.send(f"Deleted {channels_count} channels and categories and {roles_count} roles.")
 
 
 # And then we finally add the cog to the bot so that it can load, unload, reload and use it's content.

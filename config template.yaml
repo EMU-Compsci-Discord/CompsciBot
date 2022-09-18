@@ -1,4 +1,3 @@
-bot_prefix: "PREFIX"
 token: "BOT_TOKEN"
 application_id: "APPLICATION_ID"
 owners:
