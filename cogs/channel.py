@@ -1,8 +1,9 @@
 import asyncio
 from collections import OrderedDict
 from pathlib import Path
+from string import ascii_lowercase
 import sys
-from typing import Coroutine, TypedDict
+from typing import Coroutine, TypedDict, Generator
 import json
 import yaml
 from nextcord.ext.commands import Cog
@@ -10,7 +11,7 @@ from nextcord.ext.application_checks import has_permissions
 from nextcord.utils import find
 import re
 import nextcord
-from nextcord import Interaction, SlashOption, PermissionOverwrite, Permissions, Colour
+from nextcord import Interaction, SlashOption, PermissionOverwrite, Permissions, Colour, Embed
 
 
 with open("config.yaml") as file:
@@ -85,6 +86,7 @@ def read_class_json(file_name: str) -> SectionJson:
 
 
 course_name_regex = re.compile('(COSC|MATH|STAT)[- ]([0-9]{3})')
+term_name_regex = re.compile('([A-Z][a-z]+)[- ](20[0-9]{2})')
 
 
 async def create_category(category_name, interaction: Interaction):
@@ -130,6 +132,15 @@ async def create_role_for_category(interaction: Interaction, category: nextcord.
         read_message_history=True
     )
     return role
+
+
+def reaction_emoji() -> Generator[str, None, None]:
+    """
+    generates emojis for reactions
+    """
+
+    for letter in ascii_lowercase:
+        yield f":regional_indicator_{letter}:"
 
 
 class ChannelManager(Cog, name="channelmanager"):
@@ -253,6 +264,58 @@ class ChannelManager(Cog, name="channelmanager"):
         await asyncio.gather(*coroutines)
 
         await interaction.followup.send(f"Deleted {channels_count} channels and categories and {roles_count} roles.")
+
+    @nextcord.slash_command(name="classrolereactions")
+    async def carl_class_roles(self, interaction: Interaction):
+        """
+        Generates the Carl bot commands to create reaction roles for all classes.
+        """
+
+        await interaction.response.defer()
+
+        lower_level_roles: list[nextcord.Role] = []
+        upper_level_roles: list[nextcord.Role] = []
+
+        for role in interaction.guild.roles:
+            match = course_name_regex.search(role.name)
+            if match is not None and match.group(2)[0] in ['1', '2', '3']:
+                lower_level_roles.append(role)
+            elif match is not None and match.group(2)[0] in ['4', '5', '6']:
+                upper_level_roles.append(role)
+
+        term = term_name_regex.search(lower_level_roles[0].name).group(0)
+
+        for role_group_name, roles in (("100-300", lower_level_roles), ("400-600", upper_level_roles)):
+            roles.sort(key=lambda role: role.name)
+
+            title = f"Use the following commands to create reaction roles for {role_group_name} classes."
+
+            message = "```\n/reactionrole setup\n```\n"
+
+            message += "Which channel would you like the message to be in?\n"
+            message += "```\n#class-reaction-roles\n```\n"
+
+            message += "What would you like the message to say?\n"
+            message += "```\n"
+            message += f"{term} Class Channels {role_group_name} | React to gain access to your class channels\n\n"
+            for role, emoji in zip(roles, reaction_emoji()):
+                message += f"{emoji}  {course_name_regex.search(role.name).group(0)}\n"
+            message += "\n```\n"
+
+            message += "Would you like the message to have a color?\n"
+            message += "```\nnone\n```\n"
+
+            message += "What roles would you like to add?\n"
+            message += "```\n"
+            for role, emoji in zip(roles, reaction_emoji()):
+                message += f"{emoji} {role.mention}\n"
+            message += "\n```\n"
+
+            message += "```\ndone\n```\n"
+
+            embed = Embed(title=title, description=message)
+
+            await interaction.followup.send(embed=embed)
 
 
 # And then we finally add the cog to the bot so that it can load, unload, reload and use it's content.
