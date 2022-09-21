@@ -84,6 +84,9 @@ def read_class_json(file_name: str) -> SectionJson:
         return data
 
 
+course_name_regex = re.compile('(COSC|MATH|STAT)[- ]([0-9]{3})')
+
+
 async def create_category(category_name, interaction: Interaction):
     """
     creates a category and returns category object
@@ -238,12 +241,12 @@ class ChannelManager(Cog, name="channelmanager"):
         coroutines = []
 
         for channel in interaction.guild.channels:
-            if re.search('(COSC|MATH|STAT)-[0-9]{3}', channel.name, flags=re.I):
+            if course_name_regex.search(channel.name):
                 coroutines.append(channel.delete())
                 channels_count += 1
 
         for role in interaction.guild.roles:
-            if re.search('(COSC|MATH|STAT) [0-9]{3}', role.name, flags=re.I):
+            if course_name_regex.search(role.name):
                 coroutines.append(role.delete())
                 roles_count += 1
 
