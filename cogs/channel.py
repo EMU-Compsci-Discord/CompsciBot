@@ -85,7 +85,7 @@ def read_class_json(file_name: str) -> SectionJson:
         return data
 
 
-course_name_regex = re.compile('(COSC|MATH|STAT)[- ]([0-9]{3})')
+course_name_regex = re.compile('(COSC|MATH|STAT)[- ]([0-9]{3})', re.I)
 term_name_regex = re.compile('([A-Z][a-z]+)[- ](20[0-9]{2})')
 
 
