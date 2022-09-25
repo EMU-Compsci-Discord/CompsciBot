@@ -143,26 +143,6 @@ class general(commands.Cog, name="general"):
         except:
             await interaction.response.send_message("There's something odd about that link. Either they won't let me read it or you sent it wrongly.")
 
-    @nextcord.slash_command(name="poll", description="Create a poll where members can vote.")
-    async def poll(self, interaction: Interaction, question: str = SlashOption(description="Question to ask members.", required=True)):
-        """
-        [Question] Create a poll where members can vote.
-        """
-        embed = nextcord.Embed(
-            title="A new poll has been created!",
-            description=f"{question}",
-            color=config["success"]
-        )
-
-        embed.set_footer(
-            text=f"Poll created by: {interaction.user} • React to vote!"
-        )
-        
-        embed_message = await interaction.response.send_message(embed=embed)
-        embed_message = await embed_message.fetch()
-        await embed_message.add_reaction("👍")
-        await embed_message.add_reaction("👎")
-        await embed_message.add_reaction("🤷")
 
 def setup(bot):
     bot.add_cog(general(bot))
