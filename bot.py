@@ -17,7 +17,7 @@ with open("config.yaml") as file:
 
 intents = nextcord.Intents.default().all()
 
-bot = Bot(intents=intents)
+bot = Bot(intents=intents, command_prefix="!")
 
 scheduler = AsyncIOScheduler()
 toSchedule = quotes.Quotes(bot)
