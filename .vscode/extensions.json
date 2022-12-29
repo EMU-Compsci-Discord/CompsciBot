@@ -1,0 +1,10 @@
+{
+    "recommendations": [
+        "ms-python.python",
+        "EditorConfig.EditorConfig",
+        "bungcip.better-toml",
+        "esbenp.prettier-vscode",
+        "vivaxy.vscode-conventional-commits",
+        "eamodio.gitlens"
+    ]
+}
