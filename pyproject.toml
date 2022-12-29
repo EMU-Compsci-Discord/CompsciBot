@@ -1,5 +1,9 @@
 [tool.pylint.main]
 ignore = [".venv"]
+recursive = true
 
 [tool.autopep8]
 max_line_length = 120
+recursive = true
+exit_code = true
+in_place = true
