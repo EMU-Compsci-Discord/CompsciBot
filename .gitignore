@@ -1,5 +1,5 @@
 # Byte-compiled / optimized / DLL files
-__pycache__/
+*/__pycache__/
 *.py[cod]
 *$py.class
 
@@ -12,9 +12,7 @@ build/
 develop-eggs/
 dist/
 downloads/
-cogs/__pycache__
 .vscode/
-noncommands/__pycache__
 eggs/
 .eggs/
 lib/
@@ -144,14 +142,6 @@ cython_debug/
 .idea/*
 *.pyc
 *.pyc
-/cogs/__pycache__/fun.cpython-37.pyc
-/cogs/__pycache__/general.cpython-37.pyc
-/cogs/__pycache__/help.cpython-37.pyc
-/cogs/__pycache__/moderation.cpython-37.pyc
-/cogs/__pycache__/owner.cpython-37.pyc
-/cogs/__pycache__/template.cpython-37.pyc
-/noncommands/__pycache__/imchecker.cpython-37.pyc
-/noncommands/__pycache__/reminderLoop.cpython-37.pyc
 newperson.png
 *.pyc
 */*.pyc
