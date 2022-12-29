@@ -2,7 +2,6 @@ from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.decomposition import TruncatedSVD
 import pandas as pd
 import nltk
-import re
 import numpy as np
 from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize

@@ -1,22 +1,13 @@
-import asyncio
-import os
+
 import random
-import sys
 import aiohttp
-import aiofiles
-import hashlib
 import yaml
 import requests
-import uuid
 import inspirobot
-import uwuify
-import json
 
 import nextcord
-from typing import Optional
 from nextcord.ext import commands
-from nextcord import Interaction, SlashOption, ChannelType
-from nextcord.abc import GuildChannel
+from nextcord import Interaction, SlashOption
 
 
 with open("config.yaml") as file:

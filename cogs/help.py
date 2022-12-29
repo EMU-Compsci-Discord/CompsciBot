@@ -1,11 +1,7 @@
-import os
-import sys
 import yaml
 import nextcord
-from typing import Optional
 from nextcord.ext import commands
-from nextcord import Interaction, SlashOption, ChannelType
-from nextcord.abc import GuildChannel
+from nextcord import Interaction
 
 
 with open("config.yaml") as file:

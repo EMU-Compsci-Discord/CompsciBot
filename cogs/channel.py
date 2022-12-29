@@ -1,6 +1,5 @@
 import asyncio
 from collections import OrderedDict
-from pathlib import Path
 from string import ascii_lowercase
 import sys
 from typing import Coroutine, TypedDict, Generator

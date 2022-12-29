@@ -1,12 +1,10 @@
 import os
 import platform
-import random
-import sys
 import nextcord
 import yaml
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from apscheduler.triggers.cron import CronTrigger
-from nextcord.ext import commands, tasks
+from nextcord.ext import commands
 from nextcord.ext.commands import Bot
 
 from noncommands import auto_code_block, quotes

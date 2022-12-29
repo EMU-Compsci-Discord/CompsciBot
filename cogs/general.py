@@ -1,16 +1,9 @@
-import os
 import platform
-import sys
-import json
 import yaml
-import random
-from nextcord.ext import commands
-from noncommands import summarizer, quotes
+from noncommands import summarizer
 import nextcord
-from typing import Optional
 from nextcord.ext import commands
-from nextcord import Interaction, SlashOption, ChannelType
-from nextcord.abc import GuildChannel
+from nextcord import Interaction, SlashOption
 
 with open("config.yaml") as file:
     config = yaml.load(file, Loader=yaml.FullLoader)
