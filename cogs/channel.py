@@ -11,7 +11,7 @@ from nextcord.ext.application_checks import has_permissions
 from nextcord.utils import find
 import re
 import nextcord
-from nextcord import Interaction, SlashOption, PermissionOverwrite, Permissions, Colour, Embed
+from nextcord import Interaction, SlashOption, PermissionOverwrite, Permissions, Colour, Embed, Attachment
 
 
 with open("config.yaml") as file:
@@ -60,29 +60,27 @@ class SectionJson(TypedDict):
 JSON_SCHEMA = "https://raw.githubusercontent.com/EMU-Compsci-Discord/compsci-class-scraper/main/json-schema/output-v1.schema.json"
 
 
-def read_class_json(file_name: str) -> SectionJson:
+async def read_class_json(file: Attachment) -> SectionJson:
     """
-    reads a json file containing classes
+    reads a json file Attachment containing classes
     """
 
-    if not file_name.endswith('.json'):
-        raise Exception("File name must end with .json")
+    content_type, encoding = file.content_type.split("; ")
 
-    if re.search("^[a-zA-Z0-9_\-]+\.json$", file_name) is None:
-        raise Exception("File name can only contain letters, numbers, dashes and underscores")
+    if content_type != "application/json":
+        raise Exception(f"File must be a JSON file but was {content_type}")
 
-    file_path = Path("resources", file_name)
+    if encoding != "charset=utf-8":
+        raise Exception(f"File must be encoded in UTF-8 but was {encoding}")
 
-    if not file_path.is_file():
-        raise Exception(f"File {file_path} does not exist")
+    file_contents = await file.read()
 
-    with open(file_path) as file:
-        data = json.load(file)
+    data = json.loads(file_contents)
 
-        if data["$schema"] != JSON_SCHEMA:
-            raise Exception(f"Incorrect JSON schema\nExpected: {JSON_SCHEMA}\nFound: {data['$schema']}")
+    if data["$schema"] != JSON_SCHEMA:
+        raise Exception(f"Incorrect JSON schema\nExpected: {JSON_SCHEMA}\nFound: {data['$schema']}")
 
-        return data
+    return data
 
 
 course_name_regex = re.compile('(COSC|MATH|STAT)[- ]([0-9]{3})', re.I)
@@ -149,13 +147,13 @@ class ChannelManager(Cog, name="channelmanager"):
 
     @nextcord.slash_command(name="importclasses")
     @has_permissions(administrator=True)
-    async def import_classes(self, interaction: Interaction, file_name: str = SlashOption(description="The name of the JSON file to parse.", required=True)):
+    async def import_classes(self, interaction: Interaction, file: Attachment = SlashOption(description="The name of the JSON file to parse.", required=True)):
         """
         Import a JSON file and create channels and roles for each class.
         """
 
         try:
-            json = read_class_json(file_name)
+            json = await read_class_json(file)
         except Exception as e:
             await interaction.response.send_message(f"Error: {e}", ephemeral=True)
             return
