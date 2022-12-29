@@ -2,6 +2,11 @@
 ignore = [".venv"]
 recursive = true
 
+[tool.pylint.messages_control]
+disable = [
+    "line-too-long", # disable because we use autopep8
+]
+
 [tool.autopep8]
 max_line_length = 120
 recursive = true
