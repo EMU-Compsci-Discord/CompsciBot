@@ -12,7 +12,7 @@ from nextcord.abc import GuildChannel
 with open("config.yaml") as file:
     config = yaml.load(file, Loader=yaml.FullLoader)
 
-# Here we name the cog and create a new class for the cog.
+
 class Quotes(commands.Cog, name="quotes"):
     def __init__(self, bot):
         self.bot = bot
@@ -36,7 +36,7 @@ class Quotes(commands.Cog, name="quotes"):
         newquote = await quoteClass.newquote(quote)
 
         await interaction.response.send_message("Quote submitted! Quote: " + newquote)
-            
-# And then we finally add the cog to the bot so that it can load, unload, reload and use it's content.
+
+
 def setup(bot):
     bot.add_cog(Quotes(bot))

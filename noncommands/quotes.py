@@ -7,9 +7,10 @@ import mysql.connector
 with open("config.yaml") as file:
     config = yaml.load(file, Loader=yaml.FullLoader)
 
+
 class Quotes:
     def __init__(self, bot):
-        self.bot=bot
+        self.bot = bot
 
     async def dailyQuote(self):
         channel = self.bot.get_channel(707293854507991172)
@@ -54,5 +55,5 @@ class Quotes:
         mydb.commit()
         mycursor.close()
         mydb.close()
-        
-        return quote    
+
+        return quote

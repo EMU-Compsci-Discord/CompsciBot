@@ -11,6 +11,7 @@ from nextcord.abc import GuildChannel
 with open("config.yaml") as file:
     config = yaml.load(file, Loader=yaml.FullLoader)
 
+
 class Help(commands.Cog, name="help"):
     def __init__(self, bot):
         self.bot = bot

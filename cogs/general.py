@@ -15,6 +15,7 @@ from nextcord.abc import GuildChannel
 with open("config.yaml") as file:
     config = yaml.load(file, Loader=yaml.FullLoader)
 
+
 class general(commands.Cog, name="general"):
     def __init__(self, bot):
         self.bot = bot
@@ -110,7 +111,7 @@ class general(commands.Cog, name="general"):
         embed.set_footer(
             text=f"Pong request by {interaction.user}"
         )
-        await interaction.response.send_message(embed=embed)  
+        await interaction.response.send_message(embed=embed)
 
     @nextcord.slash_command(name="invite", description="Get the invite link of the bot to be able to invite it to another server.")
     async def invite(self, interaction: Interaction):
@@ -119,7 +120,6 @@ class general(commands.Cog, name="general"):
         """
         await interaction.response.send_message(f"Invite me by clicking here: https://discordapp.com/oauth2/authorize?&client_id={config['application_id']}&scope=bot&permissions=8")
 
-    
     @nextcord.slash_command(name="tldrchannel", description="Get a TLDR of X number of past messages on the channel.")
     async def tldrchannel(self, interaction: Interaction, number: int = SlashOption(description="The number of past messages to summarize", required=True, min_value=5, max_value=200)):
         """
@@ -132,7 +132,7 @@ class general(commands.Cog, name="general"):
         embed = summarizer.getSummaryText(config, text)
 
         await interaction.response.send_message(embed=embed)
-    
+
     @nextcord.slash_command(name="tldr", description="Get a TLDR of a web page.")
     async def tldr(self, interaction: Interaction, url: str = SlashOption(description="The URL of the web page to summarize", required=True)):
         """

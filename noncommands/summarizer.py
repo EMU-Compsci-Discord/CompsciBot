@@ -4,7 +4,7 @@ import pandas as pd
 import nltk
 import re
 import numpy as np
-from nltk.corpus import stopwords 
+from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
 from trafilatura import bare_extraction
 import trafilatura
@@ -12,6 +12,7 @@ import nextcord
 
 nltk.download('punkt')
 nltk.download('stopwords')
+
 
 def scoreSent(sent, scoreMatrix, scoreCol):
     score = 0
@@ -28,21 +29,22 @@ def filterStopwords(sent):
 
     return " ".join([w for w in word_tokens if w not in stop_words])
 
+
 def getSummarySpread(filePath, numSent):
-    
+
     f = open(filePath, "r")
     text = f.read()
     text = " ".join(text.split())
 
     for i in range(100):
         text = text.replace("[" + str(i) + "]", "")
-    
+
     doc = nltk.tokenize.sent_tokenize(text)
     docFilt = [filterStopwords(s) for s in doc]
     vectorizer = CountVectorizer()
     bag_of_words = vectorizer.fit_transform(docFilt)
 
-    svd = TruncatedSVD(n_components = numSent)
+    svd = TruncatedSVD(n_components=numSent)
     lsa = svd.fit_transform(bag_of_words)
 
     col = ["topic" + str(i) for i in range(numSent)]
@@ -53,14 +55,13 @@ def getSummarySpread(filePath, numSent):
     topic_encoded_df["docFilt"] = docFilt
     topic_encoded_df["doc"] = doc
     dictionary = vectorizer.get_feature_names_out()
-    encoding_matrix=pd.DataFrame(svd.components_,index=col,columns=dictionary).T
+    encoding_matrix = pd.DataFrame(svd.components_, index=col, columns=dictionary).T
 
     for i in range(numSent):
         encoding_matrix[absCol[i]] = np.abs(encoding_matrix[col[i]])
     cl = dict()
     for c in absCol:
         cl[c] = []
-
 
     for c in absCol:
         for s in doc:
@@ -70,13 +71,14 @@ def getSummarySpread(filePath, numSent):
         s = [d for d in sorted(cl[c], key=lambda x: x[1]) if d[0] not in [f[0] for f in chosen]][::-1]
         chosen.append(s[0])
 
+
 def getSummaryMono(text, numSent):
 
     text = " ".join(text.split())
 
     for i in range(100):
         text = text.replace("[" + str(i) + "]", "")
-    
+
     doc = nltk.tokenize.sent_tokenize(text)
 
     docFilt = [filterStopwords(s) for s in doc]
@@ -84,7 +86,7 @@ def getSummaryMono(text, numSent):
     vectorizer = CountVectorizer()
     bag_of_words = vectorizer.fit_transform(docFilt)
 
-    svd = TruncatedSVD(n_components = 1)
+    svd = TruncatedSVD(n_components=1)
     lsa = svd.fit_transform(bag_of_words)
 
     col = ["topic1"]
@@ -96,7 +98,7 @@ def getSummaryMono(text, numSent):
     topic_encoded_df["doc"] = doc
 
     dictionary = vectorizer.get_feature_names_out()
-    encoding_matrix=pd.DataFrame(svd.components_,index=col,columns=dictionary).T
+    encoding_matrix = pd.DataFrame(svd.components_, index=col, columns=dictionary).T
 
     for i in range(len(col)):
         encoding_matrix[absCol[i]] = np.abs(encoding_matrix[col[i]])
@@ -109,7 +111,7 @@ def getSummaryMono(text, numSent):
         for s in doc:
             cl[c].append([s, scoreSent(s, encoding_matrix, c)])
     chosen = []
-    
+
     for i in range(numSent):
         for c in absCol:
             s = [d for d in sorted(cl[c], key=lambda x: x[1]) if d[0] not in [f[0] for f in chosen]][::-1]
@@ -126,17 +128,18 @@ def getSummaryUrl(config, url):
         color=config["success"]
     )
     embed.add_field(
-        name = "Title:",
-        value = article["title"],
-        inline = True
+        name="Title:",
+        value=article["title"],
+        inline=True
     )
     embed.add_field(
         name="Summary:",
         value="\n".join(getSummaryMono(article["text"], numSent)),
-        inline = False
+        inline=False
     )
 
     return embed
+
 
 def getSummaryText(config, text):
     numSent = 5
@@ -146,7 +149,7 @@ def getSummaryText(config, text):
     embed.add_field(
         name="Summary:",
         value="\n".join(getSummaryMono(text, numSent)),
-        inline = False
+        inline=False
     )
 
     return embed

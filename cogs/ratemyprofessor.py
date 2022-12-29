@@ -13,6 +13,7 @@ from nextcord.abc import GuildChannel
 with open("config.yaml") as file:
     config = yaml.load(file, Loader=yaml.FullLoader)
 
+
 class RateMyProfessor(commands.Cog, name="rate my professor"):
     def __init__(self, bot):
         self.bot = bot
@@ -33,16 +34,20 @@ class RateMyProfessor(commands.Cog, name="rate my professor"):
             EMU = ratemyprofessor.get_school_by_name("Eastern Michigan University")
             prof = ratemyprofessor.get_professor_by_school_and_name(EMU, professorname)
 
-            ratingsBest = sorted([rating for rating in prof.get_ratings() if rating.comment], key=lambda rating: (rating.rating, rating.date))
+            ratingsBest = sorted([rating for rating in prof.get_ratings() if rating.comment],
+                                 key=lambda rating: (rating.rating, rating.date))
             bestRating = ratingsBest[-1]
 
-            ratingsWorst = sorted([rating for rating in prof.get_ratings() if rating.comment], key=lambda rating: (-rating.rating, rating.date))
+            ratingsWorst = sorted([rating for rating in prof.get_ratings() if rating.comment],
+                                  key=lambda rating: (-rating.rating, rating.date))
             worstRating = ratingsWorst[-1]
 
             profEmbed = self.buildProfEmbed(prof)
-            bestembed = self.buildRatingEmbed(nextcord.Embed(title=f"Best Rating for {prof.name}", color=config["success"]), bestRating)
-            worstembed = self.buildRatingEmbed(nextcord.Embed(title=f"Worst Rating for {prof.name}",color=config["success"]), worstRating)
-            
+            bestembed = self.buildRatingEmbed(nextcord.Embed(title=f"Best Rating for {prof.name}", color=config["success"]),
+                                              bestRating)
+            worstembed = self.buildRatingEmbed(nextcord.Embed(title=f"Worst Rating for {prof.name}", color=config["success"]),
+                                               worstRating)
+
             await interaction.response.send_message(embed=profEmbed)
             await interaction.followup.send(embed=bestembed)
             await interaction.followup.send(embed=worstembed)
@@ -93,7 +98,7 @@ class RateMyProfessor(commands.Cog, name="rate my professor"):
             )
 
         return embed
-    
+
     def buildProfEmbed(self, prof):
         embed = nextcord.Embed(
             title=prof,
@@ -102,7 +107,7 @@ class RateMyProfessor(commands.Cog, name="rate my professor"):
 
         if prof.name in self.profImages:
             embed.set_image(url=self.profImages[prof.name])
-        
+
         embed.add_field(
             name="Department",
             value=prof.department,
@@ -140,6 +145,7 @@ class RateMyProfessor(commands.Cog, name="rate my professor"):
         )
 
         return embed
+
 
 def setup(bot):
     bot.add_cog(RateMyProfessor(bot))
