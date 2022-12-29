@@ -6,4 +6,3 @@ recursive = true
 max_line_length = 120
 recursive = true
 exit_code = true
-in_place = true

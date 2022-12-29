@@ -34,4 +34,4 @@ jobs:
         run: pip install -r requirements.txt
 
       - name: Run autopep8
-        run: autopep8 .
+        run: autopep8 --diff .
