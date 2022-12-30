@@ -16,7 +16,7 @@ nltk.download('punkt')
 nltk.download('stopwords')
 
 
-def scoreSent(sent, scoreMatrix, scoreCol):
+def score_sent(sent, scoreMatrix, scoreCol):
     score = 0
     for word in sent.split(" "):
         if word in scoreMatrix.index:
@@ -25,14 +25,14 @@ def scoreSent(sent, scoreMatrix, scoreCol):
     return score/len(sent)
 
 
-def filterStopwords(sent):
+def filter_stopwords(sent):
     stop_words = set(stopwords.words('english'))
     word_tokens = word_tokenize(sent)
 
     return " ".join([w for w in word_tokens if w not in stop_words])
 
 
-def getSummarySpread(filePath, numSent):
+def get_summary_spread(filePath, numSent):
 
     f = open(filePath, "r")
     text = f.read()
@@ -42,7 +42,7 @@ def getSummarySpread(filePath, numSent):
         text = text.replace("[" + str(i) + "]", "")
 
     doc = nltk.tokenize.sent_tokenize(text)
-    docFilt = [filterStopwords(s) for s in doc]
+    docFilt = [filter_stopwords(s) for s in doc]
     vectorizer = CountVectorizer()
     bag_of_words = vectorizer.fit_transform(docFilt)
 
@@ -67,14 +67,14 @@ def getSummarySpread(filePath, numSent):
 
     for c in absCol:
         for s in doc:
-            cl[c].append([s, scoreSent(s, encoding_matrix, c)])
+            cl[c].append([s, score_sent(s, encoding_matrix, c)])
     chosen = []
     for c in absCol:
         s = [d for d in sorted(cl[c], key=lambda x: x[1]) if d[0] not in [f[0] for f in chosen]][::-1]
         chosen.append(s[0])
 
 
-def getSummaryMono(text, numSent):
+def get_summary_mono(text, numSent):
 
     text = " ".join(text.split())
 
@@ -83,7 +83,7 @@ def getSummaryMono(text, numSent):
 
     doc = nltk.tokenize.sent_tokenize(text)
 
-    docFilt = [filterStopwords(s) for s in doc]
+    docFilt = [filter_stopwords(s) for s in doc]
 
     vectorizer = CountVectorizer()
     bag_of_words = vectorizer.fit_transform(docFilt)
@@ -111,7 +111,7 @@ def getSummaryMono(text, numSent):
 
     for c in absCol:
         for s in doc:
-            cl[c].append([s, scoreSent(s, encoding_matrix, c)])
+            cl[c].append([s, score_sent(s, encoding_matrix, c)])
     chosen = []
 
     for i in range(numSent):
@@ -122,7 +122,7 @@ def getSummaryMono(text, numSent):
     return [i[0] for i in chosen]
 
 
-def getSummaryUrl(config, url):
+def get_summary_url(config, url):
     numSent = 5
     downloaded = trafilatura.fetch_url(url)
     article = bare_extraction(downloaded)
@@ -136,21 +136,21 @@ def getSummaryUrl(config, url):
     )
     embed.add_field(
         name="Summary:",
-        value="\n".join(getSummaryMono(article["text"], numSent)),
+        value="\n".join(get_summary_mono(article["text"], numSent)),
         inline=False
     )
 
     return embed
 
 
-def getSummaryText(text):
+def get_summary_text(text):
     numSent = 5
     embed = nextcord.Embed(
         color=SUCCESS_COLOR
     )
     embed.add_field(
         name="Summary:",
-        value="\n".join(getSummaryMono(text, numSent)),
+        value="\n".join(get_summary_mono(text, numSent)),
         inline=False
     )
 
