@@ -130,7 +130,7 @@ class general(commands.Cog, name="general"):
         [URL] Get a TLDR a web page.
         """
         try:
-            await interaction.response.send_message(embed=summarizer.get_summary_url(config, url))
+            await interaction.response.send_message(embed=summarizer.get_summary_url(url))
         except:
             await interaction.response.send_message("There's something odd about that link. Either they won't let me read it or you sent it wrongly.")
 

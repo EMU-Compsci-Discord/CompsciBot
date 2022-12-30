@@ -122,7 +122,7 @@ def get_summary_mono(text, numSent):
     return [i[0] for i in chosen]
 
 
-def get_summary_url(config, url):
+def get_summary_url(url):
     numSent = 5
     downloaded = trafilatura.fetch_url(url)
     article = bare_extraction(downloaded)
