@@ -38,7 +38,7 @@ bot.remove_command("help")
 
 if __name__ == "__main__":
     for file in os.listdir("./cogs"):
-        if file.endswith(".py"):
+        if file.endswith(".py") and not file.startswith("_"):
             extension = file[:-3]
             try:
                 bot.load_extension(f"cogs.{extension}")
