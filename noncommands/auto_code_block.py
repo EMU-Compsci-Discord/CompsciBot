@@ -29,7 +29,6 @@ class AutoCodeBlock:
                 await msg.delete()
             except asyncio.exceptions.TimeoutError:
                 await msg.clear_reactions()
-                pass
 
     def looks_like_unformatted_code(self, text):
         """
