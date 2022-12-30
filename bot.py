@@ -1,3 +1,8 @@
+"""
+This is the main file that runs the bot.
+"""
+
+
 import os
 import platform
 import nextcord

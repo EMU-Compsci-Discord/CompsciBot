@@ -1,3 +1,8 @@
+"""
+This cog adds meta commands having to do with the bot itself.
+"""
+
+
 import platform
 from noncommands import summarizer
 import nextcord

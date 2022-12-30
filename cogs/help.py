@@ -1,3 +1,8 @@
+"""
+This cog adds a help command.
+"""
+
+
 import nextcord
 from nextcord.ext import commands
 from nextcord import Interaction

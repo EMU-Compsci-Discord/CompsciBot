@@ -1,3 +1,8 @@
+"""
+This cog adds commands related to the creation and deletion of class channels.
+"""
+
+
 import asyncio
 from collections import OrderedDict
 from string import ascii_lowercase

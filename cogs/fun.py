@@ -1,3 +1,7 @@
+"""
+This cog add fun little random things.
+"""
+
 
 import random
 import aiohttp

@@ -1,3 +1,8 @@
+"""
+This cog adds a command for accessing ratemyprofessor
+"""
+
+
 import ratemyprofessor
 import nextcord
 from nextcord.ext import commands

@@ -1,3 +1,8 @@
+# """
+# This is a template for a new cog.
+# """
+#
+#
 # import os
 # import sys
 # import nextcord
