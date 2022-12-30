@@ -4,11 +4,11 @@ This cog adds meta commands having to do with the bot itself.
 
 
 import platform
-from noncommands import summarizer
 import nextcord
 from nextcord.ext import commands
 from nextcord import Interaction, SlashOption
 
+from noncommands import summarizer
 from constants import config, SUCCESS_COLOR
 
 

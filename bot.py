@@ -12,7 +12,6 @@ from nextcord.ext import commands
 from nextcord.ext.commands import Bot
 
 from noncommands import auto_code_block, quotes
-
 from constants import ERROR_COLOR, config
 
 

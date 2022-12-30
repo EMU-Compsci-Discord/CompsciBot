@@ -3,10 +3,11 @@ This cog adds commands for getting and creating quotes.
 """
 
 
-from noncommands import quotes
 import nextcord
 from nextcord.ext import commands
 from nextcord import Interaction, SlashOption
+
+from noncommands import quotes
 
 
 class Quotes(commands.Cog, name="quotes"):
