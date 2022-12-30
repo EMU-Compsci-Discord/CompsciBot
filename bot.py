@@ -48,7 +48,7 @@ if __name__ == "__main__":
             try:
                 bot.load_extension(f"cogs.{extension}")
                 print(f"Loaded extension '{extension}'")
-            except Exception as e:
+            except Exception as e:  # pylint: disable=broad-except; because we want to catch all errors
                 exception = f"{type(e).__name__}: {e}"
                 print(f"Failed to load extension {extension}\n{exception}")
 
