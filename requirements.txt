@@ -2,8 +2,6 @@ aiohttp
 apscheduler
 asyncio
 nextcord
-pyyaml
-aiofiles
 schedule
 scikit-learn
 pandas
@@ -11,7 +9,6 @@ nltk
 numpy
 trafilatura
 inspiro
-uwuify
 RateMyProfessorAPI
 mysql-connector
 pylint
