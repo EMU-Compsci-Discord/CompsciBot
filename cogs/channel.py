@@ -97,7 +97,7 @@ async def create_category(category_name, interaction: Interaction):
     }
     try:
         return await guild.create_category(category_name, overwrites=overwrites)
-    except:
+    except Exception:
         print("Issue with ", category_name, ".  Error: ", sys.exc_info()[0])
 
 
@@ -111,13 +111,16 @@ async def create_channel(channel_name: str, category: nextcord.CategoryChannel, 
 
 async def create_role(interaction: Interaction, role_name: str, permissions: Permissions = Permissions.none(), color=Colour.default()):
     """
-    creates a role with specified permissions, with specifed name.
+    creates a role with specified permissions, with specified name.
     """
 
     return await interaction.guild.create_role(name=role_name, permissions=permissions, colour=color)
 
 
 async def create_role_for_category(interaction: Interaction, category: nextcord.CategoryChannel, term: str):
+    """
+    creates a role for a category and returns role object
+    """
     role_name = f"{category.name.replace('-', ' ')} {term}"
     role = await create_role(interaction, role_name, color=nextcord.Colour.blue())
     # gives basic permissions to a role for its assigned channel
@@ -141,6 +144,10 @@ def reaction_emoji() -> Generator[str, None, None]:
 
 
 class ChannelManager(Cog, name="channelmanager"):
+    """
+    This cog adds commands related to the creation and deletion of class channels.
+    """
+
     def __init__(self, bot):
         self.bot = bot
 
@@ -152,9 +159,9 @@ class ChannelManager(Cog, name="channelmanager"):
         """
 
         try:
-            json = await read_class_json(file)
-        except Exception as e:
-            await interaction.response.send_message(f"Error: {e}", ephemeral=True)
+            json_data = await read_class_json(file)
+        except Exception as exception:
+            await interaction.response.send_message(f"Error: {exception}", ephemeral=True)
             return
 
         await interaction.response.defer()
@@ -165,7 +172,7 @@ class ChannelManager(Cog, name="channelmanager"):
 
         courses_by_category_name: OrderedDict[str, list[Section]] = OrderedDict()
 
-        for section in json["classes"]:
+        for section in json_data["classes"]:
 
             # first 3 numbers only (not L1,L2,L3)
             course_number = section["course"][0:3]
@@ -217,7 +224,7 @@ class ChannelManager(Cog, name="channelmanager"):
                 coroutines.append(create_channel(channel_name, category, interaction, description))
                 channels_count += 1
 
-            coroutines.append(create_role_for_category(interaction, category, json["term"]))
+            coroutines.append(create_role_for_category(interaction, category, json_data["term"]))
             roles_count += 1
 
             coroutines.append(
