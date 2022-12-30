@@ -143,7 +143,7 @@ def getSummaryUrl(config, url):
     return embed
 
 
-def getSummaryText(config, text):
+def getSummaryText(text):
     numSent = 5
     embed = nextcord.Embed(
         color=SUCCESS_COLOR

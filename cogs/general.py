@@ -120,7 +120,7 @@ class general(commands.Cog, name="general"):
         messages = await interaction.channel.history(limit=number).flatten()
         text = ". ".join([m.content for m in messages])
         text = text.replace(".. ", ". ")
-        embed = summarizer.getSummaryText(config, text)
+        embed = summarizer.getSummaryText(text)
 
         await interaction.response.send_message(embed=embed)
 
