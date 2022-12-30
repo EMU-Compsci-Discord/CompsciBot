@@ -5,7 +5,7 @@ nextcord
 pyyaml
 aiofiles
 schedule
-sklearn
+scikit-learn
 pandas
 nltk
 numpy

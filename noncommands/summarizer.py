@@ -1,5 +1,5 @@
-from sklearn.feature_extraction.text import CountVectorizer
-from sklearn.decomposition import TruncatedSVD
+from scikit-learn.feature_extraction.text import CountVectorizer
+from scikit-learn.decomposition import TruncatedSVD
 import pandas as pd
 import nltk
 import numpy as np
