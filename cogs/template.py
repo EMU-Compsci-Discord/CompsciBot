@@ -6,7 +6,7 @@
 # from nextcord import Interaction, SlashOption, ChannelType
 # from nextcord.abc import GuildChannel
 #
-# from ..constants import config
+# from constants import config
 #
 #
 # class Template(commands.Cog, name="template"):  # Here we name the cog and create a new class for the cog.

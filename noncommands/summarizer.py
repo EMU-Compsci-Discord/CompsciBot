@@ -10,7 +10,7 @@ import trafilatura
 import nextcord
 
 
-from ..constants import SUCCESS_COLOR
+from constants import SUCCESS_COLOR
 
 nltk.download('punkt')
 nltk.download('stopwords')

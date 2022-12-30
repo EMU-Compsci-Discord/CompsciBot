@@ -1,10 +1,10 @@
 import platform
-from ..noncommands import summarizer
+from noncommands import summarizer
 import nextcord
 from nextcord.ext import commands
 from nextcord import Interaction, SlashOption
 
-from ..constants import config, SUCCESS_COLOR
+from constants import config, SUCCESS_COLOR
 
 
 class general(commands.Cog, name="general"):

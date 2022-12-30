@@ -1,6 +1,6 @@
 import mysql.connector
 
-from ..constants import config
+from constants import config
 
 
 class Quotes:

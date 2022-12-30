@@ -3,7 +3,7 @@ import nextcord
 from nextcord.ext import commands
 from nextcord import SlashOption
 
-from ..constants import SUCCESS_COLOR
+from constants import SUCCESS_COLOR
 
 
 class RateMyProfessor(commands.Cog, name="rate my professor"):
