@@ -77,11 +77,11 @@ async def on_command_completion(ctx):
     """
     The code in this event is executed every time a command has been *successfully* executed
     """
-    fullCommandName = ctx.command.qualified_name
-    split = fullCommandName.split(" ")
-    executedCommand = str(split[0])
+    full_command_name = ctx.command.qualified_name
+    split = full_command_name.split(" ")
+    executed_command = str(split[0])
     print(
-        f"Executed {executedCommand} command in {ctx.guild.name} (ID: {ctx.message.guild.id}) by {ctx.message.author} (ID: {ctx.message.author.id})")
+        f"Executed {executed_command} command in {ctx.guild.name} (ID: {ctx.message.guild.id}) by {ctx.message.author} (ID: {ctx.message.author.id})")
 
 
 @bot.event
