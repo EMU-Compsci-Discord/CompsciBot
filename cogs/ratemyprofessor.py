@@ -1,11 +1,9 @@
-import yaml
+import ratemyprofessor
 import nextcord
 from nextcord.ext import commands
 from nextcord import SlashOption
 
-
-with open("config.yaml") as file:
-    config = yaml.load(file, Loader=yaml.FullLoader)
+from ..constants import SUCCESS_COLOR
 
 
 class RateMyProfessor(commands.Cog, name="rate my professor"):
@@ -37,9 +35,9 @@ class RateMyProfessor(commands.Cog, name="rate my professor"):
             worstRating = ratingsWorst[-1]
 
             profEmbed = self.buildProfEmbed(prof)
-            bestembed = self.buildRatingEmbed(nextcord.Embed(title=f"Best Rating for {prof.name}", color=config["success"]),
+            bestembed = self.buildRatingEmbed(nextcord.Embed(title=f"Best Rating for {prof.name}", color=SUCCESS_COLOR),
                                               bestRating)
-            worstembed = self.buildRatingEmbed(nextcord.Embed(title=f"Worst Rating for {prof.name}", color=config["success"]),
+            worstembed = self.buildRatingEmbed(nextcord.Embed(title=f"Worst Rating for {prof.name}", color=SUCCESS_COLOR),
                                                worstRating)
 
             await interaction.response.send_message(embed=profEmbed)
@@ -96,7 +94,7 @@ class RateMyProfessor(commands.Cog, name="rate my professor"):
     def buildProfEmbed(self, prof):
         embed = nextcord.Embed(
             title=prof,
-            color=config["success"]
+            color=SUCCESS_COLOR
         )
 
         if prof.name in self.profImages:

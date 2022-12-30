@@ -1,7 +1,6 @@
 
 import random
 import aiohttp
-import yaml
 import requests
 import inspirobot
 
@@ -10,8 +9,7 @@ from nextcord.ext import commands
 from nextcord import Interaction, SlashOption
 
 
-with open("config.yaml") as file:
-    config = yaml.load(file, Loader=yaml.FullLoader)
+from ..constants import ERROR_COLOR, MAIN_COLOR, SUCCESS_COLOR
 
 
 class Fun(commands.Cog, name="fun"):
@@ -73,7 +71,7 @@ class Fun(commands.Cog, name="fun"):
         embed = nextcord.Embed(
             title=f"**My Answer to '{question}':**",
             description=f"{answers[random.randint(0, len(answers) - 1)]}",
-            color=config["success"]
+            color=SUCCESS_COLOR
         )
         embed.set_footer(
             text=f"Question asked by: {interaction.user}"
@@ -91,13 +89,13 @@ class Fun(commands.Cog, name="fun"):
             async with session.get("https://uselessfacts.jsph.pl/random.json?language=en") as request:
                 if request.status == 200:
                     data = await request.json()
-                    embed = nextcord.Embed(description=data["text"], color=config["main_color"])
+                    embed = nextcord.Embed(description=data["text"], color=MAIN_COLOR)
                     await interaction.response.send_message(embed=embed)
                 else:
                     embed = nextcord.Embed(
                         title="Error!",
                         description="There is something wrong with the API, please try again later",
-                        color=config["error"]
+                        color=ERROR_COLOR
                     )
                     await interaction.response.send_message(embed=embed)
 

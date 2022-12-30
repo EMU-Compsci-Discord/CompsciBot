@@ -1,15 +1,12 @@
 # import os
 # import sys
-# import yaml
 # import nextcord
 # from typing import Optional
 # from nextcord.ext import commands
 # from nextcord import Interaction, SlashOption, ChannelType
 # from nextcord.abc import GuildChannel
 #
-#
-# with open("config.yaml") as file:
-#     config = yaml.load(file, Loader=yaml.FullLoader)
+# from ..constants import config
 #
 #
 # class Template(commands.Cog, name="template"):  # Here we name the cog and create a new class for the cog.

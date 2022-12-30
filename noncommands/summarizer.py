@@ -1,5 +1,5 @@
-from scikit-learn.feature_extraction.text import CountVectorizer
-from scikit-learn.decomposition import TruncatedSVD
+from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.decomposition import TruncatedSVD
 import pandas as pd
 import nltk
 import numpy as np
@@ -8,6 +8,9 @@ from nltk.tokenize import word_tokenize
 from trafilatura import bare_extraction
 import trafilatura
 import nextcord
+
+
+from ..constants import SUCCESS_COLOR
 
 nltk.download('punkt')
 nltk.download('stopwords')
@@ -124,7 +127,7 @@ def getSummaryUrl(config, url):
     downloaded = trafilatura.fetch_url(url)
     article = bare_extraction(downloaded)
     embed = nextcord.Embed(
-        color=config["success"]
+        color=SUCCESS_COLOR
     )
     embed.add_field(
         name="Title:",
@@ -143,7 +146,7 @@ def getSummaryUrl(config, url):
 def getSummaryText(config, text):
     numSent = 5
     embed = nextcord.Embed(
-        color=config["success"]
+        color=SUCCESS_COLOR
     )
     embed.add_field(
         name="Summary:",

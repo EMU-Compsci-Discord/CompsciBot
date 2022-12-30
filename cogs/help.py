@@ -1,11 +1,6 @@
-import yaml
 import nextcord
 from nextcord.ext import commands
 from nextcord import Interaction
-
-
-with open("config.yaml") as file:
-    config = yaml.load(file, Loader=yaml.FullLoader)
 
 
 class Help(commands.Cog, name="help"):

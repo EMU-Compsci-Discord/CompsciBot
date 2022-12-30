@@ -1,11 +1,7 @@
-import yaml
-from noncommands import quotes
+from ..noncommands import quotes
 import nextcord
 from nextcord.ext import commands
 from nextcord import Interaction, SlashOption
-
-with open("config.yaml") as file:
-    config = yaml.load(file, Loader=yaml.FullLoader)
 
 
 class Quotes(commands.Cog, name="quotes"):

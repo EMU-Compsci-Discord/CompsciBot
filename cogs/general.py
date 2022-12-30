@@ -1,12 +1,10 @@
 import platform
-import yaml
-from noncommands import summarizer
+from ..noncommands import summarizer
 import nextcord
 from nextcord.ext import commands
 from nextcord import Interaction, SlashOption
 
-with open("config.yaml") as file:
-    config = yaml.load(file, Loader=yaml.FullLoader)
+from ..constants import config, SUCCESS_COLOR
 
 
 class general(commands.Cog, name="general"):
@@ -20,7 +18,7 @@ class general(commands.Cog, name="general"):
         """
         embed = nextcord.Embed(
             description="The server's most helpful member.",
-            color=config["success"]
+            color=SUCCESS_COLOR
         )
         embed.set_author(
             name="Bot Information"
@@ -60,7 +58,7 @@ class general(commands.Cog, name="general"):
         embed = nextcord.Embed(
             title="**Server Name:**",
             description=f"{server}",
-            color=config["success"]
+            color=SUCCESS_COLOR
         )
 
         if server.icon != None:
@@ -94,7 +92,7 @@ class general(commands.Cog, name="general"):
         [No Arguments] Check if the bot is alive.
         """
         embed = nextcord.Embed(
-            color=config["success"]
+            color=SUCCESS_COLOR
         )
         embed.add_field(
             name="Pong!",

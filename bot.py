@@ -1,7 +1,6 @@
 import os
 import platform
 import nextcord
-import yaml
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from apscheduler.triggers.cron import CronTrigger
 from nextcord.ext import commands
@@ -9,9 +8,8 @@ from nextcord.ext.commands import Bot
 
 from noncommands import auto_code_block, quotes
 
+from constants import ERROR_COLOR, config
 
-with open("config.yaml") as file:
-    config = yaml.load(file, Loader=yaml.FullLoader)
 
 intents = nextcord.Intents.default().all()
 
@@ -94,7 +92,7 @@ async def on_command_error(context, error):
         embed = nextcord.Embed(
             title="Hey, please slow down!",
             description=f"You can use this command again in {f'{round(hours)} hours' if round(hours) > 0 else ''} {f'{round(minutes)} minutes' if round(minutes) > 0 else ''} {f'{round(seconds)} seconds' if round(seconds) > 0 else ''}.",
-            color=config["error"]
+            color=ERROR_COLOR
         )
         await context.send(embed=embed)
     elif isinstance(error, commands.MissingPermissions):
@@ -102,7 +100,7 @@ async def on_command_error(context, error):
             title="Error!",
             description="You are missing the permission `" + ", ".join(
                 error.missing_perms) + "` to execute this command!",
-            color=config["error"]
+            color=ERROR_COLOR
         )
         await context.send(embed=embed)
     raise error

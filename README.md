@@ -37,10 +37,10 @@ You should see something similar to this result if you are using Windows Command
 
 <img src="imgs/cmdCloneCommand.webp" alt="Command Line Output" width="100%"/>
 
-You can set up a python virtual environment that uses python 3.9 by running this command on windows
+You can set up a python virtual environment by running this command on windows
 
 ```pwsh
-&"C:\Program Files\Python39\python.exe" -m venv .venv
+python -m venv .venv
 ```
 
 ### 2. Getting a Discord Bot
@@ -86,25 +86,18 @@ Click the Administrator Box, so it looks as shown:
 
 ### 4. Config File
 
-Now go to your IDE or Text Editor, and make a copy of `config template.yaml`. Save the copy as `config.yaml`. This will be the bots config file, and is important to running on discord.
+Now go to your IDE or Text Editor, and make a copy of `config_template.toml`. Save the copy as `config.toml`. This will be the bots config file, and is important to running on discord.
 
 DO NOT WRITE ON THE TEMPLATE
 
-```yaml
-token: "BOT_TOKEN"
-application_id: "APPLICATION_ID"
-owners:
-  - OWNER_ID
-blacklist:
-  - 000000000000000000
-main_color: 0xD75BF4
-error: 0xE02B2B
-success: 0x42F56C
-warning: 0xF59E42
-info: 0x4299F5
+```toml
+token = "BOT_TOKEN"
+application_id = "APPLICATION_ID"
+owners = ["OWNER_ID"]
+blacklist = []
 ```
 
-On the `config.yaml` file, you will be changing four lines:
+On the `config.toml` file, you will be changing four lines:
 
 - `token`
 - `application_id`
