@@ -12,7 +12,7 @@ from noncommands import summarizer
 from constants import config, SUCCESS_COLOR
 
 
-class general(commands.Cog, name="general"):
+class General(commands.Cog, name="general"):
     """
     This cog adds meta commands having to do with the bot itself.
     """
@@ -148,4 +148,4 @@ def setup(bot):
     """
     Add the cog to the bot so that it can load, unload, reload and use it's content.
     """
-    bot.add_cog(general(bot))
+    bot.add_cog(General(bot))

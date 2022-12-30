@@ -7,7 +7,7 @@ class Quotes:
     def __init__(self, bot):
         self.bot = bot
 
-    async def dailyQuote(self):
+    async def daily_quote(self):
         channel = self.bot.get_channel(707293854507991172)
         dailyquote = await Quotes.quote(self.bot, "")
         await channel.send("Daily Quote:\n" + dailyquote)
