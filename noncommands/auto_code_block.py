@@ -32,4 +32,7 @@ class AutoCodeBlock:
                 pass
 
     def looks_like_unformatted_code(self, text):
+        """
+        Returns True if the text looks like it might contain unformatted code.
+        """
         return CODE_REGEX.search(text) and "```" not in text
