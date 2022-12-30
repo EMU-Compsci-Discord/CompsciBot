@@ -322,6 +322,8 @@ class ChannelManager(Cog, name="channelmanager"):
             await interaction.followup.send(embed=embed)
 
 
-# And then we finally add the cog to the bot so that it can load, unload, reload and use it's content.
 def setup(bot):
+    """
+    Add the cog to the bot so that it can load, unload, reload and use it's content.
+    """
     bot.add_cog(ChannelManager(bot))

@@ -26,4 +26,7 @@ class Help(commands.Cog, name="help"):
 
 
 def setup(bot):
+    """
+    Add the cog to the bot so that it can load, unload, reload and use it's content.
+    """
     bot.add_cog(Help(bot))

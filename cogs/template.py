@@ -31,5 +31,8 @@
 #         await context.send("I'll tell you when you're older. Move along now, child.")
 #
 #
-# def setup(bot):  # And then we finally add the cog to the bot so that it can load, unload, reload and use it's content.
+# def setup(bot):
+#     """
+#     Add the cog to the bot so that it can load, unload, reload and use it's content.
+#     """
 #     bot.add_cog(Template(bot))
