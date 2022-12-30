@@ -10,6 +10,10 @@ from nextcord import Interaction, SlashOption
 
 
 class Quotes(commands.Cog, name="quotes"):
+    """
+    This cog adds commands for getting and creating quotes.
+    """
+
     def __init__(self, bot):
         self.bot = bot
 

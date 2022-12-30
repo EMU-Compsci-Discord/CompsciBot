@@ -17,6 +17,10 @@ from constants import ERROR_COLOR, MAIN_COLOR, SUCCESS_COLOR
 
 
 class Fun(commands.Cog, name="fun"):
+    """
+    This cog add fun little random things.
+    """
+
     def __init__(self, bot):
         self.bot = bot
 

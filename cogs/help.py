@@ -9,6 +9,10 @@ from nextcord import Interaction
 
 
 class Help(commands.Cog, name="help"):
+    """
+    This cog adds a help command.
+    """
+
     def __init__(self, bot):
         self.bot = bot
 

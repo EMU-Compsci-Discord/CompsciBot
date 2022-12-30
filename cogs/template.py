@@ -15,6 +15,10 @@
 #
 #
 # class Template(commands.Cog, name="template"):  # Here we name the cog and create a new class for the cog.
+#     """
+#     This is a template for a new cog.
+#     """
+#
 #     def __init__(self, bot):
 #         self.bot = bot
 #

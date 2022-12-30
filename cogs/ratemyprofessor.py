@@ -12,6 +12,10 @@ from constants import SUCCESS_COLOR
 
 
 class RateMyProfessor(commands.Cog, name="rate my professor"):
+    """
+    This cog adds a command for accessing ratemyprofessor
+    """
+
     def __init__(self, bot):
         self.bot = bot
         self.profImages = {

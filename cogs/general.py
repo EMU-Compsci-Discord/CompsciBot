@@ -13,6 +13,10 @@ from constants import config, SUCCESS_COLOR
 
 
 class general(commands.Cog, name="general"):
+    """
+    This cog adds meta commands having to do with the bot itself.
+    """
+
     def __init__(self, bot):
         self.bot = bot
 
