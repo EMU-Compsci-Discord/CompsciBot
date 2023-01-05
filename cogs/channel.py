@@ -6,6 +6,7 @@ import sys
 from typing import Coroutine, TypedDict, Generator
 import json
 import yaml
+import logging
 from nextcord.ext.commands import Cog
 from nextcord.ext.application_checks import has_permissions
 from nextcord.utils import find
@@ -99,7 +100,7 @@ async def create_category(category_name, interaction: Interaction):
     try:
         return await guild.create_category(category_name, overwrites=overwrites)
     except:
-        print("Issue with ", category_name, ".  Error: ", sys.exc_info()[0])
+        logging.error(f"Issue with {category_name}.  Error: {sys.exc_info()[0]}")
 
 
 async def create_channel(channel_name: str, category: nextcord.CategoryChannel, interaction: Interaction, description: str):
