@@ -70,7 +70,7 @@ class General(commands.Cog, name="general"):
             color=SUCCESS_COLOR
         )
 
-        if server.icon != None:
+        if server.icon is not None:
             embed.set_thumbnail(
                 url=server.icon.url
             )
