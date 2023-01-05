@@ -153,7 +153,7 @@ class ChannelManager(Cog, name="channelmanager"):
 
     @nextcord.slash_command(name="importclasses")
     @has_permissions(administrator=True)
-    async def import_classes(self, interaction: Interaction, file: Attachment = SlashOption(description="The name of the JSON file to parse.", required=True)):
+    async def import_classes(self, interaction: Interaction, file: Attachment = SlashOption(description="A JSON file containing the classes.", required=True)):
         """
         Import a JSON file and create channels and roles for each class.
         """
