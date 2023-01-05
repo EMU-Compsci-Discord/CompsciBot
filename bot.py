@@ -16,7 +16,7 @@ from noncommands import auto_code_block,quotes
 with open("config.yaml") as file:
     config = yaml.load(file, Loader=yaml.FullLoader)
 
-file_logging_handler = logging.FileHandler(filename="bot.log", encoding="utf-8", mode="w")
+file_logging_handler = logging.FileHandler(filename="bot.log", encoding="utf-8", mode="a")
 file_logging_handler.setLevel(logging.DEBUG)
 file_logging_handler.setFormatter(logging.Formatter("%(asctime)s:%(levelname)s:%(name)s: %(message)s"))
 terminal_logging_handler = logging.StreamHandler(sys.stdout)
