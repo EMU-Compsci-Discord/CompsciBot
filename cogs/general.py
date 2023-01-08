@@ -1,21 +1,22 @@
-import os
+"""
+This cog adds meta commands having to do with the bot itself.
+"""
+
+
 import platform
-import sys
-import json
-import yaml
-import random
-from nextcord.ext import commands
-from noncommands import summarizer, quotes
 import nextcord
-from typing import Optional
 from nextcord.ext import commands
-from nextcord import Interaction, SlashOption, ChannelType
-from nextcord.abc import GuildChannel
+from nextcord import Interaction, SlashOption
 
-with open("config.yaml") as file:
-    config = yaml.load(file, Loader=yaml.FullLoader)
+from noncommands import summarizer
+from constants import config, SUCCESS_COLOR
 
-class general(commands.Cog, name="general"):
+
+class General(commands.Cog, name="general"):
+    """
+    This cog adds meta commands having to do with the bot itself.
+    """
+
     def __init__(self, bot):
         self.bot = bot
 
@@ -26,7 +27,7 @@ class general(commands.Cog, name="general"):
         """
         embed = nextcord.Embed(
             description="The server's most helpful member.",
-            color=config["success"]
+            color=SUCCESS_COLOR
         )
         embed.set_author(
             name="Bot Information"
@@ -66,10 +67,10 @@ class general(commands.Cog, name="general"):
         embed = nextcord.Embed(
             title="**Server Name:**",
             description=f"{server}",
-            color=config["success"]
+            color=SUCCESS_COLOR
         )
 
-        if server.icon != None:
+        if server.icon is not None:
             embed.set_thumbnail(
                 url=server.icon.url
             )
@@ -100,7 +101,7 @@ class general(commands.Cog, name="general"):
         [No Arguments] Check if the bot is alive.
         """
         embed = nextcord.Embed(
-            color=config["success"]
+            color=SUCCESS_COLOR
         )
         embed.add_field(
             name="Pong!",
@@ -110,7 +111,7 @@ class general(commands.Cog, name="general"):
         embed.set_footer(
             text=f"Pong request by {interaction.user}"
         )
-        await interaction.response.send_message(embed=embed)  
+        await interaction.response.send_message(embed=embed)
 
     @nextcord.slash_command(name="invite", description="Get the invite link of the bot to be able to invite it to another server.")
     async def invite(self, interaction: Interaction):
@@ -119,7 +120,6 @@ class general(commands.Cog, name="general"):
         """
         await interaction.response.send_message(f"Invite me by clicking here: https://discordapp.com/oauth2/authorize?&client_id={config['application_id']}&scope=bot&permissions=8")
 
-    
     @nextcord.slash_command(name="tldrchannel", description="Get a TLDR of X number of past messages on the channel.")
     async def tldrchannel(self, interaction: Interaction, number: int = SlashOption(description="The number of past messages to summarize", required=True, min_value=5, max_value=200)):
         """
@@ -129,20 +129,23 @@ class general(commands.Cog, name="general"):
         messages = await interaction.channel.history(limit=number).flatten()
         text = ". ".join([m.content for m in messages])
         text = text.replace(".. ", ". ")
-        embed = summarizer.getSummaryText(config, text)
+        embed = summarizer.get_summary_text(text)
 
         await interaction.response.send_message(embed=embed)
-    
+
     @nextcord.slash_command(name="tldr", description="Get a TLDR of a web page.")
     async def tldr(self, interaction: Interaction, url: str = SlashOption(description="The URL of the web page to summarize", required=True)):
         """
         [URL] Get a TLDR a web page.
         """
         try:
-            await interaction.response.send_message(embed=summarizer.getSummaryUrl(config, url))
+            await interaction.response.send_message(embed=summarizer.get_summary_url(url))
         except:
             await interaction.response.send_message("There's something odd about that link. Either they won't let me read it or you sent it wrongly.")
 
 
 def setup(bot):
-    bot.add_cog(general(bot))
+    """
+    Add the cog to the bot so that it can load, unload, reload and use it's content.
+    """
+    bot.add_cog(General(bot))

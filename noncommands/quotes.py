@@ -1,27 +1,26 @@
-import json
-import random
-import yaml
-import os
 import mysql.connector
 
-with open("config.yaml") as file:
-    config = yaml.load(file, Loader=yaml.FullLoader)
+from constants import config
+
 
 class Quotes:
     def __init__(self, bot):
-        self.bot=bot
+        self.bot = bot
 
-    async def dailyQuote(self):
+    async def daily_quote(self):
         channel = self.bot.get_channel(707293854507991172)
         dailyquote = await Quotes.quote(self.bot, "")
         await channel.send("Daily Quote:\n" + dailyquote)
 
     async def quote(self, keywords):
+        if config["db"] is None:
+            return "Database not configured"
+
         mydb = mysql.connector.connect(
-            host=config["dbhost"],
-            user=config["dbuser"],
-            password=config["dbpassword"],
-            database=config["databasename"],
+            host=config["db"]["host"],
+            user=config["db"]["user"],
+            password=config["db"]["password"],
+            database=config["db"]["database"],
             autocommit=True,
             use_unicode=True
         )
@@ -39,11 +38,14 @@ class Quotes:
             return quote[0]
 
     async def newquote(self, quote):
+        if config["db"] is None:
+            return "Database not configured"
+
         mydb = mysql.connector.connect(
-            host=config["dbhost"],
-            user=config["dbuser"],
-            password=config["dbpassword"],
-            database=config["databasename"],
+            host=config["db"]["host"],
+            user=config["db"]["user"],
+            password=config["db"]["password"],
+            database=config["db"]["database"],
             autocommit=True,
             use_unicode=True
         )
@@ -54,5 +56,5 @@ class Quotes:
         mydb.commit()
         mycursor.close()
         mydb.close()
-        
-        return quote    
+
+        return quote

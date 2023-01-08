@@ -1,32 +1,29 @@
-import asyncio
-import os
+"""
+This cog add fun little random things.
+"""
+
+
 import random
-import sys
 import aiohttp
-import aiofiles
-import hashlib
-import yaml
 import requests
-import uuid
 import inspirobot
-import uwuify
-import json
 
 import nextcord
-from typing import Optional
 from nextcord.ext import commands
-from nextcord import Interaction, SlashOption, ChannelType
-from nextcord.abc import GuildChannel
+from nextcord import Interaction, SlashOption
 
 
-with open("config.yaml") as file:
-    config = yaml.load(file, Loader=yaml.FullLoader)
+from constants import ERROR_COLOR, MAIN_COLOR, SUCCESS_COLOR
 
 
 class Fun(commands.Cog, name="fun"):
+    """
+    This cog add fun little random things.
+    """
+
     def __init__(self, bot):
         self.bot = bot
-    
+
     @nextcord.slash_command(name="dadjoke", description="Get one of the classics")
     async def dadjoke(self, interaction: Interaction, searchterm: str = SlashOption(description="A term to try and find a dadjoke about", default="", required=False)):
         """
@@ -40,7 +37,7 @@ class Fun(commands.Cog, name="fun"):
             await interaction.response.send_message(random.choice(json["results"])["joke"])
         except:
             await interaction.response.send_message("I don't think I've heard a good one about that yet. Try something else.")
-    
+
     @nextcord.slash_command(name="xkcd", description="Get an xkcd comic.")
     async def xkcd(self, interaction: Interaction, comicnumber: int = SlashOption(description="A specific xkcd comic, like '1' to get the first comic", default="", required=False)):
         """
@@ -55,7 +52,7 @@ class Fun(commands.Cog, name="fun"):
             await interaction.response.send_message(r.json()['img'])
         except:
             await interaction.response.send_message("I can't find that xkcd comic, try another.")
-    
+
     @nextcord.slash_command(name="iswanted", description="See if someone is on the FBI's most wanted list.")
     async def iswanted(self, interaction: Interaction, name: str = SlashOption(description="The name of the person you want to check", required=True)):
         """
@@ -68,7 +65,7 @@ class Fun(commands.Cog, name="fun"):
             await interaction.response.send_message(name + " might be wanted by the FBI:\n" + url)
         except:
             await interaction.response.send_message("No one with that name is currently wanted by the FBI")
-    
+
     @nextcord.slash_command(name="eightball", description="Ask any yes/no question and get an answer.")
     async def eight_ball(self, interaction: Interaction, question: str = SlashOption(description="The question you want to ask", required=True)):
         """
@@ -82,7 +79,7 @@ class Fun(commands.Cog, name="fun"):
         embed = nextcord.Embed(
             title=f"**My Answer to '{question}':**",
             description=f"{answers[random.randint(0, len(answers) - 1)]}",
-            color=config["success"]
+            color=SUCCESS_COLOR
         )
         embed.set_footer(
             text=f"Question asked by: {interaction.user}"
@@ -100,16 +97,16 @@ class Fun(commands.Cog, name="fun"):
             async with session.get("https://uselessfacts.jsph.pl/random.json?language=en") as request:
                 if request.status == 200:
                     data = await request.json()
-                    embed = nextcord.Embed(description=data["text"], color=config["main_color"])
+                    embed = nextcord.Embed(description=data["text"], color=MAIN_COLOR)
                     await interaction.response.send_message(embed=embed)
                 else:
                     embed = nextcord.Embed(
                         title="Error!",
                         description="There is something wrong with the API, please try again later",
-                        color=config["error"]
+                        color=ERROR_COLOR
                     )
                     await interaction.response.send_message(embed=embed)
-    
+
     @nextcord.slash_command(name="inspire", description="Get an inspirational poster courtesy of https://inspirobot.me/")
     async def inspire(self, interaction: Interaction):
         """
@@ -117,7 +114,7 @@ class Fun(commands.Cog, name="fun"):
         """
         quote = inspirobot.generate()
         await interaction.response.send_message(quote.url)
-    
+
     @nextcord.slash_command(name="wisdom", description="Get some wisdom courtesy of https://inspirobot.me/")
     async def wisdom(self, interaction: Interaction):
         """
@@ -127,7 +124,7 @@ class Fun(commands.Cog, name="fun"):
         res = ""
         for quote in flow:
             res += quote.text + "\n"
-        
+
         await interaction.response.send_message(res)
 
     @nextcord.slash_command(name="advice", description="Get some advice.")
@@ -138,5 +135,9 @@ class Fun(commands.Cog, name="fun"):
         r = requests.get("https://api.adviceslip.com/advice")
         await interaction.response.send_message(r.json()['slip']['advice'])
 
+
 def setup(bot):
+    """
+    Add the cog to the bot so that it can load, unload, reload and use it's content.
+    """
     bot.add_cog(Fun(bot))

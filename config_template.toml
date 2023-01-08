@@ -1,0 +1,12 @@
+# Fill in the your bot's token application ID and owner ID
+token = "BOT_TOKEN"
+application_id = "APPLICATION_ID"
+owners = ["OWNER_ID"] # TODO are we using this?
+blacklist = []
+
+# Uncomment the following lines to enable the database
+# [db]
+# host = "DATABASE_HOSTENAME"
+# user = "DATABASE_USERNAME"
+# password = "DATABASE_PASSWORD"
+# database = "DATABASE_NAME"

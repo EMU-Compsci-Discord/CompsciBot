@@ -1,19 +1,20 @@
-import os
-import sys
-import yaml
-from nextcord.ext import commands
-from noncommands import quotes
+"""
+This cog adds commands for getting and creating quotes.
+"""
+
+
 import nextcord
-from typing import Optional
 from nextcord.ext import commands
-from nextcord import Interaction, SlashOption, ChannelType
-from nextcord.abc import GuildChannel
+from nextcord import Interaction, SlashOption
 
-with open("config.yaml") as file:
-    config = yaml.load(file, Loader=yaml.FullLoader)
+from noncommands import quotes
 
-# Here we name the cog and create a new class for the cog.
+
 class Quotes(commands.Cog, name="quotes"):
+    """
+    This cog adds commands for getting and creating quotes.
+    """
+
     def __init__(self, bot):
         self.bot = bot
 
@@ -23,8 +24,8 @@ class Quotes(commands.Cog, name="quotes"):
         """
         [(Optional) Search text] Searches CS quotes by keyword, or search one at random.
         """
-        quoteClass = quotes.Quotes(self.bot)
-        random_quote = await quoteClass.quote(keyword)
+        quote_class = quotes.Quotes(self.bot)
+        random_quote = await quote_class.quote(keyword)
         await interaction.response.send_message(random_quote)
 
     @nextcord.slash_command(name="newquote", description="Creates a new quote to be put into the list of CS quotes.")
@@ -32,11 +33,14 @@ class Quotes(commands.Cog, name="quotes"):
         """
         [(Required) Quote] Creates a new quote to be put into the list of CS quotes.
         """
-        quoteClass = quotes.Quotes(self.bot)
-        newquote = await quoteClass.newquote(quote)
+        quote_class = quotes.Quotes(self.bot)
+        newquote = await quote_class.newquote(quote)
 
         await interaction.response.send_message("Quote submitted! Quote: " + newquote)
-            
-# And then we finally add the cog to the bot so that it can load, unload, reload and use it's content.
+
+
 def setup(bot):
+    """
+    Add the cog to the bot so that it can load, unload, reload and use it's content.
+    """
     bot.add_cog(Quotes(bot))

@@ -1,28 +1,31 @@
-import os
-import sys
-import yaml
-from nextcord.ext import commands
+"""
+This cog adds a command for accessing ratemyprofessor
+"""
+
+
 import ratemyprofessor
 import nextcord
-from typing import Optional
 from nextcord.ext import commands
-from nextcord import Interaction, SlashOption, ChannelType
-from nextcord.abc import GuildChannel
+from nextcord import SlashOption
 
+from constants import SUCCESS_COLOR
 
-with open("config.yaml") as file:
-    config = yaml.load(file, Loader=yaml.FullLoader)
+PROF_IMAGES = {
+    "William Sverdlik": "https://www.emich.edu/computer-science/images/faculty/w-sverdlik.jpg",
+    "Zenia Bahorski": "https://www.emich.edu/computer-science/images/faculty/zbahorski.jpg",
+    "Andrii Kashliev": "https://www.emich.edu/computer-science/images/faculty/andreii-kashliev.jpg",
+    "Krish Narayanan": "https://www.emich.edu/computer-science/images/faculty/k-narayanan.jpg",
+    "Siyuan Jiang": "https://www.emich.edu/computer-science/images/faculty/s-jiang.jpg",
+}
+
 
 class RateMyProfessor(commands.Cog, name="rate my professor"):
+    """
+    This cog adds a command for accessing ratemyprofessor
+    """
+
     def __init__(self, bot):
         self.bot = bot
-        self.profImages = {
-            "William Sverdlik": "https://www.emich.edu/computer-science/images/faculty/w-sverdlik.jpg",
-            "Zenia Bahorski": "https://www.emich.edu/computer-science/images/faculty/zbahorski.jpg",
-            "Andrii Kashliev": "https://www.emich.edu/computer-science/images/faculty/andreii-kashliev.jpg",
-            "Krish Narayanan": "https://www.emich.edu/computer-science/images/faculty/k-narayanan.jpg",
-            "Siyuan Jiang": "https://www.emich.edu/computer-science/images/faculty/s-jiang.jpg",
-        }
 
     @nextcord.slash_command(name="rmp", description="Check out what RateMyProfessor has to say about a professor!")
     async def rmp(self, interaction: nextcord.Interaction, professorname: str = SlashOption(name="professorname", description="The name of the professor you want to look up", required=True)):
@@ -33,23 +36,27 @@ class RateMyProfessor(commands.Cog, name="rate my professor"):
             EMU = ratemyprofessor.get_school_by_name("Eastern Michigan University")
             prof = ratemyprofessor.get_professor_by_school_and_name(EMU, professorname)
 
-            ratingsBest = sorted([rating for rating in prof.get_ratings() if rating.comment], key=lambda rating: (rating.rating, rating.date))
-            bestRating = ratingsBest[-1]
+            ratings_best = sorted([rating for rating in prof.get_ratings() if rating.comment],
+                                  key=lambda rating: (rating.rating, rating.date))
+            best_rating = ratings_best[-1]
 
-            ratingsWorst = sorted([rating for rating in prof.get_ratings() if rating.comment], key=lambda rating: (-rating.rating, rating.date))
-            worstRating = ratingsWorst[-1]
+            ratings_worst = sorted([rating for rating in prof.get_ratings() if rating.comment],
+                                   key=lambda rating: (-rating.rating, rating.date))
+            worst_rating = ratings_worst[-1]
 
-            profEmbed = self.buildProfEmbed(prof)
-            bestembed = self.buildRatingEmbed(nextcord.Embed(title=f"Best Rating for {prof.name}", color=config["success"]), bestRating)
-            worstembed = self.buildRatingEmbed(nextcord.Embed(title=f"Worst Rating for {prof.name}",color=config["success"]), worstRating)
-            
-            await interaction.response.send_message(embed=profEmbed)
-            await interaction.followup.send(embed=bestembed)
-            await interaction.followup.send(embed=worstembed)
+            prof_embed = self.build_prof_embed(prof)
+            best_embed = self.build_rating_embed(nextcord.Embed(title=f"Best Rating for {prof.name}", color=SUCCESS_COLOR),
+                                                 best_rating)
+            worst_embed = self.build_rating_embed(nextcord.Embed(title=f"Worst Rating for {prof.name}", color=SUCCESS_COLOR),
+                                                  worst_rating)
+
+            await interaction.response.send_message(embed=prof_embed)
+            await interaction.followup.send(embed=best_embed)
+            await interaction.followup.send(embed=worst_embed)
         except:
             await interaction.response.send_message(f"Could not find professor '{professorname}'. Try only using a last name or check your spelling!")
 
-    def buildRatingEmbed(self, embed, rating):
+    def build_rating_embed(self, embed, rating):
         if rating.rating:
             embed.add_field(
                 name="Rating",
@@ -93,16 +100,16 @@ class RateMyProfessor(commands.Cog, name="rate my professor"):
             )
 
         return embed
-    
-    def buildProfEmbed(self, prof):
+
+    def build_prof_embed(self, prof):
         embed = nextcord.Embed(
             title=prof,
-            color=config["success"]
+            color=SUCCESS_COLOR
         )
 
-        if prof.name in self.profImages:
-            embed.set_image(url=self.profImages[prof.name])
-        
+        if prof.name in PROF_IMAGES:
+            embed.set_image(url=PROF_IMAGES[prof.name])
+
         embed.add_field(
             name="Department",
             value=prof.department,
@@ -140,6 +147,7 @@ class RateMyProfessor(commands.Cog, name="rate my professor"):
         )
 
         return embed
+
 
 def setup(bot):
     bot.add_cog(RateMyProfessor(bot))

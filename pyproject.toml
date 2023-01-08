@@ -1,0 +1,14 @@
+[tool.pylint.main]
+ignore = [".venv"]
+recursive = true
+
+[tool.pylint.messages_control]
+disable = [
+    "line-too-long", # disable because we use autopep8
+    "broad-except", # because in many cases we want the program to continue even if there is an exception
+]
+
+[tool.autopep8]
+max_line_length = 120
+recursive = true
+exit_code = true

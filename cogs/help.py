@@ -1,17 +1,18 @@
-import os
-import sys
-import yaml
+"""
+This cog adds a help command.
+"""
+
+
 import nextcord
-from typing import Optional
 from nextcord.ext import commands
-from nextcord import Interaction, SlashOption, ChannelType
-from nextcord.abc import GuildChannel
+from nextcord import Interaction
 
-
-with open("config.yaml") as file:
-    config = yaml.load(file, Loader=yaml.FullLoader)
 
 class Help(commands.Cog, name="help"):
+    """
+    This cog adds a help command.
+    """
+
     def __init__(self, bot):
         self.bot = bot
 
@@ -25,4 +26,7 @@ class Help(commands.Cog, name="help"):
 
 
 def setup(bot):
+    """
+    Add the cog to the bot so that it can load, unload, reload and use it's content.
+    """
     bot.add_cog(Help(bot))
