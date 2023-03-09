@@ -64,8 +64,7 @@ You will then be taken to the bots General information. Note the **APPLICATION I
 
 Make sure the Server Members Intent and Message Content Intent are switched `ON`.
 
-![image](https://user-images.githubusercontent.com/22625481/223935009-40740842-9a0a-4671-826b-4952c8fbb3f3.png)
-
+<img id="appId" src="imgs/intents.webp" alt="" width="100%"/>
 
 ### 3. Adding a Bot
 
