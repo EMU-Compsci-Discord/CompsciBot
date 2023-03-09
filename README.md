@@ -62,6 +62,11 @@ You will then be taken to the bots General information. Note the **APPLICATION I
 
 <img id="appId" src="imgs/appMain.webp" alt="General Application Page" width="100%"/>
 
+Make sure the Server Members Intent and Message Content Intent are switched `ON`.
+
+![image](https://user-images.githubusercontent.com/22625481/223935009-40740842-9a0a-4671-826b-4952c8fbb3f3.png)
+
+
 ### 3. Adding a Bot
 
 Now that you have an application, you need the actual bot.
