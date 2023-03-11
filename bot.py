@@ -4,6 +4,7 @@ import random
 import sys
 import nextcord
 import yaml
+import logging
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from apscheduler.triggers.cron import CronTrigger
 from nextcord.ext import commands, tasks
@@ -14,6 +15,23 @@ from noncommands import auto_code_block,quotes
 
 with open("config.yaml") as file:
     config = yaml.load(file, Loader=yaml.FullLoader)
+
+file_logging_handler = logging.FileHandler(filename="bot.log", encoding="utf-8", mode="a")
+file_logging_handler.setLevel(logging.DEBUG)
+file_logging_handler.setFormatter(logging.Formatter("%(asctime)s:%(levelname)s:%(name)s: %(message)s"))
+terminal_logging_handler = logging.StreamHandler(sys.stdout)
+terminal_logging_handler.setLevel(logging.INFO)
+terminal_logging_handler.addFilter(lambda record: record.name == "root")
+terminal_logging_handler.setFormatter(logging.Formatter("%(levelname)s: %(message)s"))
+logging.basicConfig(
+    level=logging.DEBUG,
+    handlers=[
+        file_logging_handler,
+        terminal_logging_handler
+    ]
+)
+
+
 
 intents = nextcord.Intents.default().all()
 
@@ -26,11 +44,11 @@ autoCodeBlock = auto_code_block.AutoCodeBlock(bot)
 # The code in this even is executed when the bot is ready
 @bot.event
 async def on_ready():
-    print(f"Logged in as {bot.user.name}")
-    print(f"nextcord.py API version: {nextcord.__version__}")
-    print(f"Python version: {platform.python_version()}")
-    print(f"Running on: {platform.system()} {platform.release()} ({os.name})")
-    print("-------------------")
+    logging.info(f"Logged in as {bot.user.name}")
+    logging.info(f"nextcord.py API version: {nextcord.__version__}")
+    logging.info(f"Python version: {platform.python_version()}")
+    logging.info(f"Running on: {platform.system()} {platform.release()} ({os.name})")
+    logging.info("-------------------")
     await bot.change_presence(activity=nextcord.Game("/help"))
 
 # Removes the default help command of nextcord.py to be able to create our custom help command.
@@ -42,10 +60,10 @@ if __name__ == "__main__":
             extension = file[:-3]
             try:
                 bot.load_extension(f"cogs.{extension}")
-                print(f"Loaded extension '{extension}'")
+                logging.info(f"Loaded extension '{extension}'")
             except Exception as e:
                 exception = f"{type(e).__name__}: {e}"
-                print(f"Failed to load extension {extension}\n{exception}")
+                logging.error(f"Failed to load extension {extension}: {exception}")
 
 # The code in this event is executed every time someone sends a message, with or without the prefix
 @bot.event
@@ -68,7 +86,7 @@ async def on_command_completion(ctx):
     fullCommandName = ctx.command.qualified_name
     split = fullCommandName.split(" ")
     executedCommand = str(split[0])
-    print(
+    logging.debug(
         f"Executed {executedCommand} command in {ctx.guild.name} (ID: {ctx.message.guild.id}) by {ctx.message.author} (ID: {ctx.message.author.id})")
 
 # The code in this event is executed every time a valid commands catches an error
