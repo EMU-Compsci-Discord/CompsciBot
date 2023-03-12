@@ -207,6 +207,8 @@ class ChannelManager(Cog, name="channelmanager"):
                     # deals with suffixes
                     if prof_lastname.lower() in ['sr', 'jr', 'ii', 'iii', 'iv']:
                         prof_lastname = prof_parts[-3]
+                else:
+                    prof_lastname = "TBA"
 
                 # assemble class and category names
                 channel_name = f"{category_name}-{prof_lastname}"
