@@ -111,17 +111,17 @@ async def create_channel(channel_name: str, category: nextcord.CategoryChannel, 
     return await interaction.guild.create_text_channel(channel_name, category=category, topic=description)
 
 
-async def create_role(interaction: Interaction, role_name: str, permissions: Permissions = Permissions.none(), color=Colour.default()):
+async def create_role(interaction: Interaction, role_name: str, permissions: Permissions = Permissions.none(), color=Colour.default(), mentionable=False):
     """
     creates a role with specified permissions, with specifed name.
     """
 
-    return await interaction.guild.create_role(name=role_name, permissions=permissions, colour=color)
+    return await interaction.guild.create_role(name=role_name, permissions=permissions, colour=color, mentionable=mentionable)
 
 
 async def create_role_for_category(interaction: Interaction, category: nextcord.CategoryChannel, term: str):
     role_name = f"{category.name.replace('-', ' ')} {term}"
-    role = await create_role(interaction, role_name, color=nextcord.Colour.blue())
+    role = await create_role(interaction, role_name, color=nextcord.Colour.blue(), mentionable=True)
     # gives basic permissions to a role for its assigned channel
     await category.set_permissions(
         role,
