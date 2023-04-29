@@ -121,14 +121,15 @@ async def create_role(interaction: Interaction, role_name: str, permissions: Per
 
 async def create_role_for_category(interaction: Interaction, category: nextcord.CategoryChannel, term: str):
     role_name = f"{category.name.replace('-', ' ')} {term}"
-    role = await create_role(interaction, role_name, color=nextcord.Colour.blue(), mentionable=True)
+    role = await create_role(interaction, role_name, color=nextcord.Colour.blue())
     # gives basic permissions to a role for its assigned channel
     await category.set_permissions(
         role,
         read_messages=True,
         send_messages=True,
         add_reactions=True,
-        read_message_history=True
+        read_message_history=True,
+        mention_everyone=True
     )
     return role
 
