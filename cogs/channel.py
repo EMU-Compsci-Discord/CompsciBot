@@ -1,5 +1,6 @@
 import asyncio
 from collections import OrderedDict
+from itertools import chain
 from pathlib import Path
 from string import ascii_lowercase
 import sys
@@ -275,22 +276,37 @@ class ChannelManager(Cog, name="channelmanager"):
 
         await interaction.response.defer()
 
-        lower_level_roles: list[nextcord.Role] = []
-        upper_level_roles: list[nextcord.Role] = []
+        roles_by_class_level: list[list[nextcord.Role]] = [[], [], [], [], [], []]
 
         for role in interaction.guild.roles:
             match = course_name_regex.search(role.name)
-            if match is not None and match.group(2)[0] in ['1', '2', '3']:
-                lower_level_roles.append(role)
-            elif match is not None and match.group(2)[0] in ['4', '5', '6']:
-                upper_level_roles.append(role)
+            if match is not None:
+                roles_by_class_level[int(match.group(2)[0]) - 1].append(role)
 
-        term = term_name_regex.search(lower_level_roles[0].name).group(0)
+        for groupings in (
+            (("100-600", 0, 6), ),
+            (("100-300", 0, 3), ("400-600", 3, 6)),
+            (("100-200", 0, 2), ("300", 2, 3), ("400-500", 3, 5), ("600", 5, 6))
+        ):
+            potential_role_groups = [(label, list(chain(*roles_by_class_level[min:max]))) for (label, min, max) in groupings]
 
-        for role_group_name, roles in (("100-300", lower_level_roles), ("400-600", upper_level_roles)):
+            if not next((True for (label, roles) in potential_role_groups if len(roles) > 20), False):
+                role_groups = potential_role_groups
+                break
+        
+        if role_groups is None:
+            await interaction.followup.send("Error: too many classes", ephemeral=True)
+            return
+        elif next(chain(*roles_by_class_level), None) is None:
+            await interaction.followup.send("Error: no class roles found", ephemeral=True)
+            return
+
+        term = term_name_regex.search(next(chain(*roles_by_class_level)).name).group(0)
+
+        for (label, roles) in role_groups:
             roles.sort(key=lambda role: role.name)
 
-            title = f"Use the following commands to create reaction roles for {role_group_name} classes."
+            title = f"Use the following commands to create reaction roles for {label} classes."
 
             message = "```\n/reactionrole setup\n```\n"
 
@@ -299,8 +315,8 @@ class ChannelManager(Cog, name="channelmanager"):
 
             message += "What would you like the message to say?\n"
             message += "```\n"
-            message += f"{term} Class Channels {role_group_name} | React to gain access to your class channels\n\n"
-            for role, emoji in zip(roles, reaction_emoji()):
+            message += f"{term} Class Channels {label} | React to gain access to your class channels\n\n"
+            for (role, emoji) in zip(roles, reaction_emoji()):
                 message += f"{emoji}  {course_name_regex.search(role.name).group(0)}\n"
             message += "\n```\n"
 
@@ -309,7 +325,7 @@ class ChannelManager(Cog, name="channelmanager"):
 
             message += "What roles would you like to add?\n"
             message += "```\n"
-            for role, emoji in zip(roles, reaction_emoji()):
+            for (role, emoji) in zip(roles, reaction_emoji()):
                 message += f"{emoji} {role.mention}\n"
             message += "\n```\n"
 
