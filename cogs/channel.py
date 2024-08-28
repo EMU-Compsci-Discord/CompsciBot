@@ -9,7 +9,7 @@ import json
 import yaml
 import logging
 from nextcord.ext.commands import Cog
-from nextcord.ext.application_checks import has_permissions
+from nextcord.ext.application_checks import has_role
 from nextcord.utils import find
 import re
 import nextcord
@@ -149,7 +149,7 @@ class ChannelManager(Cog, name="channelmanager"):
         self.bot = bot
 
     @nextcord.slash_command(name="importclasses")
-    @has_permissions(administrator=True)
+    @has_role('Class Manager')
     async def import_classes(self, interaction: Interaction, file: Attachment = SlashOption(description="A JSON file containing the classes.", required=True)):
         """
         Import a JSON file and create channels and roles for each class.
@@ -241,7 +241,7 @@ class ChannelManager(Cog, name="channelmanager"):
         await interaction.followup.send(f"Created {channels_count} channels, {categories_count} categories, and {roles_count} roles.")
 
     @nextcord.slash_command(name="deleteclasses")
-    @has_permissions(administrator=True)
+    @has_role('Class Manager')
     async def delete_classes(self, interaction: Interaction):
         """
         Admin Only. Deletes channels, categories, and roles with course names in them.
